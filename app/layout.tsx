@@ -1,3 +1,4 @@
+import { Providers } from "./providers";
 import styles from "./styles.module.css";
 import { Metadata } from "next";
 
@@ -14,8 +15,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={styles.container}>
-        <main className={styles.main}>{children}</main>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <Providers>
+          <main className={styles.main}>{children}</main>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        </Providers>
       </body>
     </html>
   );

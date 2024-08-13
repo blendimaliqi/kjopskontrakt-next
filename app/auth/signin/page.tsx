@@ -1,0 +1,17 @@
+"use client";
+
+import { signIn } from "next-auth/react";
+
+export default function SignIn() {
+  return (
+    <div>
+      <h1>Sign In</h1>
+      <button onClick={() => signIn("credentials", { callbackUrl: "/" })}>
+        Sign in with Credentials
+      </button>
+      <button onClick={() => signIn("google", { callbackUrl: "/" })}>
+        Sign in with Google
+      </button>
+    </div>
+  );
+}
