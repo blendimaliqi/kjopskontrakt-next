@@ -24,6 +24,8 @@ interface FormData {
   kjopesum: string;
   betalingsmate: string;
   selgers_kontonummer: string;
+  omregistreringsavgift_betales_av: "kjoper" | "selger";
+  omregistreringsavgift_belop: string;
   utstyr_sommer: boolean;
   utstyr_vinter: boolean;
   utstyr_annet: boolean;
@@ -42,10 +44,6 @@ export function generatePDF(formData: FormData): void {
   const pageHeight = 297;
   const margin = 20;
   let yPosition = margin;
-
-  function toString(value: string | number | boolean): string {
-    return value.toString();
-  }
 
   function addText(
     text: string,
@@ -151,7 +149,7 @@ export function generatePDF(formData: FormData): void {
     // Selger column
     addField(
       label,
-      toString(formData[`selger_${fieldName}` as keyof FormData]),
+      formData[`selger_${fieldName}` as keyof FormData] as string,
       margin,
       yPosition,
       sectionWidth - 5
@@ -160,7 +158,7 @@ export function generatePDF(formData: FormData): void {
     // Kjøper column
     addField(
       label,
-      toString(formData[`kjoper_${fieldName}` as keyof FormData]),
+      formData[`kjoper_${fieldName}` as keyof FormData] as string,
       margin + sectionWidth + 10,
       yPosition,
       sectionWidth - 5
@@ -199,15 +197,24 @@ export function generatePDF(formData: FormData): void {
       ["betalingsmate", "Betalingsmåte"],
     ],
     [["selgers_kontonummer", "Selgers kontonummer"]],
+    [
+      ["omregistreringsavgift_betales_av", "Omregistreringsavgift betales av"],
+      ["omregistreringsavgift_belop", "Beløp"],
+    ],
   ];
 
   vehicleFields.forEach((row) => {
     const fieldWidth =
       (pageWidth - 2 * margin - (row.length - 1) * 5) / row.length;
     row.forEach(([fieldName, label], index) => {
+      let value = formData[fieldName as keyof FormData] as string;
+      if (fieldName === "omregistreringsavgift_betales_av") {
+        value =
+          value === "kjoper" ? "Kjøper" : value === "selger" ? "Selger" : "";
+      }
       addField(
         label,
-        toString(formData[fieldName as keyof FormData]),
+        value,
         margin + index * (fieldWidth + 5),
         yPosition,
         fieldWidth
@@ -287,7 +294,7 @@ export function generatePDF(formData: FormData): void {
     const y = yPosition + (index % 3) * 15;
     addField(
       label,
-      toString(formData[fieldName as keyof FormData]),
+      formData[fieldName as keyof FormData] as string,
       x,
       y,
       (pageWidth - 2 * margin - 10) / 2

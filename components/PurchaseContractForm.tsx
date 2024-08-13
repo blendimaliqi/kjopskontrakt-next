@@ -26,6 +26,8 @@ interface FormData {
   kjopesum: string;
   betalingsmate: string;
   selgers_kontonummer: string;
+  omregistreringsavgift_betales_av: "kjoper" | "selger";
+  omregistreringsavgift_belop: string;
   utstyr_sommer: boolean;
   utstyr_vinter: boolean;
   utstyr_annet: boolean;
@@ -62,6 +64,8 @@ const PurchaseContractForm: React.FC = () => {
     kjopesum: "",
     betalingsmate: "",
     selgers_kontonummer: "",
+    omregistreringsavgift_betales_av: "kjoper",
+    omregistreringsavgift_belop: "",
     utstyr_sommer: false,
     utstyr_vinter: false,
     utstyr_annet: false,
@@ -74,7 +78,7 @@ const PurchaseContractForm: React.FC = () => {
   });
 
   const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
     setFormData((prevData) => ({
@@ -258,6 +262,32 @@ const PurchaseContractForm: React.FC = () => {
       </table>
 
       <h3>Kjøretøy</h3>
+      <div className={styles.formRow}>
+        <div className={styles.formColumn}>
+          <label htmlFor="omregistreringsavgift_betales_av">
+            Omregistreringsavgift betales av:
+          </label>
+          <select
+            id="omregistreringsavgift_betales_av"
+            name="omregistreringsavgift_betales_av"
+            value={formData.omregistreringsavgift_betales_av}
+            onChange={handleInputChange}
+          >
+            <option value="kjoper">Kjøper</option>
+            <option value="selger">Selger</option>
+          </select>
+        </div>
+        <div className={styles.formColumn}>
+          <label htmlFor="omregistreringsavgift_belop">Beløp:</label>
+          <input
+            type="text"
+            id="omregistreringsavgift_belop"
+            name="omregistreringsavgift_belop"
+            value={formData.omregistreringsavgift_belop}
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
       <div className={styles.formRow}>
         <div className={styles.formColumn}>
           <label htmlFor="regnr">Reg.nr:</label>
