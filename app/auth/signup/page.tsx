@@ -4,7 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/utils/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -31,27 +31,35 @@ export default function SignUp() {
 
   return (
     <div>
-      <h1>Sign Up</h1>
-      <form onSubmit={handleSignUp}>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-          required
-        />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          required
-        />
-        <button type="submit">Sign Up</button>
-      </form>
-      <p>
-        Already have an account? <Link href="/auth/signin">Sign in</Link>
-      </p>
+      {session && session.user ? (
+        <div>
+          <button onClick={() => signOut()}>Sign out</button>
+        </div>
+      ) : (
+        <>
+          <h1>Sign Up</h1>
+          <form onSubmit={handleSignUp}>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              required
+            />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              required
+            />
+            <button type="submit">Sign Up</button>
+          </form>
+          <p>
+            Already have an account? <Link href="/auth/signin">Sign in</Link>
+          </p>
+        </>
+      )}
     </div>
   );
 }

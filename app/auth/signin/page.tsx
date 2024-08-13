@@ -37,9 +37,9 @@ export default function SignIn() {
         />
         <button type="submit">Sign in with Credentials</button>
       </form>
-      <button onClick={() => signIn("google", { callbackUrl: "/" })}>
+      {/* <button onClick={() => signIn("google", { callbackUrl: "/" })}>
         Sign in with Google
-      </button>
+      </button> */}
     </div>
   );
 }
