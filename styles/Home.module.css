@@ -1,0 +1,15 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.formContainer {
+  border: 1px solid #000;
+  padding: 20px;
+}
+
+.main {
+  font-family: Arial, sans-serif;
+}
