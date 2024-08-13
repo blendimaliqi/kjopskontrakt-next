@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <div className={styles.formContainer}>
-        <h2>Kjøpskontrakt</h2>
+        <h2 style={{ textAlign: "center" }}>Kjøpskontrakt</h2>
         <PurchaseContractForm />
       </div>
     </main>
