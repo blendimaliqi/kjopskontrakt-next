@@ -4,7 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/utils/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -24,8 +24,18 @@ export default function SignUp() {
       // Handle error (show message to user)
     } else {
       console.log("Signup successful:", data);
-      // Redirect to sign-in page or show a success message
-      router.push("/auth/signin");
+      // Sign in the user immediately after successful sign up
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        console.error("Error signing in:", result.error);
+      } else {
+        router.push("/dashboard"); // Redirect to dashboard or home page
+      }
     }
   };
 
@@ -33,11 +43,13 @@ export default function SignUp() {
     <div>
       {session && session.user ? (
         <div>
+          <p>Signed in as {session.user.email}</p>
           <button onClick={() => signOut()}>Sign out</button>
         </div>
       ) : (
         <>
           <h1>Sign Up</h1>
+
           <form onSubmit={handleSignUp}>
             <input
               type="email"

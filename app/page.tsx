@@ -7,13 +7,19 @@ import SignUp from "./auth/signup/page";
 
 export default function Home() {
   const { data: session } = useSession();
+
+  session && console.log(session);
   return (
     <main className={styles.main}>
       <div className={styles.formContainer}>
         <h2 style={{ textAlign: "center" }}>Kjøpskontrakt</h2>
         {/* <AuthButton /> */}
         <SignUp />
-        {session && session.user && <PurchaseContractForm />}
+        {session &&
+          session.user &&
+          session.user.email === "blendi.maliqi93@gmail.com" && (
+            <PurchaseContractForm />
+          )}
       </div>
     </main>
   );
