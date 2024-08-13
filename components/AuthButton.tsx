@@ -1,5 +1,6 @@
 "use client";
 
+import SignUp from "@/app/auth/signup/page";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function AuthButton() {
@@ -8,5 +9,9 @@ export default function AuthButton() {
   if (session && session.user) {
     return <button onClick={() => signOut()}>Sign out</button>;
   }
-  return <button onClick={() => signIn()}>Sign in</button>;
+  return (
+    <div>
+      <button onClick={() => signIn()}>Sign in</button>
+    </div>
+  );
 }
