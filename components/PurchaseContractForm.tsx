@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, ClipboardEvent } from "react";
+import React, { useState, ChangeEvent, ClipboardEvent, useEffect } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { generatePDF } from "../utils/pdfGenerator";
+import { useSession } from "next-auth/react";
 
 interface FormData {
   selger_fornavn: string;
@@ -52,6 +53,8 @@ interface FormData {
 }
 
 const PurchaseContractForm: React.FC = () => {
+  const { data: session } = useSession();
+
   const [formData, setFormData] = useState<FormData>({
     selger_fornavn: "",
     selger_etternavn: "",
@@ -92,6 +95,7 @@ const PurchaseContractForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [balance, setBalance] = useState<number | null>(null);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -140,6 +144,27 @@ const PurchaseContractForm: React.FC = () => {
     }));
   };
 
+  const fetchBalance = async () => {
+    try {
+      const response = await fetch("/api/account/balance", {
+        method: "GET",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "An unknown error occurred");
+      }
+
+      setBalance(data.balance);
+    } catch (error) {
+      console.error("Balance fetch error:", error);
+      setError(`Failed to fetch balance: ${error}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleWithdraw = async () => {
     setIsLoading(true);
     setError(null);
@@ -161,6 +186,7 @@ const PurchaseContractForm: React.FC = () => {
       }
 
       generatePDF(formData);
+      fetchBalance();
     } catch (error) {
       console.error("Withdrawal error:", error);
       setError(`Withdrawal failed: ${error}`);
@@ -171,6 +197,19 @@ const PurchaseContractForm: React.FC = () => {
 
   const handleGeneratePDF = () => {
     handleWithdraw();
+  };
+
+  useEffect(() => {
+    if (session && session.user && session.user.email) {
+      fetchBalance();
+    }
+  }, []);
+
+  const getButtonText = () => {
+    if (isLoading) return "Genererer...";
+    if (balance !== null && Number(balance) < 9.9)
+      return "Legg til penger (Kun kr 9.90.- per generering)";
+    return "Generer PDF (kr 9.90.-)";
   };
 
   return (
@@ -572,9 +611,9 @@ const PurchaseContractForm: React.FC = () => {
           <Button
             onClick={handleGeneratePDF}
             className="w-full"
-            disabled={isLoading}
+            disabled={isLoading || balance === null || balance < 9.9}
           >
-            {isLoading ? "Genererer..." : "Generer PDF (kr 9.90.-)"}
+            {getButtonText()}
           </Button>
 
           {error && <div className="text-red-500 mt-2">{error}</div>}

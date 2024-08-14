@@ -1,7 +1,6 @@
 "use client";
 import PurchaseContractForm from "@/components/PurchaseContractForm";
 import { useSession } from "next-auth/react";
-import "../app/globals.css";
 
 export default function Home() {
   const { data: session } = useSession();

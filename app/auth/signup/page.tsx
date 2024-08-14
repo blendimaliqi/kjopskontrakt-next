@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,41 +13,66 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [isRateLimited, setIsRateLimited] = useState(false);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+    setIsRateLimited(false);
 
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
     });
 
-    if (signUpError) {
-      setError(signUpError.message);
-      setIsLoading(false);
-      return;
-    }
-
-    // Sign in the user immediately after successful sign up
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
     setIsLoading(false);
 
-    if (result?.error) {
-      setError(
-        "Feil ved innlogging etter registrering. Vennligst prøv å logge inn manuelt."
-      );
+    if (signUpError) {
+      if (signUpError.message.includes("Email rate limit exceeded")) {
+        setIsRateLimited(true);
+      } else {
+        setError(signUpError.message);
+      }
     } else {
-      router.push("/");
+      setIsRegistered(true);
     }
   };
+
+  if (isRegistered) {
+    return (
+      <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
+        <Alert className="mb-4">
+          <AlertDescription>
+            Takk for at du registrerte deg! Vennligst sjekk e-posten din for en
+            bekreftelseslink. Etter at du har bekreftet e-postadressen din, kan
+            du logge inn.
+          </AlertDescription>
+        </Alert>
+        <Link href="/auth/signin">
+          <Button className="w-full">Gå til innlogging</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  if (isRateLimited) {
+    return (
+      <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
+        <Alert className="mb-4">
+          <AlertDescription>
+            Beklager, vi har nådd grensen for e-postregistrering. Dette er
+            vanligvis et midlertidig problem. Vennligst prøv igjen senere eller
+            kontakt support hvis problemet vedvarer.
+          </AlertDescription>
+        </Alert>
+        <Button onClick={() => setIsRateLimited(false)} className="w-full">
+          Prøv igjen
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
