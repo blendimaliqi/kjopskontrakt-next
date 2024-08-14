@@ -7,7 +7,6 @@ import SignUp from "./auth/signup/page";
 import Deposit from "@/components/Deposit";
 import Balance from "@/components/Balance";
 import { useEffect } from "react";
-import Withdraw from "@/components/Withdraw";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -19,17 +18,14 @@ export default function Home() {
         <h2 style={{ textAlign: "center" }}>Kjøpskontrakt</h2>
         {/* <AuthButton /> */}
         <SignUp />
-        {session &&
-          session.user &&
-          session.user.email === "blendi.maliqi93@gmail.com" && (
-            <div>
-              <Balance />
-              <Deposit />
-              <Withdraw />
+        {session && session.user && session.user.email && (
+          <div>
+            <Balance />
+            <Deposit />
 
-              <PurchaseContractForm />
-            </div>
-          )}
+            <PurchaseContractForm />
+          </div>
+        )}
       </div>
     </main>
   );

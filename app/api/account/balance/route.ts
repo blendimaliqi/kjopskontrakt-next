@@ -13,11 +13,10 @@ export async function GET(req: NextRequest) {
 
     console.log("Session user:", session.user);
 
-    const { data: user, error: fetchError } = await supabase
+    const { data: users, error: fetchError } = await supabase
       .from("users")
       .select("balance")
-      .eq("email", session.user?.email)
-      .single();
+      .eq("email", session.user?.email);
 
     if (fetchError) {
       console.error("Fetch error:", fetchError);
@@ -27,9 +26,25 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    let user = users?.[0];
+
     if (!user) {
-      console.log("User not found:", session.user?.email);
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      console.log("User not found. Attempting to create new user record.");
+      const { data: newUser, error: createError } = await supabase
+        .from("users")
+        .insert({ email: session.user?.email, balance: 0 })
+        .select()
+        .single();
+
+      if (createError) {
+        console.error("Create user error:", createError);
+        return NextResponse.json(
+          { error: `Failed to create user record: ${createError.message}` },
+          { status: 500 }
+        );
+      }
+
+      user = newUser;
     }
 
     console.log("User balance:", user.balance);
