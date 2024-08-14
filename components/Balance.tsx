@@ -46,7 +46,7 @@ function Balance() {
         <p style={{ color: "red" }}>{error}</p>
       ) : balance !== null ? (
         <div>
-          <p>Gjenstående beløp: {balance.toFixed(2)} kr</p>
+          <p>{balance.toFixed(2)} kr</p>
           {/* {isNewUser && (
             <p style={{ color: "green" }}>
               Welcome! Your account has been created with an initial balance of

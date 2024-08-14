@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
@@ -15,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Balance from "@/components/Balance";
 
-const DropDownMenuDemo = () => {
+const DropdownProfile = () => {
   const { data: session } = useSession();
 
   if (!session) {
@@ -36,54 +37,52 @@ const DropDownMenuDemo = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="flex items-center">
           <User className="mr-2 h-4 w-4" />
-          Profile
+          Profil
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="w-56 max-w-[calc(100vw-2rem)]"
+        className="w-56"
         align="end"
-        alignOffset={-16}
-        style={{
-          position: "fixed",
-          right: "1rem",
-          top: "calc(var(--header-height, 4rem) + 0.5rem)",
-        }}
+        side="bottom"
+        sideOffset={5}
       >
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuLabel>
+          {" "}
+          <span className="text-sm truncate w-full">{session.user.email}</span>
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <User className="mr-2 h-4 w-4" />
-            <Link href="/profile">Your Profile</Link>
+            <Link href="/profile" className="flex-grow">
+              Din profil
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <CreditCard className="mr-2 h-4 w-4" />
-            <span>Billing</span>
+            <span>Betalinger</span>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
+            <span>Instillinger</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <span className="font-medium">Email:</span>
-          <span className="ml-2 truncate">{session.user.email}</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
+
+        <DropdownMenuItem className="flex flex-col items-start">
           <span className="font-medium">Balance:</span>
-          <div className="ml-2">
+          <div className="w-full">
             <Balance />
           </div>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut()}>
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span>Logg ut</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
 
-export default DropDownMenuDemo;
+export default DropdownProfile;

@@ -14,7 +14,7 @@ const Title: React.FC<TitleProps> = ({ className, href = "/" }) => {
         href={href}
         className="no-underline text-inherit hover:text-gray-700 transition-colors"
       >
-        Kontrakt til PDF generator
+        Kjøpskontrakt generator
       </Link>
     </h1>
   );

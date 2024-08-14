@@ -13,7 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
 
 function Deposit() {
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -29,7 +29,7 @@ function Deposit() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ amount }),
+        body: JSON.stringify({ amount: parseFloat(amount) }),
       });
 
       const data = await response.json();
@@ -41,12 +41,20 @@ function Deposit() {
       setSuccess(
         `Deposit successful! New balance: $${data.balance.toFixed(2)}`
       );
-      setAmount(0); // Reset amount after successful deposit
+      setAmount(""); // Reset amount after successful deposit
     } catch (error) {
       console.error("Deposit error:", error);
       setError(`Deposit failed: ${error}`);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Allow only numbers and a single decimal point
+    if (/^\d*\.?\d*$/.test(value)) {
+      setAmount(value);
     }
   };
 
@@ -61,15 +69,16 @@ function Deposit() {
       <CardContent>
         <div className="flex items-center space-x-2">
           <Input
-            type="number"
+            type="text"
             value={amount}
-            onChange={(e) => setAmount(Number(e.target.value))}
-            min="0"
-            step="0.01"
+            onChange={handleAmountChange}
             placeholder="Enter amount"
             className="flex-grow"
           />
-          <Button onClick={handleDeposit} disabled={isLoading || amount <= 0}>
+          <Button
+            onClick={handleDeposit}
+            disabled={isLoading || !amount || parseFloat(amount) <= 0}
+          >
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
