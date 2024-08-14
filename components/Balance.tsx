@@ -40,14 +40,13 @@ function Balance() {
 
   return (
     <div>
-      <h2>Your Balance</h2>
       {isLoading ? (
         <p>Loading balance...</p>
       ) : error ? (
         <p style={{ color: "red" }}>{error}</p>
       ) : balance !== null ? (
         <div>
-          <p>Current balance: ${balance.toFixed(2)}</p>
+          <p>Gjenstående beløp: {balance.toFixed(2)} kr</p>
           {/* {isNewUser && (
             <p style={{ color: "green" }}>
               Welcome! Your account has been created with an initial balance of

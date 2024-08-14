@@ -1,0 +1,9 @@
+.profileContainer {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.profileContainer h1 {
+  margin-bottom: 20px;
+}

@@ -125,7 +125,7 @@ const PurchaseContractForm: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ amount: 9 }),
+        body: JSON.stringify({ amount: 9.9 }),
       });
 
       const data = await response.json();
@@ -530,7 +530,7 @@ const PurchaseContractForm: React.FC = () => {
         onClick={handleGeneratePDF}
         className={styles.generateButton}
       >
-        Generate PDF
+        Generer PDF (kr 9.90.-)
       </button>
     </form>
   );

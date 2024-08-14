@@ -17,12 +17,8 @@ export default function Home() {
       <div className={styles.formContainer}>
         <h2 style={{ textAlign: "center" }}>Kjøpskontrakt</h2>
         {/* <AuthButton /> */}
-        <SignUp />
         {session && session.user && session.user.email && (
           <div>
-            <Balance />
-            <Deposit />
-
             <PurchaseContractForm />
           </div>
         )}
