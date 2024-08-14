@@ -1,13 +1,20 @@
 "use client";
 import PurchaseContractForm from "@/components/PurchaseContractForm";
-import styles from "../styles/Home.module.css";
+import { useSession } from "next-auth/react";
+import "../app/globals.css";
 
 export default function Home() {
+  const { data: session } = useSession();
+
+  session && console.log(session);
   return (
-    <main className={styles.main}>
-      <div className={styles.formContainer}>
-        <h2 style={{ textAlign: "center" }}>Kjøpskontrakt</h2>
-        <PurchaseContractForm />
+    <main>
+      <div>
+        {session && session.user && session.user.email && (
+          <div>
+            <PurchaseContractForm />
+          </div>
+        )}
       </div>
     </main>
   );
