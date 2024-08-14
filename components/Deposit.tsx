@@ -35,16 +35,14 @@ function Deposit() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "An unknown error occurred");
+        throw new Error(data.error || "En ukjent feil oppstod");
       }
 
-      setSuccess(
-        `Deposit successful! New balance: $${data.balance.toFixed(2)}`
-      );
+      setSuccess(`Innskudd vellykket! Ny saldo: ${data.balance.toFixed(2)} kr`);
       setAmount(""); // Reset amount after successful deposit
     } catch (error) {
-      console.error("Deposit error:", error);
-      setError(`Deposit failed: ${error}`);
+      console.error("Innskuddsfeil:", error);
+      setError(`Innskudd mislyktes: ${error}`);
     } finally {
       setIsLoading(false);
     }
@@ -59,11 +57,11 @@ function Deposit() {
   };
 
   return (
-    <Card>
+    <Card className="md:col-span-2">
       <CardHeader>
-        <CardTitle>Make a Deposit</CardTitle>
+        <CardTitle>Gjør et innskudd</CardTitle>
         <CardDescription>
-          Enter the amount you wish to deposit into your account.
+          Skriv inn beløpet du ønsker å sette inn på kontoen din.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -72,7 +70,7 @@ function Deposit() {
             type="text"
             value={amount}
             onChange={handleAmountChange}
-            placeholder="Enter amount"
+            placeholder="Skriv inn beløp"
             className="flex-grow"
           />
           <Button
@@ -82,10 +80,10 @@ function Deposit() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing
+                Behandler
               </>
             ) : (
-              "Deposit"
+              "Sett inn"
             )}
           </Button>
         </div>
@@ -93,13 +91,13 @@ function Deposit() {
       <CardFooter>
         {error && (
           <Alert variant="destructive">
-            <AlertTitle>Error</AlertTitle>
+            <AlertTitle>Feil</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
         {success && (
           <Alert variant="default">
-            <AlertTitle>Success</AlertTitle>
+            <AlertTitle>Vellykket</AlertTitle>
             <AlertDescription>{success}</AlertDescription>
           </Alert>
         )}

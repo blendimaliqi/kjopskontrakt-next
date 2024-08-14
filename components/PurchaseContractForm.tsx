@@ -160,10 +160,6 @@ const PurchaseContractForm: React.FC = () => {
         throw new Error(data.error || "An unknown error occurred");
       }
 
-      setSuccess(
-        `Withdrawal successful! New balance: $${data.balance.toFixed(2)}`
-      );
-
       generatePDF(formData);
     } catch (error) {
       console.error("Withdrawal error:", error);

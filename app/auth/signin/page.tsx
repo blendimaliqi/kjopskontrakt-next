@@ -30,7 +30,7 @@ export default function SignIn() {
     setIsLoading(false);
 
     if (result?.error) {
-      setError("Invalid email or password");
+      setError("Ugyldig e-post eller passord");
     } else {
       router.push("/");
     }
@@ -38,7 +38,7 @@ export default function SignIn() {
 
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6">Sign In</h1>
+      <h1 className="text-2xl font-bold mb-6">Logg Inn</h1>
       {error && (
         <Alert variant="destructive" className="mb-4">
           <AlertDescription>{error}</AlertDescription>
@@ -46,34 +46,34 @@ export default function SignIn() {
       )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">E-post</Label>
           <Input
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
+            placeholder="E-post"
             required
           />
         </div>
         <div>
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">Passord</Label>
           <Input
             id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
+            placeholder="Passord"
             required
           />
         </div>
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Signing in..." : "Sign in"}
+          {isLoading ? "Logger inn..." : "Logg inn"}
         </Button>
       </form>
       <div className="mt-4 text-center">
         <Link href="/auth/signup" className="text-blue-600 hover:underline">
-          Don't have an account? Sign up
+          Har du ikke en konto? Registrer deg
         </Link>
       </div>
     </div>

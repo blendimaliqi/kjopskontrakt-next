@@ -16,7 +16,9 @@ const ProfilePage = () => {
       <div className="flex items-center justify-center h-screen">
         <Card>
           <CardContent className="pt-6">
-            <p className="text-center">Please sign in to view your profile.</p>
+            <p className="text-center">
+              Vennligst logg inn for å se profilen din.
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -25,13 +27,13 @@ const ProfilePage = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Your Profile</h1>
+      <h1 className="text-3xl font-bold mb-6">Din Profil</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
               <User className="mr-2" />
-              User Information
+              Brukerinformasjon
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -39,7 +41,7 @@ const ProfilePage = () => {
               <Mail className="mr-2" />
               <span>{session.user.email}</span>
             </div>
-            <Button variant="outline">Edit Profile</Button>
+            <Button variant="outline">Rediger Profil</Button>
           </CardContent>
         </Card>
 
@@ -47,7 +49,7 @@ const ProfilePage = () => {
           <CardHeader>
             <CardTitle className="flex items-center">
               <DollarSign className="mr-2" />
-              Account Balance
+              Kontobalanse
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -55,14 +57,7 @@ const ProfilePage = () => {
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>Deposit Funds</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Deposit />
-          </CardContent>
-        </Card>
+        <Deposit />
       </div>
     </div>
   );

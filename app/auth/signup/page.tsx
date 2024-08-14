@@ -44,7 +44,7 @@ export default function SignUp() {
 
     if (result?.error) {
       setError(
-        "Error signing in after registration. Please try signing in manually."
+        "Feil ved innlogging etter registrering. Vennligst prøv å logge inn manuelt."
       );
     } else {
       router.push("/");
@@ -53,7 +53,7 @@ export default function SignUp() {
 
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6">Sign Up</h1>
+      <h1 className="text-2xl font-bold mb-6">Registrer deg</h1>
       {error && (
         <Alert variant="destructive" className="mb-4">
           <AlertDescription>{error}</AlertDescription>
@@ -61,34 +61,34 @@ export default function SignUp() {
       )}
       <form onSubmit={handleSignUp} className="space-y-4">
         <div>
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">E-post</Label>
           <Input
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
+            placeholder="E-post"
             required
           />
         </div>
         <div>
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">Passord</Label>
           <Input
             id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
+            placeholder="Passord"
             required
           />
         </div>
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Signing up..." : "Sign Up"}
+          {isLoading ? "Registrerer..." : "Registrer deg"}
         </Button>
       </form>
       <div className="mt-4 text-center">
         <Link href="/auth/signin" className="text-blue-600 hover:underline">
-          Already have an account? Sign in
+          Har du allerede en konto? Logg inn
         </Link>
       </div>
     </div>

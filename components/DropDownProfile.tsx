@@ -22,12 +22,12 @@ const DropdownProfile = () => {
   if (!session) {
     return (
       <div className="flex space-x-4">
-        <Link href="/auth/signin" className="text-blue-600 hover:text-blue-800">
-          Sign In
-        </Link>
-        <Link href="/auth/signup" className="text-blue-600 hover:text-blue-800">
-          Sign Up
-        </Link>
+        <Button asChild variant="outline">
+          <Link href="/auth/signin">Logg inn</Link>
+        </Button>
+        <Button asChild>
+          <Link href="/auth/signup">Registrer</Link>
+        </Button>
       </div>
     );
   }
@@ -55,7 +55,7 @@ const DropdownProfile = () => {
           <DropdownMenuItem>
             <User className="mr-2 h-4 w-4" />
             <Link href="/profile" className="flex-grow">
-              Din profil
+              Min profil
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
@@ -70,7 +70,7 @@ const DropdownProfile = () => {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem className="flex flex-col items-start">
-          <span className="font-medium">Balance:</span>
+          <span className="font-medium">Kontobalanse:</span>
           <div className="w-full">
             <Balance />
           </div>
