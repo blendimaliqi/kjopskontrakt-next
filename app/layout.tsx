@@ -1,11 +1,10 @@
 import { Providers } from "./providers";
-import styles from "./styles.module.css";
 import { Metadata } from "next";
-import UserMenu from "@/components/UserMenu";
 import Title from "@/components/Title";
+import DropdownMenuDemo from "@/components/DropDownProfile";
 
 export const metadata: Metadata = {
-  title: "Comprehensive Custom Form",
+  title: "Kjøpskontrakt",
   description: "A custom form for purchase contracts",
 };
 
@@ -15,33 +14,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={styles.container}>
+    <html lang="no">
+      <body className="bg-gray-100">
         <Providers>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              width: "100%",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "100%",
-                maxWidth: "760px",
-                padding: "0 20px",
-              }}
-            >
-              <Title />
-              <header className={styles.header}>
-                <UserMenu />
-              </header>
+          <header className="bg-white shadow-sm">
+            <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
+              <div className="flex justify-between items-center">
+                <div className="flex-shrink-0">
+                  <Title className="text-xl" />
+                </div>
+                <div className="flex-shrink-0">
+                  <DropdownMenuDemo />
+                </div>
+              </div>
             </div>
-          </div>
-          <main className={styles.main}>{children}</main>
+          </header>
+          <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {children}
+          </main>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
         </Providers>
       </body>
