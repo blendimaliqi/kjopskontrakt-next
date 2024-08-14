@@ -94,21 +94,27 @@ const PurchaseContractForm: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
 
   const handleInputChange = (
-    e:
-      | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-      | {
-          target: {
-            name: string;
-            value: string;
-            type?: string;
-            checked?: boolean;
-          };
-        }
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
     setFormData((prevData) => ({
       ...prevData,
       [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSelectChange = (name: string) => (value: string) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleCheckboxChange = (name: string) => (checked: boolean) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: checked,
     }));
   };
 
@@ -341,16 +347,10 @@ const PurchaseContractForm: React.FC = () => {
                     Omregistreringsavgift betales av
                   </Label>
                   <Select
-                    name="omregistreringsavgift_betales_av"
                     value={formData.omregistreringsavgift_betales_av}
-                    onValueChange={(value) =>
-                      handleInputChange({
-                        target: {
-                          name: "omregistreringsavgift_betales_av",
-                          value,
-                        },
-                      })
-                    }
+                    onValueChange={handleSelectChange(
+                      "omregistreringsavgift_betales_av"
+                    )}
                   >
                     <SelectTrigger id="omregistreringsavgift_betales_av">
                       <SelectValue />
@@ -465,7 +465,6 @@ const PurchaseContractForm: React.FC = () => {
               </div>
             </CardContent>
           </Card>
-
           <Card>
             <CardHeader>
               <h3 className="text-lg font-semibold">
@@ -477,51 +476,24 @@ const PurchaseContractForm: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="utstyr_sommer"
-                    name="utstyr_sommer"
                     checked={formData.utstyr_sommer}
-                    onCheckedChange={(checked) =>
-                      handleInputChange({
-                        target: {
-                          name: "utstyr_sommer",
-                          type: "checkbox",
-                          checked: checked as boolean,
-                        },
-                      })
-                    }
+                    onCheckedChange={handleCheckboxChange("utstyr_sommer")}
                   />
                   <Label htmlFor="utstyr_sommer">Sommerhjul</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="utstyr_vinter"
-                    name="utstyr_vinter"
                     checked={formData.utstyr_vinter}
-                    onCheckedChange={(checked) =>
-                      handleInputChange({
-                        target: {
-                          name: "utstyr_vinter",
-                          type: "checkbox",
-                          checked: checked as boolean,
-                        },
-                      })
-                    }
+                    onCheckedChange={handleCheckboxChange("utstyr_vinter")}
                   />
                   <Label htmlFor="utstyr_vinter">Vinterhjul</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="utstyr_annet"
-                    name="utstyr_annet"
                     checked={formData.utstyr_annet}
-                    onCheckedChange={(checked) =>
-                      handleInputChange({
-                        target: {
-                          name: "utstyr_annet",
-                          type: "checkbox",
-                          checked: checked as boolean,
-                        },
-                      })
-                    }
+                    onCheckedChange={handleCheckboxChange("utstyr_annet")}
                   />
                   <Label htmlFor="utstyr_annet">Annet</Label>
                 </div>
