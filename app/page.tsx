@@ -4,6 +4,10 @@ import styles from "../styles/Home.module.css";
 import AuthButton from "@/components/AuthButton";
 import { useSession } from "next-auth/react";
 import SignUp from "./auth/signup/page";
+import Deposit from "@/components/Deposit";
+import Balance from "@/components/Balance";
+import { useEffect } from "react";
+import Withdraw from "@/components/Withdraw";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -18,7 +22,13 @@ export default function Home() {
         {session &&
           session.user &&
           session.user.email === "blendi.maliqi93@gmail.com" && (
-            <PurchaseContractForm />
+            <div>
+              <Balance />
+              <Deposit />
+              <Withdraw />
+
+              <PurchaseContractForm />
+            </div>
           )}
       </div>
     </main>
