@@ -7,9 +7,16 @@ import Deposit from "@/components/Deposit";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { User, Mail, DollarSign } from "lucide-react";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import PaymentForm from "@/components/PaymentForm";
 
 const ProfilePage = () => {
   const { data: session } = useSession();
+
+  const stripePromise = loadStripe(
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+  );
 
   if (!session) {
     return (
@@ -57,7 +64,11 @@ const ProfilePage = () => {
           </CardContent>
         </Card>
 
-        <Deposit />
+        {/* <Deposit /> */}
+
+        <Elements stripe={stripePromise}>
+          <PaymentForm />
+        </Elements>
       </div>
     </div>
   );
