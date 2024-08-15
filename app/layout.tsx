@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { Providers } from "./providers";
 import Title from "@/components/Title";
 import DropdownProfile from "@/components/DropDownProfile";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Kjøpskontrakt",
@@ -29,6 +30,7 @@ export default function RootLayout({
           <main className="flex-1">
             <div className="container py-6">{children}</div>
           </main>
+          <Footer />
         </Providers>
       </body>
     </html>
