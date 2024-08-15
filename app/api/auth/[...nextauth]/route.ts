@@ -1,8 +1,10 @@
-import NextAuth, { NextAuthOptions, User } from "next-auth";
+import NextAuth from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { supabase } from "@/utils/supabase";
 
+// Define the auth options
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -11,7 +13,7 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req): Promise<User | null> {
+      async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
@@ -27,7 +29,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Map Supabase user to NextAuth user
-        const user: User = {
+        const user = {
           id: data.user.id,
           name: data.user.email || "Unknown", // Fallback to 'Unknown' if email is null
           email: data.user.email || "unknown@example.com", // Fallback email
@@ -36,10 +38,6 @@ export const authOptions: NextAuthOptions = {
 
         return user;
       },
-    }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_ID!,
-      clientSecret: process.env.GOOGLE_SECRET!,
     }),
   ],
   pages: {
@@ -61,6 +59,8 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
+// The handler for NextAuth
 const handler = NextAuth(authOptions);
 
+// Export the handler functions for GET and POST methods
 export { handler as GET, handler as POST };
