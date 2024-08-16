@@ -2,6 +2,9 @@ import { supabase } from "@/utils/supabase";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
+// Make the route dynamic
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession();
