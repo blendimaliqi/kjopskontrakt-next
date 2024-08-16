@@ -26,18 +26,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
-export function methodNotAllowed(req: NextRequest) {
-  return NextResponse.json(
-    { error: `Method ${req.method} Not Allowed` },
-    { status: 405 }
-  );
-}
-
-export async function handler(req: NextRequest) {
-  if (req.method === "POST") {
-    return POST(req);
-  } else {
-    return methodNotAllowed(req);
-  }
-}

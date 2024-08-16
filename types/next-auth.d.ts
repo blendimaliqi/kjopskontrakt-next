@@ -9,7 +9,10 @@ declare module "next-auth" {
 
   // You can define any additional fields here if needed
   interface User {
-    // Add any additional fields you want to include
+    id: string;
+    name: string;
+    email: string;
+    image?: string | null;
   }
 }
 
