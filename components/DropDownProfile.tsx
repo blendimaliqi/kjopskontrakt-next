@@ -60,7 +60,9 @@ const DropdownProfile = () => {
           </DropdownMenuItem>
           <DropdownMenuItem>
             <CreditCard className="mr-2 h-4 w-4" />
-            <span>Betalinger</span>
+            <Link href="/payments-form" className="flex-grow">
+              Legg til beløp
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Settings className="mr-2 h-4 w-4" />

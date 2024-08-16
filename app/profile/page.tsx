@@ -1,22 +1,14 @@
 "use client";
-
 import React from "react";
 import { useSession } from "next-auth/react";
 import Balance from "@/components/Balance";
-import Deposit from "@/components/Deposit";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Mail, DollarSign } from "lucide-react";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
-import PaymentForm from "@/components/PaymentForm";
+import { User, Mail, DollarSign, Home } from "lucide-react";
+import Link from "next/link";
 
 const ProfilePage = () => {
   const { data: session } = useSession();
-
-  const stripePromise = loadStripe(
-    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-  );
 
   if (!session) {
     return (
@@ -33,22 +25,24 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Din Profil</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="flex flex-col  container mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-16">Min Profil</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center">
+            <CardTitle className="flex items-start">
               <User className="mr-2" />
               Brukerinformasjon
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mt-2">
               <Mail className="mr-2" />
               <span>{session.user.email}</span>
             </div>
-            <Button variant="outline">Rediger Profil</Button>
+            <Button variant="outline" style={{ marginTop: "38px" }}>
+              Rediger Profil
+            </Button>
           </CardContent>
         </Card>
 
@@ -60,16 +54,24 @@ const ProfilePage = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Balance />
+            <div className="mb-4">
+              <div className="text-sm text-gray-500 mb-1">Nåværende saldo</div>
+              <div className="text-3xl font-bold flex items-baselin ">
+                <Balance />
+              </div>
+            </div>
+            <Button asChild variant="default" className="w-full">
+              <Link href="/payments-form">Legg til beløp</Link>
+            </Button>
           </CardContent>
         </Card>
-
-        {/* <Deposit /> */}
-
-        <Elements stripe={stripePromise}>
-          <PaymentForm />
-        </Elements>
       </div>
+
+      <Button asChild variant="outline" className="mt-8">
+        <Link href="/">
+          <Home className="mr-2 " /> Tilbake til kjøpskontrakt
+        </Link>
+      </Button>
     </div>
   );
 };
