@@ -1,4 +1,6 @@
 import React, { useState, ChangeEvent, ClipboardEvent, useEffect } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -55,41 +57,81 @@ interface FormData {
 const PurchaseContractForm: React.FC = () => {
   const { data: session } = useSession();
 
-  const [formData, setFormData] = useState<FormData>({
-    selger_fornavn: "",
-    selger_etternavn: "",
-    selger_adresse: "",
-    selger_postnummer: "",
-    selger_poststed: "",
-    selger_fodselsdato: "",
-    selger_tlf_arbeid: "",
-    kjoper_fornavn: "",
-    kjoper_etternavn: "",
-    kjoper_adresse: "",
-    kjoper_postnummer: "",
-    kjoper_poststed: "",
-    kjoper_fodselsdato: "",
-    kjoper_tlf_arbeid: "",
-    regnr: "",
-    bilmerke: "",
-    type: "",
-    arsmodell: "",
-    km_stand: "",
-    siste_eu_kontroll: "",
-    kjopesum: "",
-    betalingsmate: "",
-    selgers_kontonummer: "",
-    omregistreringsavgift_betales_av: "kjoper",
-    omregistreringsavgift_belop: "",
-    utstyr_sommer: false,
-    utstyr_vinter: false,
-    utstyr_annet: false,
-    utstyr_spesifisert: "",
-    andre_kommentarer: "",
-    sted_kjoper: "",
-    dato_kjoper: "",
-    selgers_underskrift: "",
-    kjopers_underskrift: "",
+  const validationSchema = Yup.object({
+    selger_fornavn: Yup.string().required("Påkrevd"),
+    selger_etternavn: Yup.string().required("Påkrevd"),
+    selger_adresse: Yup.string().required("Påkrevd"),
+    selger_postnummer: Yup.string().required("Påkrevd"),
+    selger_poststed: Yup.string().required("Påkrevd"),
+    selger_fodselsdato: Yup.string().required("Påkrevd"),
+    selger_tlf_arbeid: Yup.string().required("Påkrevd"),
+    kjoper_fornavn: Yup.string().required("Påkrevd"),
+    kjoper_etternavn: Yup.string().required("Påkrevd"),
+    kjoper_adresse: Yup.string().required("Påkrevd"),
+    kjoper_postnummer: Yup.string().required("Påkrevd"),
+    kjoper_poststed: Yup.string().required("Påkrevd"),
+    kjoper_fodselsdato: Yup.string().required("Påkrevd"),
+    kjoper_tlf_arbeid: Yup.string().required("Påkrevd"),
+    regnr: Yup.string().required("Påkrevd"),
+    // bilmerke: Yup.string().required("Påkrevd"),
+    // type: Yup.string().required("Påkrevd"),
+    // arsmodell: Yup.string().required("Påkrevd"),
+    // km_stand: Yup.string().required("Påkrevd"),
+    // siste_eu_kontroll: Yup.date().required("Påkrevd"),
+    kjopesum: Yup.number().required("Påkrevd"),
+    // betalingsmate: Yup.string().required("Påkrevd"),
+    // selgers_kontonummer: Yup.string().required("Påkrevd"),
+    omregistreringsavgift_betales_av: Yup.string()
+      .oneOf(["kjoper", "selger"])
+      .required("Påkrevd"),
+    // omregistreringsavgift_belop: Yup.number().required("Påkrevd"),
+    // sted_kjoper: Yup.string().required("Påkrevd"),
+    // dato_kjoper: Yup.date().required("Påkrevd"),
+    // selgers_underskrift: Yup.string().required("Påkrevd"),
+    // kjopers_underskrift: Yup.string().required("Påkrevd"),
+  });
+
+  const formik = useFormik<FormData>({
+    initialValues: {
+      selger_fornavn: "",
+      selger_etternavn: "",
+      selger_adresse: "",
+      selger_postnummer: "",
+      selger_poststed: "",
+      selger_fodselsdato: "",
+      selger_tlf_arbeid: "",
+      kjoper_fornavn: "",
+      kjoper_etternavn: "",
+      kjoper_adresse: "",
+      kjoper_postnummer: "",
+      kjoper_poststed: "",
+      kjoper_fodselsdato: "",
+      kjoper_tlf_arbeid: "",
+      regnr: "",
+      bilmerke: "",
+      type: "",
+      arsmodell: "",
+      km_stand: "",
+      siste_eu_kontroll: "",
+      kjopesum: "",
+      betalingsmate: "",
+      selgers_kontonummer: "",
+      omregistreringsavgift_betales_av: "kjoper",
+      omregistreringsavgift_belop: "",
+      utstyr_sommer: false,
+      utstyr_vinter: false,
+      utstyr_annet: false,
+      utstyr_spesifisert: "",
+      andre_kommentarer: "",
+      sted_kjoper: "",
+      dato_kjoper: "",
+      selgers_underskrift: "",
+      kjopers_underskrift: "",
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      handleGeneratePDF(values);
+    },
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -97,29 +139,12 @@ const PurchaseContractForm: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
 
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
   const handleSelectChange = (name: string) => (value: string) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    formik.setFieldValue(name, value);
   };
 
   const handleCheckboxChange = (name: string) => (checked: boolean) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: checked,
-    }));
+    formik.setFieldValue(name, checked);
   };
 
   const handlePaste = (e: ClipboardEvent<HTMLTextAreaElement>) => {
@@ -131,17 +156,8 @@ const PurchaseContractForm: React.FC = () => {
       .trim();
 
     const target = e.target as HTMLTextAreaElement;
-    const { selectionStart, selectionEnd } = target;
-    const currentValue = target.value;
-    const newValue =
-      currentValue.slice(0, selectionStart) +
-      sanitizedText +
-      currentValue.slice(selectionEnd);
-
-    setFormData((prevData) => ({
-      ...prevData,
-      [target.name]: newValue,
-    }));
+    const { name } = target;
+    formik.setFieldValue(name, sanitizedText);
   };
 
   const fetchBalance = async () => {
@@ -185,7 +201,7 @@ const PurchaseContractForm: React.FC = () => {
         throw new Error(data.error || "An unknown error occurred");
       }
 
-      generatePDF(formData);
+      generatePDF(formik.values);
       fetchBalance();
     } catch (error) {
       console.error("Withdrawal error:", error);
@@ -195,7 +211,7 @@ const PurchaseContractForm: React.FC = () => {
     }
   };
 
-  const handleGeneratePDF = () => {
+  const handleGeneratePDF = (values: FormData) => {
     handleWithdraw();
   };
 
@@ -211,14 +227,17 @@ const PurchaseContractForm: React.FC = () => {
       return "Legg til penger (Kun kr 9.90.- per generering)";
     return "Generer PDF (kr 9.90.-)";
   };
-
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <h2 className="text-2xl font-bold text-center">Kjøpskontrakt</h2>
       </CardHeader>
       <CardContent>
-        <form id="customForm" className="space-y-6">
+        <form
+          id="customForm"
+          className="space-y-6"
+          onSubmit={formik.handleSubmit}
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
@@ -230,67 +249,95 @@ const PurchaseContractForm: React.FC = () => {
                     <Label htmlFor="selger_fornavn">Fornavn</Label>
                     <Input
                       id="selger_fornavn"
-                      name="selger_fornavn"
-                      value={formData.selger_fornavn}
-                      onChange={handleInputChange}
+                      {...formik.getFieldProps("selger_fornavn")}
                     />
+                    {formik.touched.selger_fornavn &&
+                    formik.errors.selger_fornavn ? (
+                      <div className="text-red-500">
+                        {formik.errors.selger_fornavn}
+                      </div>
+                    ) : null}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="selger_etternavn">Etternavn</Label>
                     <Input
                       id="selger_etternavn"
-                      name="selger_etternavn"
-                      value={formData.selger_etternavn}
-                      onChange={handleInputChange}
+                      {...formik.getFieldProps("selger_etternavn")}
                     />
+                    {formik.touched.selger_etternavn &&
+                    formik.errors.selger_etternavn ? (
+                      <div className="text-red-500">
+                        {formik.errors.selger_etternavn}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="selger_adresse">Adresse</Label>
                   <Input
                     id="selger_adresse"
-                    name="selger_adresse"
-                    value={formData.selger_adresse}
-                    onChange={handleInputChange}
+                    {...formik.getFieldProps("selger_adresse")}
                   />
+                  {formik.touched.selger_adresse &&
+                  formik.errors.selger_adresse ? (
+                    <div className="text-red-500">
+                      {formik.errors.selger_adresse}
+                    </div>
+                  ) : null}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="selger_postnummer">Postnummer</Label>
                     <Input
                       id="selger_postnummer"
-                      name="selger_postnummer"
-                      value={formData.selger_postnummer}
-                      onChange={handleInputChange}
+                      {...formik.getFieldProps("selger_postnummer")}
                     />
+                    {formik.touched.selger_postnummer &&
+                    formik.errors.selger_postnummer ? (
+                      <div className="text-red-500">
+                        {formik.errors.selger_postnummer}
+                      </div>
+                    ) : null}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="selger_poststed">Poststed</Label>
                     <Input
                       id="selger_poststed"
-                      name="selger_poststed"
-                      value={formData.selger_poststed}
-                      onChange={handleInputChange}
+                      {...formik.getFieldProps("selger_poststed")}
                     />
+                    {formik.touched.selger_poststed &&
+                    formik.errors.selger_poststed ? (
+                      <div className="text-red-500">
+                        {formik.errors.selger_poststed}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="selger_fodselsdato">Person/org.nr</Label>
                   <Input
                     id="selger_fodselsdato"
-                    name="selger_fodselsdato"
-                    value={formData.selger_fodselsdato}
-                    onChange={handleInputChange}
+                    {...formik.getFieldProps("selger_fodselsdato")}
                   />
+                  {formik.touched.selger_fodselsdato &&
+                  formik.errors.selger_fodselsdato ? (
+                    <div className="text-red-500">
+                      {formik.errors.selger_fodselsdato}
+                    </div>
+                  ) : null}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="selger_tlf_arbeid">Telefon</Label>
                   <Input
                     id="selger_tlf_arbeid"
-                    name="selger_tlf_arbeid"
-                    value={formData.selger_tlf_arbeid}
-                    onChange={handleInputChange}
+                    {...formik.getFieldProps("selger_tlf_arbeid")}
                   />
+                  {formik.touched.selger_tlf_arbeid &&
+                  formik.errors.selger_tlf_arbeid ? (
+                    <div className="text-red-500">
+                      {formik.errors.selger_tlf_arbeid}
+                    </div>
+                  ) : null}
                 </div>
               </CardContent>
             </Card>
@@ -305,67 +352,95 @@ const PurchaseContractForm: React.FC = () => {
                     <Label htmlFor="kjoper_fornavn">Fornavn</Label>
                     <Input
                       id="kjoper_fornavn"
-                      name="kjoper_fornavn"
-                      value={formData.kjoper_fornavn}
-                      onChange={handleInputChange}
+                      {...formik.getFieldProps("kjoper_fornavn")}
                     />
+                    {formik.touched.kjoper_fornavn &&
+                    formik.errors.kjoper_fornavn ? (
+                      <div className="text-red-500">
+                        {formik.errors.kjoper_fornavn}
+                      </div>
+                    ) : null}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="kjoper_etternavn">Etternavn</Label>
                     <Input
                       id="kjoper_etternavn"
-                      name="kjoper_etternavn"
-                      value={formData.kjoper_etternavn}
-                      onChange={handleInputChange}
+                      {...formik.getFieldProps("kjoper_etternavn")}
                     />
+                    {formik.touched.kjoper_etternavn &&
+                    formik.errors.kjoper_etternavn ? (
+                      <div className="text-red-500">
+                        {formik.errors.kjoper_etternavn}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="kjoper_adresse">Adresse</Label>
                   <Input
                     id="kjoper_adresse"
-                    name="kjoper_adresse"
-                    value={formData.kjoper_adresse}
-                    onChange={handleInputChange}
+                    {...formik.getFieldProps("kjoper_adresse")}
                   />
+                  {formik.touched.kjoper_adresse &&
+                  formik.errors.kjoper_adresse ? (
+                    <div className="text-red-500">
+                      {formik.errors.kjoper_adresse}
+                    </div>
+                  ) : null}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="kjoper_postnummer">Postnummer</Label>
                     <Input
                       id="kjoper_postnummer"
-                      name="kjoper_postnummer"
-                      value={formData.kjoper_postnummer}
-                      onChange={handleInputChange}
+                      {...formik.getFieldProps("kjoper_postnummer")}
                     />
+                    {formik.touched.kjoper_postnummer &&
+                    formik.errors.kjoper_postnummer ? (
+                      <div className="text-red-500">
+                        {formik.errors.kjoper_postnummer}
+                      </div>
+                    ) : null}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="kjoper_poststed">Poststed</Label>
                     <Input
                       id="kjoper_poststed"
-                      name="kjoper_poststed"
-                      value={formData.kjoper_poststed}
-                      onChange={handleInputChange}
+                      {...formik.getFieldProps("kjoper_poststed")}
                     />
+                    {formik.touched.kjoper_poststed &&
+                    formik.errors.kjoper_poststed ? (
+                      <div className="text-red-500">
+                        {formik.errors.kjoper_poststed}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="kjoper_fodselsdato">Person/org.nr</Label>
                   <Input
                     id="kjoper_fodselsdato"
-                    name="kjoper_fodselsdato"
-                    value={formData.kjoper_fodselsdato}
-                    onChange={handleInputChange}
+                    {...formik.getFieldProps("kjoper_fodselsdato")}
                   />
+                  {formik.touched.kjoper_fodselsdato &&
+                  formik.errors.kjoper_fodselsdato ? (
+                    <div className="text-red-500">
+                      {formik.errors.kjoper_fodselsdato}
+                    </div>
+                  ) : null}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="kjoper_tlf_arbeid">Telefon</Label>
                   <Input
                     id="kjoper_tlf_arbeid"
-                    name="kjoper_tlf_arbeid"
-                    value={formData.kjoper_tlf_arbeid}
-                    onChange={handleInputChange}
+                    {...formik.getFieldProps("kjoper_tlf_arbeid")}
                   />
+                  {formik.touched.kjoper_tlf_arbeid &&
+                  formik.errors.kjoper_tlf_arbeid ? (
+                    <div className="text-red-500">
+                      {formik.errors.kjoper_tlf_arbeid}
+                    </div>
+                  ) : null}
                 </div>
               </CardContent>
             </Card>
@@ -382,7 +457,7 @@ const PurchaseContractForm: React.FC = () => {
                     Omregistreringsavgift betales av
                   </Label>
                   <Select
-                    value={formData.omregistreringsavgift_betales_av}
+                    value={formik.values.omregistreringsavgift_betales_av}
                     onValueChange={handleSelectChange(
                       "omregistreringsavgift_betales_av"
                     )}
@@ -395,44 +470,48 @@ const PurchaseContractForm: React.FC = () => {
                       <SelectItem value="selger">Selger</SelectItem>
                     </SelectContent>
                   </Select>
+                  {formik.touched.omregistreringsavgift_betales_av &&
+                  formik.errors.omregistreringsavgift_betales_av ? (
+                    <div className="text-red-500">
+                      {formik.errors.omregistreringsavgift_betales_av}
+                    </div>
+                  ) : null}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="omregistreringsavgift_belop">Beløp</Label>
                   <Input
                     id="omregistreringsavgift_belop"
-                    name="omregistreringsavgift_belop"
-                    value={formData.omregistreringsavgift_belop}
-                    onChange={handleInputChange}
+                    {...formik.getFieldProps("omregistreringsavgift_belop")}
                   />
+                  {formik.touched.omregistreringsavgift_belop &&
+                  formik.errors.omregistreringsavgift_belop ? (
+                    <div className="text-red-500">
+                      {formik.errors.omregistreringsavgift_belop}
+                    </div>
+                  ) : null}
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="regnr">Reg.nr</Label>
-                  <Input
-                    id="regnr"
-                    name="regnr"
-                    value={formData.regnr}
-                    onChange={handleInputChange}
-                  />
+                  <Input id="regnr" {...formik.getFieldProps("regnr")} />
+                  {formik.touched.regnr && formik.errors.regnr ? (
+                    <div className="text-red-500">{formik.errors.regnr}</div>
+                  ) : null}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="bilmerke">Bilmerke</Label>
-                  <Input
-                    id="bilmerke"
-                    name="bilmerke"
-                    value={formData.bilmerke}
-                    onChange={handleInputChange}
-                  />
+                  <Input id="bilmerke" {...formik.getFieldProps("bilmerke")} />
+                  {formik.touched.bilmerke && formik.errors.bilmerke ? (
+                    <div className="text-red-500">{formik.errors.bilmerke}</div>
+                  ) : null}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="type">Type</Label>
-                  <Input
-                    id="type"
-                    name="type"
-                    value={formData.type}
-                    onChange={handleInputChange}
-                  />
+                  <Input id="type" {...formik.getFieldProps("type")} />
+                  {formik.touched.type && formik.errors.type ? (
+                    <div className="text-red-500">{formik.errors.type}</div>
+                  ) : null}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -440,19 +519,20 @@ const PurchaseContractForm: React.FC = () => {
                   <Label htmlFor="arsmodell">Årsmodell</Label>
                   <Input
                     id="arsmodell"
-                    name="arsmodell"
-                    value={formData.arsmodell}
-                    onChange={handleInputChange}
+                    {...formik.getFieldProps("arsmodell")}
                   />
+                  {formik.touched.arsmodell && formik.errors.arsmodell ? (
+                    <div className="text-red-500">
+                      {formik.errors.arsmodell}
+                    </div>
+                  ) : null}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="km_stand">Km stand</Label>
-                  <Input
-                    id="km_stand"
-                    name="km_stand"
-                    value={formData.km_stand}
-                    onChange={handleInputChange}
-                  />
+                  <Input id="km_stand" {...formik.getFieldProps("km_stand")} />
+                  {formik.touched.km_stand && formik.errors.km_stand ? (
+                    <div className="text-red-500">{formik.errors.km_stand}</div>
+                  ) : null}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -460,20 +540,22 @@ const PurchaseContractForm: React.FC = () => {
                   <Label htmlFor="siste_eu_kontroll">Siste EU-kontroll</Label>
                   <Input
                     id="siste_eu_kontroll"
-                    name="siste_eu_kontroll"
                     type="date"
-                    value={formData.siste_eu_kontroll}
-                    onChange={handleInputChange}
+                    {...formik.getFieldProps("siste_eu_kontroll")}
                   />
+                  {formik.touched.siste_eu_kontroll &&
+                  formik.errors.siste_eu_kontroll ? (
+                    <div className="text-red-500">
+                      {formik.errors.siste_eu_kontroll}
+                    </div>
+                  ) : null}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="kjopesum">Kjøpesum</Label>
-                  <Input
-                    id="kjopesum"
-                    name="kjopesum"
-                    value={formData.kjopesum}
-                    onChange={handleInputChange}
-                  />
+                  <Input id="kjopesum" {...formik.getFieldProps("kjopesum")} />
+                  {formik.touched.kjopesum && formik.errors.kjopesum ? (
+                    <div className="text-red-500">{formik.errors.kjopesum}</div>
+                  ) : null}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -481,10 +563,14 @@ const PurchaseContractForm: React.FC = () => {
                   <Label htmlFor="betalingsmate">Betalingsmåte</Label>
                   <Input
                     id="betalingsmate"
-                    name="betalingsmate"
-                    value={formData.betalingsmate}
-                    onChange={handleInputChange}
+                    {...formik.getFieldProps("betalingsmate")}
                   />
+                  {formik.touched.betalingsmate &&
+                  formik.errors.betalingsmate ? (
+                    <div className="text-red-500">
+                      {formik.errors.betalingsmate}
+                    </div>
+                  ) : null}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="selgers_kontonummer">
@@ -492,14 +578,19 @@ const PurchaseContractForm: React.FC = () => {
                   </Label>
                   <Input
                     id="selgers_kontonummer"
-                    name="selgers_kontonummer"
-                    value={formData.selgers_kontonummer}
-                    onChange={handleInputChange}
+                    {...formik.getFieldProps("selgers_kontonummer")}
                   />
+                  {formik.touched.selgers_kontonummer &&
+                  formik.errors.selgers_kontonummer ? (
+                    <div className="text-red-500">
+                      {formik.errors.selgers_kontonummer}
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </CardContent>
           </Card>
+
           <Card>
             <CardHeader>
               <h3 className="text-lg font-semibold">
@@ -511,7 +602,7 @@ const PurchaseContractForm: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="utstyr_sommer"
-                    checked={formData.utstyr_sommer}
+                    checked={formik.values.utstyr_sommer}
                     onCheckedChange={handleCheckboxChange("utstyr_sommer")}
                   />
                   <Label htmlFor="utstyr_sommer">Sommerhjul</Label>
@@ -519,7 +610,7 @@ const PurchaseContractForm: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="utstyr_vinter"
-                    checked={formData.utstyr_vinter}
+                    checked={formik.values.utstyr_vinter}
                     onCheckedChange={handleCheckboxChange("utstyr_vinter")}
                   />
                   <Label htmlFor="utstyr_vinter">Vinterhjul</Label>
@@ -527,7 +618,7 @@ const PurchaseContractForm: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="utstyr_annet"
-                    checked={formData.utstyr_annet}
+                    checked={formik.values.utstyr_annet}
                     onCheckedChange={handleCheckboxChange("utstyr_annet")}
                   />
                   <Label htmlFor="utstyr_annet">Annet</Label>
@@ -539,9 +630,7 @@ const PurchaseContractForm: React.FC = () => {
                 </Label>
                 <Textarea
                   id="utstyr_spesifisert"
-                  name="utstyr_spesifisert"
-                  value={formData.utstyr_spesifisert}
-                  onChange={handleInputChange}
+                  {...formik.getFieldProps("utstyr_spesifisert")}
                   onPaste={handlePaste}
                 />
               </div>
@@ -557,9 +646,7 @@ const PurchaseContractForm: React.FC = () => {
             <CardContent>
               <Textarea
                 id="andre_kommentarer"
-                name="andre_kommentarer"
-                value={formData.andre_kommentarer}
-                onChange={handleInputChange}
+                {...formik.getFieldProps("andre_kommentarer")}
                 onPaste={handlePaste}
               />
             </CardContent>
@@ -570,20 +657,22 @@ const PurchaseContractForm: React.FC = () => {
               <Label htmlFor="sted_kjoper">Sted</Label>
               <Input
                 id="sted_kjoper"
-                name="sted_kjoper"
-                value={formData.sted_kjoper}
-                onChange={handleInputChange}
+                {...formik.getFieldProps("sted_kjoper")}
               />
+              {formik.touched.sted_kjoper && formik.errors.sted_kjoper ? (
+                <div className="text-red-500">{formik.errors.sted_kjoper}</div>
+              ) : null}
             </div>
             <div className="space-y-2">
               <Label htmlFor="dato_kjoper">Dato</Label>
               <Input
                 id="dato_kjoper"
-                name="dato_kjoper"
                 type="date"
-                value={formData.dato_kjoper}
-                onChange={handleInputChange}
+                {...formik.getFieldProps("dato_kjoper")}
               />
+              {formik.touched.dato_kjoper && formik.errors.dato_kjoper ? (
+                <div className="text-red-500">{formik.errors.dato_kjoper}</div>
+              ) : null}
             </div>
           </div>
 
@@ -592,29 +681,42 @@ const PurchaseContractForm: React.FC = () => {
               <Label htmlFor="selgers_underskrift">Selgers underskrift</Label>
               <Input
                 id="selgers_underskrift"
-                name="selgers_underskrift"
-                value={formData.selgers_underskrift}
-                onChange={handleInputChange}
+                {...formik.getFieldProps("selgers_underskrift")}
               />
+              {formik.touched.selgers_underskrift &&
+              formik.errors.selgers_underskrift ? (
+                <div className="text-red-500">
+                  {formik.errors.selgers_underskrift}
+                </div>
+              ) : null}
             </div>
             <div className="space-y-2">
               <Label htmlFor="kjopers_underskrift">Kjøpers underskrift</Label>
               <Input
                 id="kjopers_underskrift"
-                name="kjopers_underskrift"
-                value={formData.kjopers_underskrift}
-                onChange={handleInputChange}
+                // {...formik.getFieldProps("kjopers_underskrift")}
               />
+              {formik.touched.kjopers_underskrift &&
+              formik.errors.kjopers_underskrift ? (
+                <div className="text-red-500">
+                  {formik.errors.kjopers_underskrift}
+                </div>
+              ) : null}
             </div>
           </div>
 
           <Button
-            onClick={handleGeneratePDF}
+            type="submit"
             className="w-full"
             disabled={isLoading || balance === null || balance < 9.9}
           >
             {getButtonText()}
           </Button>
+          {!formik.isValid && (
+            <div className="text-red-500 mt-2">
+              {"Fyll ut alle påkrevde felter"}
+            </div>
+          )}
 
           {error && <div className="text-red-500 mt-2">{error}</div>}
           {success && <div className="text-green-500 mt-2">{success}</div>}

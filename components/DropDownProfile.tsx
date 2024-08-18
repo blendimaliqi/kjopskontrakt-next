@@ -64,10 +64,12 @@ const DropdownProfile = () => {
               Legg til beløp
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          {/* <DropdownMenuItem>
             <Settings className="mr-2 h-4 w-4" />
-            <span>Instillinger</span>
-          </DropdownMenuItem>
+            <Link href="/settings" className="flex-grow">
+              Instillinger
+            </Link>
+          </DropdownMenuItem> */}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
 
