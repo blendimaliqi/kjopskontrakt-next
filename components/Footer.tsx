@@ -20,6 +20,14 @@ const Footer = () => {
                 <ul className="grid grid-cols-2 gap-2">
                   <li>
                     <a
+                      href="/about"
+                      className="text-sm text-gray-600 hover:text-gray-900"
+                    >
+                      Om oss
+                    </a>
+                  </li>
+                  <li>
+                    <a
                       href="/terms-and-conditions"
                       className="text-sm text-gray-600 hover:text-gray-900"
                     >
