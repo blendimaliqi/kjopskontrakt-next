@@ -79,7 +79,7 @@ const PurchaseContractForm: React.FC = () => {
     // arsmodell: Yup.string().required("Påkrevd"),
     // km_stand: Yup.string().required("Påkrevd"),
     // siste_eu_kontroll: Yup.date().required("Påkrevd"),
-    kjopesum: Yup.number().required("Påkrevd"),
+    kjopesum: Yup.number().typeError("Må være et tall").required("Påkrevd"),
     // betalingsmate: Yup.string().required("Påkrevd"),
     // selgers_kontonummer: Yup.string().required("Påkrevd"),
     omregistreringsavgift_betales_av: Yup.string()
