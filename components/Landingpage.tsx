@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, Zap, BookOpen, Users } from "lucide-react";
 import Link from "next/link";
-import PricingPageContent from "@/app/pricing/page";
+import PricingPageContent from "./PricingPageContent";
 
 const LandingPageContent = () => {
   return (
