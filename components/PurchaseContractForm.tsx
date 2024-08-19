@@ -52,6 +52,7 @@ interface FormData {
   dato_kjoper: string;
   selgers_underskrift: string;
   kjopers_underskrift: string;
+  include_disclaimer: boolean;
 }
 
 const PurchaseContractForm: React.FC = () => {
@@ -127,6 +128,7 @@ const PurchaseContractForm: React.FC = () => {
       dato_kjoper: "",
       selgers_underskrift: "",
       kjopers_underskrift: "",
+      include_disclaimer: true,
     },
     validationSchema,
     onSubmit: (values) => {
@@ -703,6 +705,17 @@ const PurchaseContractForm: React.FC = () => {
                 </div>
               ) : null}
             </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="include_disclaimer"
+              checked={formik.values.include_disclaimer}
+              onCheckedChange={handleCheckboxChange("include_disclaimer")}
+            />
+            <Label htmlFor="include_disclaimer">
+              Inkluder ansvarsfraskrivelse i kontrakten
+            </Label>
           </div>
 
           <Button

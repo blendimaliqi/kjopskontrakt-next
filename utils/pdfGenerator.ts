@@ -35,6 +35,7 @@ interface FormData {
   dato_kjoper: string;
   selgers_underskrift: string;
   kjopers_underskrift: string;
+  include_disclaimer: boolean;
 }
 
 export function generatePDF(formData: FormData): void {
@@ -301,16 +302,30 @@ export function generatePDF(formData: FormData): void {
     );
   });
 
-  // Add small text below the signature fields
-  addText(
-    "Kjøper er informert/opplyst og pliktet seg til og undersøke og sette seg inn i sevicehistorikk, kosmetiske skader, funksjonsteste knapper og mediestystemer og prøvekjørt bilen. Utstyrsliste kontrolleres av kjøper, åpenbare synlige mangler fra annonsert utstyr kan ikke reklameres på etter kjøp. Kjøpet skjer i de betingelser som er opplyst i vedlakt dokument. Sikkerhetsinnretninger følger bilens prodoksujnsdato om ikke annet er er angitt under spesielle vilkår. Kjøper bekrefter ved sin underskrift å ha gjort seg kjent med, og godtar disse",
-    margin,
-    yPosition + 45,
-    8,
-    "normal",
-    "left",
-    pageWidth - 2 * margin
-  );
+  // Add disclaimer if checkbox is checked
+  if (formData.include_disclaimer) {
+    yPosition += 45;
+    addText(
+      "Kjøper er informert/opplyst og pliktet seg til og undersøke og sette seg inn i sevicehistorikk, kosmetiske skader, funksjonsteste knapper og mediestystemer og prøvekjørt bilen. Utstyrsliste kontrolleres av kjøper, åpenbare synlige mangler fra annonsert utstyr kan ikke reklameres på etter kjøp. Kjøpet skjer i de betingelser som er opplyst i vedlakt dokument. Sikkerhetsinnretninger følger bilens produksjonsdato om ikke annet er er angitt under spesielle vilkår. Kjøper bekrefter ved sin underskrift å ha gjort seg kjent med, og godtar disse.",
+      margin,
+      yPosition,
+      8,
+      "normal",
+      "left",
+      pageWidth - 2 * margin
+    );
+  }
+
+  // // Add small text below the signature fields
+  // addText(
+  //   "Kjøper er informert/opplyst og pliktet seg til og undersøke og sette seg inn i sevicehistorikk, kosmetiske skader, funksjonsteste knapper og mediestystemer og prøvekjørt bilen. Utstyrsliste kontrolleres av kjøper, åpenbare synlige mangler fra annonsert utstyr kan ikke reklameres på etter kjøp. Kjøpet skjer i de betingelser som er opplyst i vedlakt dokument. Sikkerhetsinnretninger følger bilens produksjonsdato om ikke annet er er angitt under spesielle vilkår. Kjøper bekrefter ved sin underskrift å ha gjort seg kjent med, og godtar disse.",
+  //   margin,
+  //   yPosition + 45,
+  //   8,
+  //   "normal",
+  //   "left",
+  //   pageWidth - 2 * margin
+  // );
 
   // Add page border
   const pageCount = (doc as any).internal.getNumberOfPages();
@@ -324,6 +339,19 @@ export function generatePDF(formData: FormData): void {
     );
   }
 
+  // Check for specific seller details and set filename accordingly
+  let filename = "kjøpskontrakt.pdf";
+  if (
+    formData.selger_fornavn === "Ola" &&
+    formData.selger_etternavn === "Nordmann" &&
+    formData.selger_tlf_arbeid === "22334455"
+  ) {
+    filename = "demo-kjøpskontrakt.pdf";
+  }
+
+  // Save the PDF with the determined filename
+  doc.save(filename);
+
   // Save the PDF
-  doc.save("kjøpskontrakt.pdf");
+  doc.save(filename);
 }
