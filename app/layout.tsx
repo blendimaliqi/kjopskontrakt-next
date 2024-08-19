@@ -8,6 +8,12 @@ import Footer from "@/components/Footer";
 export const metadata: Metadata = {
   title: "Kjøpskontrakt",
   description: "A custom form for purchase contracts",
+  icons: [
+    { rel: "icon", url: "/logo_nobg.png", sizes: "32x32" },
+    { rel: "icon", url: "/logo_nobg.png", sizes: "192x192" },
+    { rel: "apple-touch-icon", url: "/logo_nobg.png", sizes: "180x180" },
+    { rel: "shortcut icon", url: "/logo_nobg.png" },
+  ],
 };
 
 export default function RootLayout({
