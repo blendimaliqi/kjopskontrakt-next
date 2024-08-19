@@ -20,8 +20,8 @@ const LandingPageContent = () => {
         <main className="bg-white rounded-2xl shadow-xl p-8 space-y-8">
           <p className="text-lg text-gray-700 leading-relaxed">
             Velkommen til vår kjøpskontrakt-generator for bil. Her kan du enkelt
-            opprette en profesjonell og lovlig bindende kjøpsavtale for kjøp og
-            salg av bruktbil.
+            opprette en profesjonell og lovlig bindende kjøpsavtale i form av
+            pdf for kjøp og salg av bruktbil.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

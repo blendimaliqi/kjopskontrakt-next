@@ -26,6 +26,7 @@ const Footer = () => {
                       Om oss
                     </a>
                   </li>
+
                   <li>
                     <a
                       href="/terms-and-conditions"
@@ -36,20 +37,21 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="/privacy-policy"
-                      className="text-sm text-gray-600 hover:text-gray-900"
-                    >
-                      Personvernerklæring
-                    </a>
-                  </li>
-                  <li>
-                    <a
                       href="/faq"
                       className="text-sm text-gray-600 hover:text-gray-900"
                     >
                       Ofte stilte spørsmål
                     </a>
                   </li>
+                  <li>
+                    <a
+                      href="/privacy-policy"
+                      className="text-sm text-gray-600 hover:text-gray-900"
+                    >
+                      Personvernerklæring
+                    </a>
+                  </li>
+
                   <li>
                     <a
                       href="/contact"

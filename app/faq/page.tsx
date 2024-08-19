@@ -21,6 +21,11 @@ const FAQPage: NextPage = () => {
         "Kontraktene som genereres er basert på standard juridiske formuleringer og er ment å være juridisk bindende. Imidlertid anbefaler vi at du gjennomgår kontrakten nøye og konsulterer en advokat hvis du er usikker på noe eller har spesielle behov.",
     },
     {
+      question: "Hvordan fungerer signeringen av kontrakten?",
+      answer:
+        "I vår applikasjon kan du velge å skrive inn navnene på kjøper og selger i signaturfeltene når du genererer kontrakten. Disse navnene vil da vises i maskinskrift på den endelige PDF-en. Det er viktig å merke seg at selv om navnene er fylt ut på denne måten, må kontrakten fortsatt signeres fysisk av alle involverte parter for å være juridisk gyldig. Du kan skrive ut kontrakten og fylle ut signaturfeltene fysisk.",
+    },
+    {
       question: "Hvor mye koster det å bruke tjenesten?",
       answer:
         "Prisen for å bruke tjenesten er kr 9.90.- per generert kontrakt. Du betaler kun når du er fornøyd med kontrakten og ønsker å laste den ned.",

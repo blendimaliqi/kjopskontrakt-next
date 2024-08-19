@@ -13,7 +13,7 @@ const AboutUs: NextPage = () => {
           <h2 className="text-xl font-semibold">Vår historie</h2>
           <p>
             Kjøpskontrakt-bil Generator ble utviklet for å forenkle prosessen
-            med å lage juridisk bindende kontrakter for bilkjøp og -salg. Vår
+            med å lage juridisk bindende kontrakter for bilkjøp og salg. Vår
             tjeneste ble skapt ut fra et ønske om å gjøre denne ofte kompliserte
             prosessen mer tilgjengelig og brukervennlig for alle.
           </p>
