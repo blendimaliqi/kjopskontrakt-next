@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, Zap, BookOpen, Users } from "lucide-react";
 import Link from "next/link";
+import PricingPageContent from "@/app/pricing/page";
 
 const LandingPageContent = () => {
   return (
@@ -42,6 +43,10 @@ const LandingPageContent = () => {
             for bil i dag!
           </p>
         </main>
+
+        <div style={{ marginTop: "120px" }}>
+          <PricingPageContent />
+        </div>
 
         <div className="flex justify-center space-x-4">
           <Button asChild variant="outline">

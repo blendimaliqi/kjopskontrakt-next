@@ -40,9 +40,9 @@ const ProfilePage = () => {
               <Mail className="mr-2" />
               <span>{session.user.email}</span>
             </div>
-            <Button variant="outline" style={{ marginTop: "38px" }}>
+            {/* <Button variant="outline" style={{ marginTop: "38px" }}>
               Rediger Profil
-            </Button>
+            </Button> */}
           </CardContent>
         </Card>
 

@@ -3,7 +3,7 @@
 import React from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
-import { User, LogOut, CreditCard, Settings } from "lucide-react";
+import { User, LogOut, CreditCard, Settings, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -62,6 +62,12 @@ const DropdownProfile = () => {
             <CreditCard className="mr-2 h-4 w-4" />
             <Link href="/payments-form" className="flex-grow">
               Legg til beløp
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Coins className="mr-2 h-4 w-4" />
+            <Link href="/pricing" className="flex-grow">
+              Pris
             </Link>
           </DropdownMenuItem>
           {/* <DropdownMenuItem>
