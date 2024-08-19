@@ -85,11 +85,17 @@ const MobileLandingPage = () => {
               </li>
             ))}
           </ul>
-          <Button asChild className="w-full">
-            <Link href="/pricing">Se mer om prising</Link>
-          </Button>
         </section>
       </main>
+
+      <footer className="bg-white shadow-sm p-4 space-y-3">
+        <Button asChild variant="outline" className="w-full">
+          <Link href="/auth/signin">Logg inn</Link>
+        </Button>
+        <Button asChild className="w-full">
+          <Link href="/auth/signup">Registrer deg</Link>
+        </Button>
+      </footer>
     </div>
   );
 };
