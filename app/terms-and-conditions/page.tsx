@@ -161,7 +161,7 @@ const TermsAndConditions: NextPage = () => {
                   For spørsmål eller henvendelser angående disse vilkårene og
                   betingelsene, vennligst kontakt utvikleren på:
                 </p>
-                <p>E-post: blendi.maliqi93@gmail.com</p>
+                <p>E-post: support@kjopskontrakt.no</p>
               </section>
 
               <p className="text-sm text-gray-500">

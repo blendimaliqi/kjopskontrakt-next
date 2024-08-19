@@ -67,7 +67,7 @@ const AboutUs: NextPage = () => {
           <h2 className="text-xl font-semibold">Kontakt oss</h2>
           <p>
             Har du spørsmål eller trenger du assistanse? Ikke nøl med å kontakte
-            oss på blendi.maliqi93@gmail.com. Vi er her for å hjelpe deg med å
+            oss på support@kjopskontrakt.no. Vi er her for å hjelpe deg med å
             gjøre din bilhandel så enkel og trygg som mulig.
           </p>
         </CardContent>

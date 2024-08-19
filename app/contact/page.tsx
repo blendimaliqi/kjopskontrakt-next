@@ -24,7 +24,7 @@ const ContactUsPage: NextPage = () => {
 
           <section>
             <h2 className="text-xl font-semibold mb-2">Kontaktinformasjon</h2>
-            <p>E-post: blendi.maliqi93@gmail.com</p>
+            <p>E-post: support@kjopskontrakt.no</p>
             <p>
               Vi besvarer alle henvendelser så raskt som mulig, vanligvis innen
               24 timer på hverdager.

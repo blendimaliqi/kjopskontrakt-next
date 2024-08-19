@@ -43,7 +43,7 @@ const FAQPage: NextPage = () => {
     {
       question: "Hva hvis jeg trenger hjelp eller har spørsmål underveis?",
       answer:
-        "Hvis du har spørsmål eller trenger assistanse, kan du når som helst kontakte meg på blendi.maliqi93@gmail.com. Jeg vil svare så raskt som mulig.",
+        "Hvis du har spørsmål eller trenger assistanse, kan du når som helst kontakte oss på support@kjopskontrakt.no. Vi vil svare så raskt som mulig.",
     },
     {
       question:
@@ -55,7 +55,7 @@ const FAQPage: NextPage = () => {
       question:
         "Hva gjør jeg hvis jeg oppdager en feil i den genererte kontrakten?",
       answer:
-        "Hvis du oppdager noen feil eller uoverensstemmelser i den genererte kontrakten, vennligst kontakt meg umiddelbart på blendi.maliqi93@gmail.com. Jeg vil hjelpe deg med å rette opp feilen og generere en ny kontrakt uten ekstra kostnad.",
+        "Hvis du oppdager noen feil eller uoverensstemmelser i den genererte kontrakten, vennligst kontakt oss umiddelbart på support@kjopskontrakt.no. Vi vil hjelpe deg med å rette opp feilen og generere en ny kontrakt uten ekstra kostnad.",
     },
     {
       question: "Kan jeg bruke tjenesten på mobil eller nettbrett?",

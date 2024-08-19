@@ -96,7 +96,7 @@ const PrivacyPolicyPage: NextPage = () => {
                 <p>
                   Hvis du har spørsmål om denne personvernerklæringen eller vår
                   håndtering av personopplysninger, vennligst kontakt oss på:
-                  blendi.maliqi93@gmail.com
+                  support@kjopskontrakt.no
                 </p>
               </section>
 
