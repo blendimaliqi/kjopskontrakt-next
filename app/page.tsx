@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import PurchaseContractForm from "@/components/PurchaseContractForm";
+import MobilePurchaseContractForm from "@/components/MobilePurchaseContractForm";
 import LandingPageContent from "../components/Landingpage";
 import MobileLandingPageContent from "../components/MobileLandingPage";
 
@@ -23,10 +24,14 @@ export default function Home() {
     ? MobileLandingPageContent
     : LandingPageContent;
 
+  const ContractForm = isMobile
+    ? MobilePurchaseContractForm
+    : PurchaseContractForm;
+
   return (
     <main className="container mx-auto px-4 py-8">
       {session && session.user && session.user.email ? (
-        <PurchaseContractForm />
+        <ContractForm />
       ) : (
         <LandingPageContents />
       )}
