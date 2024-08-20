@@ -117,7 +117,7 @@ export default function SignUp() {
           />
         </div>
         <div>
-          <Label htmlFor="password">Lag passord</Label>
+          <Label htmlFor="password">Passord</Label>
           <Input
             id="password"
             type="password"
