@@ -19,9 +19,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, CheckCircle } from "lucide-react";
+import { AlertCircle, CheckCircle, LogIn } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
@@ -48,6 +49,7 @@ interface PaymentFormProps {
 }
 
 const PaymentForm: React.FC<PaymentFormProps> = ({ onSuccess }) => {
+  const { data: session } = useSession();
   const stripe = useStripe();
   const elements = useElements();
   const [amount, setAmount] = useState<string>("");
@@ -234,7 +236,27 @@ const SuccessCard: React.FC<SuccessCardProps> = ({ balance, onReset }) => (
   </Card>
 );
 
+const LoginMessage: React.FC = () => (
+  <Card>
+    <CardHeader>
+      <CardTitle className="flex items-center">
+        <LogIn className="mr-2" />
+        Innlogging påkrevd
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p>Du må være logget inn for å få tilgang til betalingssiden.</p>
+    </CardContent>
+    <CardFooter>
+      <Button asChild>
+        <Link href="/auth/signin">Gå til innlogging</Link>
+      </Button>
+    </CardFooter>
+  </Card>
+);
+
 const PaymentPage: React.FC = () => {
+  const { data: session, status } = useSession();
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [newBalance, setNewBalance] = useState(0);
 
@@ -247,6 +269,18 @@ const PaymentPage: React.FC = () => {
     setPaymentSuccess(false);
     setNewBalance(0);
   };
+
+  if (status === "loading") {
+    return <div>Laster...</div>;
+  }
+
+  if (status === "unauthenticated") {
+    return (
+      <div className="container mx-auto p-6 max-w-md">
+        <LoginMessage />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6 max-w-md">
