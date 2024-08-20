@@ -2,30 +2,55 @@
 import React from "react";
 import { useSession } from "next-auth/react";
 import Balance from "@/components/Balance";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Mail, DollarSign, Home } from "lucide-react";
+import { User, Mail, DollarSign, Home, LogIn } from "lucide-react";
 import Link from "next/link";
 
-const ProfilePage = () => {
-  const { data: session } = useSession();
+const LoginMessage: React.FC = () => (
+  <Card>
+    <CardHeader>
+      <CardTitle className="flex items-center">
+        <LogIn className="mr-2" />
+        Innlogging påkrevd
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p>Du må være logget inn for å se profilen din.</p>
+    </CardContent>
+    <CardFooter>
+      <Button asChild>
+        <Link href="/auth/signin">Gå til innlogging</Link>
+      </Button>
+    </CardFooter>
+  </Card>
+);
 
-  if (!session) {
+const ProfilePage: React.FC = () => {
+  const { data: session, status } = useSession();
+
+  if (status === "loading") {
+    return (
+      <div className="flex items-center justify-center h-screen">Laster...</div>
+    );
+  }
+
+  if (status === "unauthenticated") {
     return (
       <div className="flex items-center justify-center h-screen">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center">
-              Vennligst logg inn for å se profilen din.
-            </p>
-          </CardContent>
-        </Card>
+        <LoginMessage />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col  container mx-auto p-6">
+    <div className="flex flex-col container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-16">Min Profil</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <Card>
@@ -38,7 +63,7 @@ const ProfilePage = () => {
           <CardContent>
             <div className="flex items-center mt-2">
               <Mail className="mr-2" />
-              <span>{session.user.email}</span>
+              <span>{session && session.user.email}</span>
             </div>
             {/* <Button variant="outline" style={{ marginTop: "38px" }}>
               Rediger Profil
@@ -56,7 +81,7 @@ const ProfilePage = () => {
           <CardContent>
             <div className="mb-4">
               <div className="text-sm text-gray-500 mb-1">Nåværende saldo</div>
-              <div className="text-3xl font-bold flex items-baselin ">
+              <div className="text-3xl font-bold flex items-baseline">
                 <Balance />
               </div>
             </div>
@@ -69,7 +94,7 @@ const ProfilePage = () => {
 
       <Button asChild variant="outline" className="mt-8">
         <Link href="/">
-          <Home className="mr-2 " /> Tilbake til kjøpskontrakt
+          <Home className="mr-2" /> Tilbake til kjøpskontrakt
         </Link>
       </Button>
     </div>

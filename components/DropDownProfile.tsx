@@ -32,6 +32,10 @@ const DropdownProfile = () => {
     );
   }
 
+  const handleSignOut = () => {
+    signOut({ callbackUrl: "/" });
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -86,7 +90,7 @@ const DropdownProfile = () => {
           </div>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()}>
+        <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
           <span className="cursor-pointer">Logg ut</span>
         </DropdownMenuItem>
