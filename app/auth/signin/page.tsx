@@ -71,9 +71,18 @@ export default function SignIn() {
           {isLoading ? "Logger inn..." : "Logg inn"}
         </Button>
       </form>
-      <div className="mt-4 text-center">
-        <Link href="/auth/signup" className="text-blue-600 hover:underline">
+      <div className="mt-4 text-center space-y-2">
+        <Link
+          href="/auth/signup"
+          className="text-blue-600 hover:underline block"
+        >
           Har du ikke en konto? Registrer deg
+        </Link>
+        <Link
+          href="/auth/reset-password"
+          className="text-blue-600 hover:underline block"
+        >
+          Glemt passord?
         </Link>
       </div>
     </div>
