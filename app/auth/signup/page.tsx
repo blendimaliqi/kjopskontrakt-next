@@ -11,13 +11,35 @@ import { supabase } from "@/utils/supabase";
 export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [isRateLimited, setIsRateLimited] = useState(false);
 
+  const validatePasswords = () => {
+    if (password !== confirmPassword) {
+      setPasswordError("Passordene samsvarer ikke.");
+      return false;
+    }
+    setPasswordError("");
+    return true;
+  };
+
+  const handleConfirmPasswordBlur = () => {
+    if (confirmPassword) {
+      validatePasswords();
+    }
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validatePasswords()) {
+      return;
+    }
+
     setIsLoading(true);
     setError("");
     setIsRateLimited(false);
@@ -95,7 +117,7 @@ export default function SignUp() {
           />
         </div>
         <div>
-          <Label htmlFor="password">Passord</Label>
+          <Label htmlFor="password">Lag passord</Label>
           <Input
             id="password"
             type="password"
@@ -105,6 +127,23 @@ export default function SignUp() {
             required
           />
         </div>
+        <div>
+          <Label htmlFor="confirmPassword">Bekreft passord</Label>
+          <Input
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            onBlur={handleConfirmPasswordBlur}
+            placeholder="Bekreft passord"
+            required
+          />
+        </div>
+        {passwordError && (
+          <Alert variant="destructive" className="mt-2">
+            <AlertDescription>{passwordError}</AlertDescription>
+          </Alert>
+        )}
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Registrerer..." : "Registrer deg"}
         </Button>

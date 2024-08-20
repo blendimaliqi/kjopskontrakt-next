@@ -16,7 +16,7 @@ import Link from "next/link";
 const LoginMessage: React.FC = () => (
   <Card>
     <CardHeader>
-      <CardTitle className="flex items-center">
+      <CardTitle className="flex ">
         <LogIn className="mr-2" />
         Innlogging påkrevd
       </CardTitle>
@@ -26,7 +26,12 @@ const LoginMessage: React.FC = () => (
     </CardContent>
     <CardFooter>
       <Button asChild>
-        <Link href="/auth/signin">Gå til innlogging</Link>
+        <Link
+          href="/auth/signin
+        "
+        >
+          Gå til innlogging
+        </Link>
       </Button>
     </CardFooter>
   </Card>
@@ -43,7 +48,7 @@ const ProfilePage: React.FC = () => {
 
   if (status === "unauthenticated") {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex justify-center ">
         <LoginMessage />
       </div>
     );
