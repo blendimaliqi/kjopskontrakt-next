@@ -26,9 +26,9 @@ export default function RootLayout({
       <body className="flex min-h-screen flex-col">
         <Providers>
           <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container flex h-14 items-center">
-              <Title className="mr-4 text-xl" />
-              <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+            <div className="container flex h-14 items-center justify-between">
+              <Title className="text-xl" />
+              <div className="flex items-center space-x-4">
                 <DropdownProfile />
               </div>
             </div>
