@@ -226,7 +226,7 @@ const MobilePurchaseContractForm: React.FC = () => {
   const getButtonText = () => {
     if (isLoading) return "Genererer...";
     if (balance !== null && Number(balance) < 9.9)
-      return "Legg til penger (Kun kr 9.90.- per generering)";
+      return "Legg til penger (kr 9.90.-)";
     return "Generer PDF (kr 9.90.-)";
   };
   return (
