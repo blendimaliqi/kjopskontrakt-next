@@ -19,10 +19,24 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, CheckCircle, LogIn } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle,
+  CreditCard,
+  HelpCircle,
+  LogIn,
+  Shield,
+  ShieldCheck,
+} from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
@@ -283,32 +297,104 @@ const PaymentPage: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-md">
-      {paymentSuccess ? (
-        <SuccessCard balance={newBalance} onReset={handleReset} />
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Betalingsdetaljer</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Elements stripe={stripePromise}>
-              <PaymentForm onSuccess={handlePaymentSuccess} />
-            </Elements>
-          </CardContent>
-          <CardFooter className="text-xs text-gray-500 justify-between">
-            <span>Drevet av Stripe</span>
-            <div>
-              <a href="#" className="underline mr-2">
-                Vilkår
-              </a>
-              <a href="#" className="underline">
-                Personvern
-              </a>
+    <div className="container mx-auto p-6 max-w-xl">
+      <div className="">
+        <div className="md:col-span-2">
+          {paymentSuccess ? (
+            <SuccessCard balance={newBalance} onReset={handleReset} />
+          ) : (
+            <Card className="shadow-lg">
+              <CardHeader className="p-6">
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center mb-2">
+                    <Shield className="mr-3 h-8 w-8 text-blue-600" />
+                    <CardTitle className="text-2xl font-bold">
+                      Trygg og enkel betaling
+                    </CardTitle>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="">
+                <Elements stripe={stripePromise}>
+                  <PaymentForm onSuccess={handlePaymentSuccess} />
+                </Elements>
+              </CardContent>
+              <CardFooter className="text-sm text-gray-600 justify-between bg-gray-50 border-t p-4">
+                <div className="flex items-center">
+                  <Shield className="mr-2 h-5 w-5 text-blue-600" />
+                  <span> Kryptert og beskyttet av Stripe</span>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <CreditCard className="h-5 w-5 text-gray-500" />
+                  <div>
+                    <a
+                      href="/terms-and-conditions"
+                      className="underline mr-2 hover:text-gray-700"
+                    >
+                      Vilkår
+                    </a>
+                    <a
+                      href="/privacy-policy"
+                      className="underline hover:text-gray-700"
+                    >
+                      Personvern
+                    </a>
+                  </div>
+                </div>
+              </CardFooter>
+            </Card>
+          )}
+
+          <div className="mt-6 text-center text-sm text-gray-500">
+            <div className="flex justify-center space-x-4 mb-2">
+              <img src="/stripe.png" alt="Stripe" className="h-7" />
+              <img src="/visa2.png" alt="Visa" className="h-7" />
+              <img src="/mastercard.png" alt="Mastercard" className="h-7" />
             </div>
-          </CardFooter>
-        </Card>
-      )}
+          </div>
+        </div>
+
+        <div className="space-y-6 mt-12">
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="text-left">
+                <div className="flex items-center">
+                  <CreditCard className="mr-2 h-5 w-5" />
+                  Hvilke betalingsmetoder aksepteres?
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                Vi aksepterer alle større kredittkort, inkludert Visa,
+                Mastercard.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger className="text-left">
+                <div className="flex items-center">
+                  <ShieldCheck className="mr-2 h-5 w-5" />
+                  Er mine betalingsopplysninger trygge?
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                Ja, vi bruker Stripe for å prosessere betalinger, som er en av
+                de mest sikre betalingsplattformene tilgjengelig.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-3">
+              <AccordionTrigger className="text-left">
+                <div className="flex items-center">
+                  <HelpCircle className="mr-2 h-5 w-5" />
+                  Hvordan kan jeg få hjelp?
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                Hvis du trenger hjelp, kan du kontakte vår kundeservice på
+                support@kjopskontrakt.no
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      </div>
     </div>
   );
 };
