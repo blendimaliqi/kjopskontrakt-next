@@ -7,15 +7,16 @@ import Footer from "@/components/Footer";
 import StructuredData from "@/components/StructuredData";
 
 export const metadata: Metadata = {
-  title: "Kjøpskontrakt | Enkelt verktøy for bilkjøpskontrakter i Norge",
+  title:
+    "Kjøpskontrakt til PDF | Enkelt verktøy for bilkjøpskontrakter i Norge",
   description:
     "Lag profesjonelle kjøpskontrakter for bil enkelt og raskt. Sikre trygge biltransaksjoner i Norge med vår brukervennlige tjeneste.",
   keywords:
-    "kjøpskontrakt, bilkjøp, bilsalg, kontrakt, Norge, juridisk dokument",
+    "kjøpekontrakt, kjøpekontrakt bil, kjøpekontrakt til pdf, kjøpekontrakt bil til pdf, kjopekontrakt, kjøpskontrakt, kjopskontrakt, bilkjøp, bilsalg, kontrakt, Norge, juridisk dokument",
   openGraph: {
     title: "Kjøpskontrakt - Profesjonelle bilkjøpskontrakter",
     description:
-      "Lag enkelt og raskt juridisk korrekte kjøpskontrakter for bil i Norge.",
+      "Lag enkelt og raskt juridisk korrekte kjøpekontrakter for bil i Norge.",
     type: "website",
     url: "https://kjopskontrakt.no",
     images: [
