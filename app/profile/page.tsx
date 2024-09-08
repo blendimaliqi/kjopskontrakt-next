@@ -12,50 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { User, Mail, DollarSign, Home, LogIn } from "lucide-react";
 import Link from "next/link";
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Min Profil | Kjøpskontrakt-bil Generator',
-  description: 'Administrer din profil, se kontobalanse, og få tilgang til dine kjøpskontrakter for bil.',
-  openGraph: {
-    title: 'Min Profil | Kjøpskontrakt-bil Generator',
-    description: 'Administrer din profil, se kontobalanse, og få tilgang til dine kjøpskontrakter for bil.',
-    type: 'website',
-    url: 'https://www.kjopskontrakt.no/profile',
-    images: [
-      {
-        url: 'https://www.kjopskontrakt.no/images/profile-og.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Profilside for Kjøpskontrakt-bil Generator',
-      },
-    ],
-  },
-};
-
-const LoginMessage: React.FC = () => (
-  <Card>
-    <CardHeader>
-      <CardTitle className="flex ">
-        <LogIn className="mr-2" />
-        Innlogging påkrevd
-      </CardTitle>
-    </CardHeader>
-    <CardContent>
-      <p>Du må være logget inn for å se profilen din.</p>
-    </CardContent>
-    <CardFooter>
-      <Button asChild>
-        <Link
-          href="/auth/signin
-        "
-        >
-          Gå til innlogging
-        </Link>
-      </Button>
-    </CardFooter>
-  </Card>
-);
+import { LoginMessage } from "../payments-form/page";
 
 const ProfilePage: React.FC = () => {
   const { data: session, status } = useSession();
