@@ -37,6 +37,20 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Sikker betaling | Kjøpskontrakt-bil Generator",
+  description: "Gjør en sikker betaling for å bruke Kjøpskontrakt-bil Generator. Vi bruker Stripe for å garantere trygge transaksjoner.",
+  keywords: "betaling, sikker betaling, Stripe, kjøpskontrakt, bil, generator",
+  openGraph: {
+    title: "Sikker betaling | Kjøpskontrakt-bil Generator",
+    description: "Gjør en sikker betaling for å bruke Kjøpskontrakt-bil Generator.",
+    type: "website",
+    url: "https://kjopskontrakt.no/payments-form",
+  },
+  robots: "index, nofollow", // Consider using nofollow for payment pages
+};
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""

@@ -1,6 +1,20 @@
 import React from "react";
+import { Metadata } from "next";
 import { NextPage } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+  title: "Om oss | Kjøpskontrakt-bil Generator",
+  description: "Lær mer om Kjøpskontrakt-bil Generator, vår historie, misjon og verdier. Vi tilbyr en enkel og pålitelig løsning for å generere kjøpskontrakter for bil.",
+  keywords: "om oss, kjøpskontrakt, bil, generator, historie, misjon, verdier",
+  openGraph: {
+    title: "Om oss | Kjøpskontrakt-bil Generator",
+    description: "Lær mer om Kjøpskontrakt-bil Generator og vår misjon.",
+    type: "website",
+    url: "https://kjopskontrakt.no/about",
+  },
+  robots: "index, follow",
+};
 
 const AboutUs: NextPage = () => {
   return (

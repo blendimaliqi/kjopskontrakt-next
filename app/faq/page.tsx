@@ -1,12 +1,21 @@
 import React from "react";
+import { Metadata } from "next";
 import { NextPage } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
+export const metadata: Metadata = {
+  title: "Ofte stilte spørsmål | Kjøpskontrakt-bil Generator",
+  description: "Finn svar på vanlige spørsmål om Kjøpskontrakt-bil Generator. Lær mer om hvordan tjenesten fungerer, priser, og juridiske aspekter.",
+  keywords: "FAQ, ofte stilte spørsmål, kjøpskontrakt, bil, generator, hjelp, support",
+  openGraph: {
+    title: "Ofte stilte spørsmål | Kjøpskontrakt-bil Generator",
+    description: "Finn svar på vanlige spørsmål om Kjøpskontrakt-bil Generator.",
+    type: "website",
+    url: "https://kjopskontrakt.no/faq",
+  },
+  robots: "index, follow",
+};
 
 const FAQPage: NextPage = () => {
   const faqs = [

@@ -9,6 +9,18 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Registrering fullført | Kjøpskontrakt for bil",
+  description: "Din registrering er fullført. Start med å lage din første kjøpskontrakt for bil nå!",
+  keywords: "kjøpskontrakt, bil, registrering, bruktbil, kontrakt generator",
+  openGraph: {
+    title: "Registrering fullført | Kjøpskontrakt for bil",
+    description: "Din registrering er fullført. Start med å lage din første kjøpskontrakt for bil nå!",
+    type: "website",
+  },
+};
 
 const SignupConfirmationPage = () => {
   return (

@@ -1,8 +1,24 @@
 import React from "react";
-import { NextPage } from "next";
+import { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const ContactUsPage: NextPage = () => {
+export const metadata: Metadata = {
+  title: "Kontakt oss | Kjøpskontrakt-bil Generator",
+  description:
+    "Har du spørsmål eller tilbakemeldinger? Kontakt oss for support og hjelp med Kjøpskontrakt-bil Generator. Vi er her for å hjelpe deg!",
+  keywords:
+    "kontakt, kundeservice, support, kjøpskontrakt, bil, generator, spørsmål, tilbakemeldinger",
+  openGraph: {
+    title: "Kontakt oss | Kjøpskontrakt-bil Generator",
+    description:
+      "Har du spørsmål eller tilbakemeldinger? Kontakt oss for support og hjelp med Kjøpskontrakt-bil Generator.",
+    type: "website",
+    url: "https://kjopskontrakt.no/contact",
+  },
+  robots: "index, follow",
+};
+
+const ContactUsPage = () => {
   return (
     <div className="container mx-auto py-8 px-4">
       <Card className="w-full max-w-4xl mx-auto">

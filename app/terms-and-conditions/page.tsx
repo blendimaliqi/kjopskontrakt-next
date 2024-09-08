@@ -2,6 +2,18 @@ import React from "react";
 import { NextPage } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Vilkår og betingelser | Kjøpskontrakt-bil Generator",
+  description: "Les våre vilkår og betingelser for bruk av Kjøpskontrakt-bil Generator. Finn informasjon om tjenestebeskrivelse, priser, ansvar, og mer.",
+  keywords: "vilkår og betingelser, kjøpskontrakt, bil, generator, juridisk informasjon",
+  openGraph: {
+    title: "Vilkår og betingelser | Kjøpskontrakt-bil Generator",
+    description: "Les våre vilkår og betingelser for bruk av Kjøpskontrakt-bil Generator.",
+    type: "website",
+  },
+};
 
 const TermsAndConditions: NextPage = () => {
   return (

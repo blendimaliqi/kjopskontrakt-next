@@ -1,8 +1,22 @@
 import React from "react";
+import { Metadata } from "next";
 import PricingPageContent from "@/components/PricingPageContent";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Wallet } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Priser | Kjøpskontrakt-bil Generator",
+  description: "Se våre konkurransedyktige priser for Kjøpskontrakt-bil Generator. Rimelig og pålitelig tjeneste for å generere kjøpskontrakter for bil.",
+  keywords: "priser, kostnader, kjøpskontrakt, bil, generator, betaling",
+  openGraph: {
+    title: "Priser | Kjøpskontrakt-bil Generator",
+    description: "Se våre konkurransedyktige priser for Kjøpskontrakt-bil Generator.",
+    type: "website",
+    url: "https://kjopskontrakt.no/pricing",
+  },
+  robots: "index, follow",
+};
 
 const PricingPage = () => {
   return (

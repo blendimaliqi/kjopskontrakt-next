@@ -2,6 +2,13 @@ import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Home } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "404 - Side ikke funnet | Kjøpskontrakt-bil Generator",
+  description: "Beklager, men siden du leter etter finnes ikke. Gå tilbake til forsiden eller kontakt vår kundeservice.",
+  robots: "noindex, nofollow",
+};
 
 export default function NotFound() {
   return (

@@ -1,7 +1,21 @@
 import React from "react";
+import { Metadata } from "next";
 import { NextPage } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
+export const metadata: Metadata = {
+  title: "Personvernerklæring | Kjøpskontrakt-bil Generator",
+  description: "Les vår personvernerklæring for å forstå hvordan vi beskytter dine personopplysninger når du bruker Kjøpskontrakt-bil Generator.",
+  keywords: "personvern, personvernerklæring, databehandling, sikkerhet, kjøpskontrakt, bil",
+  openGraph: {
+    title: "Personvernerklæring | Kjøpskontrakt-bil Generator",
+    description: "Les vår personvernerklæring for Kjøpskontrakt-bil Generator.",
+    type: "website",
+    url: "https://kjopskontrakt.no/privacy-policy",
+  },
+  robots: "index, follow",
+};
 
 const PrivacyPolicyPage: NextPage = () => {
   return (
