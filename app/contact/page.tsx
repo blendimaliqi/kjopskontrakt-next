@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const metadata: Metadata = {
-  title: "Kontakt oss | Kjøpskontrakt-bil Generator",
+  title: "Kontakt oss | asdasdasd",
   description:
     "Har du spørsmål eller tilbakemeldinger? Kontakt oss for support og hjelp med Kjøpskontrakt-bil Generator. Vi er her for å hjelpe deg!",
   keywords:

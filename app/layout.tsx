@@ -1,4 +1,3 @@
-import "./globals.css";
 import { Metadata } from "next";
 import { Providers } from "./providers";
 import Title from "@/components/Title";
@@ -7,38 +6,24 @@ import Footer from "@/components/Footer";
 import StructuredData from "@/components/StructuredData";
 
 export const metadata: Metadata = {
-  title:
-    "Kjøpskontrakt til PDF | Enkelt verktøy for bilkjøpskontrakter i Norge",
+  title: {
+    default: "Kjøpskontrakt-bil Generator",
+    template: "%s | Kjøpskontrakt-bil Generator",
+  },
   description:
-    "Lag profesjonelle kjøpskontrakter for bil enkelt og raskt. Sikre trygge biltransaksjoner i Norge med vår brukervennlige tjeneste.",
-  keywords:
-    "kjøpekontrakt, kjøpekontrakt bil, kjøpekontrakt til pdf, kjøpekontrakt bil til pdf, kjopekontrakt, kjøpskontrakt, kjopskontrakt, bilkjøp, bilsalg, kontrakt, Norge, juridisk dokument",
+    "Generer profesjonelle og juridisk bindende kjøpskontrakter for bil enkelt og raskt.",
+  keywords: "kjøpskontrakt, bil, generator, bruktbil, kontrakt",
   openGraph: {
-    title: "Kjøpskontrakt - Profesjonelle bilkjøpskontrakter",
-    description:
-      "Lag enkelt og raskt juridisk korrekte kjøpekontrakter for bil i Norge.",
     type: "website",
+    locale: "nb_NO",
     url: "https://kjopskontrakt.no",
-    images: [
-      {
-        url: "/logo_nobg.png",
-        width: 1200,
-        height: 630,
-        alt: "Kjøpskontrakt logo",
-      },
-    ],
+    siteName: "Kjøpskontrakt-bil Generator",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Kjøpskontrakt for bilkjøp i Norge",
-    description: "Enkel og sikker måte å lage kjøpskontrakter for bil på.",
-    images: ["/logo_nobg.png"],
+  robots: "index, follow",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-icon.png",
   },
-  icons: [
-    { rel: "icon", url: "/logo_nobg.png", type: "image/png", sizes: "32x32" },
-    { rel: "icon", url: "/logo_nobg.png", type: "image/png", sizes: "192x192" },
-    { rel: "apple-touch-icon", url: "/logo_nobg.png" },
-  ],
 };
 
 export default function RootLayout({
