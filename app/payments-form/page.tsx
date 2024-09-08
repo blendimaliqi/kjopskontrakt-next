@@ -376,8 +376,16 @@ const PaymentPage: React.FC = () => {
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                Ja, vi bruker Stripe for å prosessere betalinger, som er en av
-                de mest sikre betalingsplattformene tilgjengelig.
+                Ja, vi bruker{" "}
+                <a
+                  href="https://stripe.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Stripe
+                </a>{" "}
+                for å prosessere betalinger, som er en av de mest sikre
+                betalingsplattformene tilgjengelig.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-3">
