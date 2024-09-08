@@ -242,15 +242,17 @@ const SuccessCard: React.FC<SuccessCardProps> = ({ balance, onReset }) => (
     </CardContent>
     <CardFooter>
       <div className="flex space-x-4">
-        <Button asChild variant="outline" onClick={onReset}>
-          <Link href="/">Tilbake</Link>
+        <Button asChild variant="outline">
+          <Link href="/" onClick={onReset}>
+            Tilbake
+          </Link>
         </Button>
       </div>
     </CardFooter>
   </Card>
 );
 
-export const LoginMessage: React.FC = () => (
+const LoginMessage: React.FC = () => (
   <Card>
     <CardHeader>
       <CardTitle className="flex items-center">

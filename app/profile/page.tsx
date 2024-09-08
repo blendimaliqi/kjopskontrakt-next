@@ -12,10 +12,28 @@ import {
 import { Button } from "@/components/ui/button";
 import { User, Mail, DollarSign, Home, LogIn } from "lucide-react";
 import Link from "next/link";
-import { LoginMessage } from "../payments-form/page";
 
 const ProfilePage: React.FC = () => {
   const { data: session, status } = useSession();
+
+  const LoginMessage: React.FC = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <LogIn className="mr-2" />
+          Innlogging påkrevd
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p>Du må være logget inn for å få tilgang til betalingssiden.</p>
+      </CardContent>
+      <CardFooter>
+        <Button asChild>
+          <Link href="/auth/signin">Gå til innlogging</Link>
+        </Button>
+      </CardFooter>
+    </Card>
+  );
 
   if (status === "loading") {
     return (
