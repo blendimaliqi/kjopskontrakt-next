@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import StructuredData from "@/components/StructuredData";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://kjopskontrakt.no"),
   title: {
     default: "Kjøpskontrakt-bil Generator",
     template: "%s | Kjøpskontrakt-bil Generator",
@@ -19,7 +20,25 @@ export const metadata: Metadata = {
     url: "https://kjopskontrakt.no",
     siteName: "Kjøpskontrakt-bil Generator",
   },
-  robots: "index, follow",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "https://kjopskontrakt.no",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+  },
   icons: {
     icon: "/favicon.ico",
     apple: "/apple-icon.png",
@@ -32,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="no" className="h-full">
+    <html lang="nb" className="h-full">
       <body className="flex min-h-screen flex-col">
         <StructuredData />
         <Providers>

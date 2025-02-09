@@ -1,0 +1,17 @@
+# https://kjopskontrakt.no/robots.txt
+# Allow all crawlers
+User-agent: *
+
+# Only allow specific public pages
+Allow: /$
+Allow: /about$
+Allow: /contact$
+Allow: /faq$
+Allow: /privacy-policy$
+Allow: /terms-and-conditions$
+
+# Disallow everything else by default
+Disallow: /
+
+# Sitemap
+Sitemap: https://kjopskontrakt.no/sitemap.xml 
