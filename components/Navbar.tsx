@@ -4,12 +4,34 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const router = useRouter();
+  const [prevScrollPos, setPrevScrollPos] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  const handleScroll = () => {
+    const currentScrollPos = window.scrollY;
+
+    // Always show navbar when at the top of the page
+    if (currentScrollPos < 10) {
+      setVisible(true);
+      setPrevScrollPos(currentScrollPos);
+      return;
+    }
+
+    // Show navbar when scrolling up, hide when scrolling down
+    setVisible(prevScrollPos > currentScrollPos || currentScrollPos < 10);
+    setPrevScrollPos(currentScrollPos);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [prevScrollPos, visible]);
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
@@ -39,7 +61,11 @@ export default function Navbar() {
   );
 
   return (
-    <nav className="bg-white shadow-sm border-b">
+    <nav
+      className={`bg-white shadow-sm border-b fixed top-0 w-full z-50 transition-transform duration-300 ${
+        visible ? "translate-y-0" : "-translate-y-full"
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
