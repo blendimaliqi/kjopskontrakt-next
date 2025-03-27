@@ -32,7 +32,7 @@ export default function SignIn() {
     if (result?.error) {
       setError("Ugyldig e-post eller passord");
     } else {
-      router.push("/");
+      router.push("/contract");
     }
   };
 

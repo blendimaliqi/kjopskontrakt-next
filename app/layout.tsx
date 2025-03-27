@@ -1,9 +1,8 @@
 import { Metadata } from "next";
 import { Providers } from "./providers";
-import Title from "@/components/Title";
-import DropdownProfile from "@/components/DropDownProfile";
 import Footer from "@/components/Footer";
 import StructuredData from "@/components/StructuredData";
+import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://kjopskontrakt.no"),
@@ -55,48 +54,7 @@ export default function RootLayout({
       <body className="flex min-h-screen flex-col">
         <StructuredData />
         <Providers>
-          <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 shadow-sm">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex h-16 items-center justify-between">
-                <Title className="text-xl" />
-                <nav className="hidden md:flex items-center space-x-8">
-                  <a
-                    href="/"
-                    className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
-                  >
-                    Hjem
-                  </a>
-                  <a
-                    href="/contract"
-                    className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
-                  >
-                    Kjøpskontrakt
-                  </a>
-                  <a
-                    href="/#hvordan-det-fungerer"
-                    className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
-                  >
-                    Hvordan det fungerer
-                  </a>
-                  <a
-                    href="/#priser"
-                    className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
-                  >
-                    Priser
-                  </a>
-                  <a
-                    href="/contact"
-                    className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
-                  >
-                    Kontakt
-                  </a>
-                </nav>
-                <div className="flex items-center space-x-4">
-                  <DropdownProfile />
-                </div>
-              </div>
-            </div>
-          </header>
+          <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />
         </Providers>

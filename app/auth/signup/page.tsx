@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/utils/supabase";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -17,6 +19,7 @@ export default function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [isRateLimited, setIsRateLimited] = useState(false);
+  const router = useRouter();
 
   const validatePasswords = () => {
     if (password !== confirmPassword) {
@@ -52,16 +55,28 @@ export default function SignUp() {
       },
     });
 
-    setIsLoading(false);
-
     if (signUpError) {
+      setIsLoading(false);
       if (signUpError.message.includes("Email rate limit exceeded")) {
         setIsRateLimited(true);
       } else {
         setError(signUpError.message);
       }
     } else {
-      setIsRegistered(true);
+      // Attempt to sign in automatically after successful registration
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      setIsLoading(false);
+
+      if (result?.error) {
+        setIsRegistered(true); // Fall back to registration success screen
+      } else {
+        router.push("/contract"); // Redirect to contract page on successful auto-login
+      }
     }
   };
 
