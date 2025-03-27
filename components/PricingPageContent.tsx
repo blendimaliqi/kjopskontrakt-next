@@ -96,8 +96,8 @@ const PricingPageContent = () => {
                     asChild
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                   >
-                    <Link href="/dashboard">
-                      Gå til dashbordet <ArrowRight className="ml-2 h-4 w-4" />
+                    <Link href="/payments-form">
+                      Gå til Min Konto <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
                 )}

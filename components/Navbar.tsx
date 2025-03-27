@@ -5,6 +5,7 @@ import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { Wallet, FileText, Home, HelpCircle, CreditCard } from "lucide-react";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -12,8 +13,9 @@ export default function Navbar() {
   const router = useRouter();
   const [prevScrollPos, setPrevScrollPos] = useState(0);
   const [visible, setVisible] = useState(true);
+  const [userInteraction, setUserInteraction] = useState(false);
 
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     const currentScrollPos = window.scrollY;
 
     // Always show navbar when at the top of the page
@@ -23,15 +25,32 @@ export default function Navbar() {
       return;
     }
 
-    // Show navbar when scrolling up, hide when scrolling down
-    setVisible(prevScrollPos > currentScrollPos || currentScrollPos < 10);
-    setPrevScrollPos(currentScrollPos);
-  };
+    // Regular scroll behavior: Show when scrolling up, hide when scrolling down
+    // But only if the user has interacted with the page first (scrolled manually)
+    if (userInteraction) {
+      setVisible(prevScrollPos > currentScrollPos);
+    }
 
+    setPrevScrollPos(currentScrollPos);
+  }, [prevScrollPos, userInteraction]);
+
+  // Set up the scroll listener
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [prevScrollPos, visible]);
+  }, [handleScroll]);
+
+  // Set up an event listener to detect manual user scrolling
+  useEffect(() => {
+    const handleUserScroll = (e: WheelEvent) => {
+      if (!userInteraction) {
+        setUserInteraction(true);
+      }
+    };
+
+    window.addEventListener("wheel", handleUserScroll);
+    return () => window.removeEventListener("wheel", handleUserScroll);
+  }, [userInteraction]);
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
@@ -41,6 +60,12 @@ export default function Navbar() {
   const handleSmoothScroll = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
       e.preventDefault();
+
+      // Always ensure navbar is visible when navigation is clicked
+      setVisible(true);
+
+      // Reset user interaction so navbar stays visible until user manually scrolls
+      setUserInteraction(false);
 
       // If we're not on the home page, navigate there first, then scroll
       if (pathname !== "/") {
@@ -83,6 +108,7 @@ export default function Navbar() {
                     : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
                 }`}
               >
+                <Home className="mr-1 h-4 w-4" />
                 Hjem
               </Link>
               <Link
@@ -93,6 +119,7 @@ export default function Navbar() {
                     : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
                 }`}
               >
+                <FileText className="mr-1 h-4 w-4" />
                 Kjøpskontrakt
               </Link>
               <a
@@ -100,6 +127,7 @@ export default function Navbar() {
                 onClick={(e) => handleSmoothScroll(e, "#hvordan-det-fungerer")}
                 className="inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
               >
+                <HelpCircle className="mr-1 h-4 w-4" />
                 Hvordan det fungerer
               </a>
               <a
@@ -107,8 +135,22 @@ export default function Navbar() {
                 onClick={(e) => handleSmoothScroll(e, "#priser")}
                 className="inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
               >
+                <CreditCard className="mr-1 h-4 w-4" />
                 Priser
               </a>
+              {status === "authenticated" && (
+                <Link
+                  href="/payments-form"
+                  className={`inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 ${
+                    pathname === "/payments-form"
+                      ? "border-blue-500 text-gray-900"
+                      : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                  }`}
+                >
+                  <Wallet className="mr-1 h-4 w-4" />
+                  Min Konto
+                </Link>
+              )}
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
