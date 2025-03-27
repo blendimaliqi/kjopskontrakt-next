@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Wallet, FileText, Home, HelpCircle, CreditCard } from "lucide-react";
+import { getBaseUrl } from "@/utils/auth";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -53,8 +54,9 @@ export default function Navbar() {
   }, [userInteraction]);
 
   const handleSignOut = async () => {
-    // Use callbackUrl to ensure proper redirection in all environments
-    await signOut({ callbackUrl: window.location.origin });
+    // Use the helper function to get the correct base URL
+    const baseUrl = getBaseUrl();
+    await signOut({ callbackUrl: baseUrl });
   };
 
   const handleSmoothScroll = useCallback(

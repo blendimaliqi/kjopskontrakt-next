@@ -29,6 +29,7 @@ function Deposit() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ amount: parseFloat(amount) }),
       });
 

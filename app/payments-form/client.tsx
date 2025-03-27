@@ -492,14 +492,24 @@ const PaymentPage: React.FC = () => {
     }
   }, [status]);
 
-  const fetchBalance = async () => {
+  const fetchBalance = async (retryCount = 0) => {
     setIsLoadingBalance(true);
     setBalanceError(null);
     try {
-      const response = await fetch("/api/account/balance");
+      const response = await fetch("/api/account/balance", {
+        method: "GET",
+        credentials: "include",
+      });
+
       if (!response.ok) {
+        if (response.status === 401 && retryCount < 2) {
+          console.log(`Auth error, retrying... (${retryCount + 1})`);
+          setTimeout(() => fetchBalance(retryCount + 1), 1000);
+          return;
+        }
         throw new Error("Kunne ikke hente saldo");
       }
+
       const data = await response.json();
       setCurrentBalance(data.balance || 0);
     } catch (error) {
@@ -545,7 +555,7 @@ const PaymentPage: React.FC = () => {
           <AlertTitle>Feil</AlertTitle>
           <AlertDescription>{balanceError}</AlertDescription>
         </Alert>
-        <Button onClick={fetchBalance} className="mt-4">
+        <Button onClick={() => fetchBalance()} className="mt-4">
           Prøv igjen
         </Button>
       </div>

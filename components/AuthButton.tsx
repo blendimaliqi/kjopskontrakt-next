@@ -2,13 +2,19 @@
 
 import SignUp from "@/app/auth/signup/page";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { getBaseUrl } from "@/utils/auth";
 
 export default function AuthButton() {
   const { data: session } = useSession();
 
   if (session && session.user) {
     return (
-      <button onClick={() => signOut({ callbackUrl: window.location.origin })}>
+      <button
+        onClick={() => {
+          const baseUrl = getBaseUrl();
+          signOut({ callbackUrl: baseUrl });
+        }}
+      >
         Sign out
       </button>
     );

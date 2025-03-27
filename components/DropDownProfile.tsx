@@ -22,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Balance from "@/components/Balance";
+import { getBaseUrl } from "@/utils/auth";
 
 const DropdownProfile = () => {
   const { data: session } = useSession();
@@ -44,7 +45,8 @@ const DropdownProfile = () => {
   }
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: window.location.origin });
+    const baseUrl = getBaseUrl();
+    signOut({ callbackUrl: baseUrl });
   };
 
   return (

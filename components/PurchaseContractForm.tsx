@@ -163,15 +163,21 @@ const PurchaseContractForm: React.FC = () => {
     formik.setFieldValue(name, sanitizedText);
   };
 
-  const fetchBalance = async () => {
+  const fetchBalance = async (retryCount = 0) => {
     try {
       const response = await fetch("/api/account/balance", {
         method: "GET",
+        credentials: "include",
       });
 
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 401 && retryCount < 2) {
+          console.log(`Auth error, retrying... (${retryCount + 1})`);
+          setTimeout(() => fetchBalance(retryCount + 1), 1000);
+          return;
+        }
         throw new Error(data.error || "An unknown error occurred");
       }
 
@@ -195,6 +201,7 @@ const PurchaseContractForm: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ amount: 9.9 }),
       });
 

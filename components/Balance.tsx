@@ -7,7 +7,7 @@ function Balance() {
   const [isNewUser, setIsNewUser] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchBalance = async () => {
+    const fetchBalance = async (retryCount = 0) => {
       setIsLoading(true);
       setError(null);
       setIsNewUser(false);
@@ -15,11 +15,18 @@ function Balance() {
       try {
         const response = await fetch("/api/account/balance", {
           method: "GET",
+          credentials: "include", // Include cookies in the request
         });
 
         const data = await response.json();
 
         if (!response.ok) {
+          if (response.status === 401 && retryCount < 2) {
+            // If unauthorized and we haven't retried too many times, wait and retry
+            console.log(`Auth error, retrying... (${retryCount + 1})`);
+            setTimeout(() => fetchBalance(retryCount + 1), 1000);
+            return;
+          }
           throw new Error(data.error || "An unknown error occurred");
         }
 
