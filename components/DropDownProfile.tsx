@@ -44,7 +44,7 @@ const DropdownProfile = () => {
   }
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: "/" });
+    signOut({ callbackUrl: window.location.origin });
   };
 
   return (

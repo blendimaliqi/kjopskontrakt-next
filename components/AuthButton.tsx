@@ -7,7 +7,11 @@ export default function AuthButton() {
   const { data: session } = useSession();
 
   if (session && session.user) {
-    return <button onClick={() => signOut()}>Sign out</button>;
+    return (
+      <button onClick={() => signOut({ callbackUrl: window.location.origin })}>
+        Sign out
+      </button>
+    );
   }
   return (
     <div>

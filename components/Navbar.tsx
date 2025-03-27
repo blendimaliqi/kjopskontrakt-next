@@ -53,8 +53,8 @@ export default function Navbar() {
   }, [userInteraction]);
 
   const handleSignOut = async () => {
-    await signOut({ redirect: false });
-    router.push("/");
+    // Use callbackUrl to ensure proper redirection in all environments
+    await signOut({ callbackUrl: window.location.origin });
   };
 
   const handleSmoothScroll = useCallback(
