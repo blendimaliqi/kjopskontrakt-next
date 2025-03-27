@@ -1,8 +1,14 @@
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
 import { Providers } from "./providers";
 import Footer from "@/components/Footer";
 import StructuredData from "@/components/StructuredData";
 import Navbar from "@/components/Navbar";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://kjopskontrakt.no"),
@@ -32,11 +38,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://kjopskontrakt.no",
-  },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
   },
   icons: {
     icon: "/favicon.ico",

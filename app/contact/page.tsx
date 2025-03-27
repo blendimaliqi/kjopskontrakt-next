@@ -39,10 +39,10 @@ export default function ContactPage() {
               <div>
                 <h3 className="font-medium text-gray-900 mb-1">E-post</h3>
                 <a
-                  href="mailto:kontakt@kjopskontrakt-bil.no"
+                  href="mailto:support@kjopskontrakt.no"
                   className="text-blue-600 hover:underline"
                 >
-                  kontakt@kjopskontrakt-bil.no
+                  support@kjopskontrakt.no
                 </a>
               </div>
             </div>
