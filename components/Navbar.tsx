@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from "next/navigation";
+import { useCallback } from "react";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -14,6 +15,28 @@ export default function Navbar() {
     await signOut({ redirect: false });
     router.push("/");
   };
+
+  const handleSmoothScroll = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+      e.preventDefault();
+
+      // If we're not on the home page, navigate there first, then scroll
+      if (pathname !== "/") {
+        router.push(`/${targetId}`);
+        return;
+      }
+
+      // If we're already on the home page, just scroll to the section
+      const targetElement = document.getElementById(targetId.substring(1));
+      if (targetElement) {
+        window.scrollTo({
+          top: targetElement.offsetTop - 80, // Offset for the fixed header
+          behavior: "smooth",
+        });
+      }
+    },
+    [pathname, router]
+  );
 
   return (
     <nav className="bg-white shadow-sm border-b">
@@ -46,18 +69,20 @@ export default function Navbar() {
               >
                 Kjøpskontrakt
               </Link>
-              <Link
+              <a
                 href="/#hvordan-det-fungerer"
+                onClick={(e) => handleSmoothScroll(e, "#hvordan-det-fungerer")}
                 className="inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
               >
                 Hvordan det fungerer
-              </Link>
-              <Link
+              </a>
+              <a
                 href="/#priser"
+                onClick={(e) => handleSmoothScroll(e, "#priser")}
                 className="inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
               >
                 Priser
-              </Link>
+              </a>
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
