@@ -1,12 +1,9 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: {
-    default: "Kjøpskontrakt-bil Generator",
-    template: "%s | Kjøpskontrakt-bil Generator",
-  },
+  title: "Kjøpskontrakt for bil | Lag en juridisk gyldig kjøpskontrakt enkelt",
   description:
-    "Generer profesjonelle og juridisk bindende kjøpskontrakter for bil enkelt og raskt.",
+    "Lag enkelt og raskt en juridisk gyldig kjøpskontrakt for kjøp og salg av bil med vår digitale tjeneste.",
   keywords: "kjøpskontrakt, bil, generator, bruktbil, kontrakt",
   openGraph: {
     type: "website",
@@ -18,5 +15,8 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
     apple: "/apple-icon.png",
+  },
+  alternates: {
+    canonical: "https://kjopskontrakt.no",
   },
 };

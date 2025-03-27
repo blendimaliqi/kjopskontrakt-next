@@ -57,6 +57,7 @@ interface FormData {
 
 const PurchaseContractForm: React.FC = () => {
   const { data: session } = useSession();
+  const isLoggedIn = Boolean(session && session.user && session.user.email);
 
   const validationSchema = Yup.object({
     selger_fornavn: Yup.string().required("Påkrevd"),
@@ -218,34 +219,37 @@ const PurchaseContractForm: React.FC = () => {
   };
 
   useEffect(() => {
-    if (session && session.user && session.user.email) {
+    if (isLoggedIn) {
       fetchBalance();
     }
-  }, []);
+  }, [isLoggedIn]);
 
   const getButtonText = () => {
+    if (!isLoggedIn) return "Logg inn for å generere PDF";
     if (isLoading) return "Genererer...";
     if (balance !== null && Number(balance) < 9.9)
       return "Legg til penger (Kun kr 9.90.- per generering)";
     return "Generer PDF (kr 9.90.-)";
   };
   return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-        <h2 className="text-2xl font-bold text-center">Kjøpskontrakt</h2>
+    <Card className="w-full max-w-4xl mx-auto backdrop-blur-sm bg-white/95 shadow-xl border-t border-gray-100">
+      <CardHeader className="border-b bg-gradient-to-r from-gray-50 to-white p-6">
+        <h2 className="text-2xl font-bold text-gray-900 text-center">
+          Kjøpskontrakt
+        </h2>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-8">
         <form
           id="customForm"
-          className="space-y-6"
+          className="space-y-8"
           onSubmit={formik.handleSubmit}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <h3 className="text-lg font-semibold">Selger</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <Card className="border border-gray-200/80 shadow-md hover:shadow-lg transition-shadow duration-200">
+              <CardHeader className="bg-gradient-to-r from-gray-50 to-white border-b">
+                <h3 className="text-lg font-semibold text-gray-900">Selger</h3>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="selger_fornavn">Fornavn</Label>
@@ -344,11 +348,11 @@ const PurchaseContractForm: React.FC = () => {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <h3 className="text-lg font-semibold">Kjøper</h3>
+            <Card className="border border-gray-200/80 shadow-md hover:shadow-lg transition-shadow duration-200">
+              <CardHeader className="bg-gradient-to-r from-gray-50 to-white border-b">
+                <h3 className="text-lg font-semibold text-gray-900">Kjøper</h3>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="kjoper_fornavn">Fornavn</Label>
@@ -448,11 +452,11 @@ const PurchaseContractForm: React.FC = () => {
             </Card>
           </div>
 
-          <Card>
-            <CardHeader>
-              <h3 className="text-lg font-semibold">Kjøretøy</h3>
+          <Card className="border border-gray-200/80 shadow-md hover:shadow-lg transition-shadow duration-200">
+            <CardHeader className="bg-gradient-to-r from-gray-50 to-white border-b">
+              <h3 className="text-lg font-semibold text-gray-900">Kjøretøy</h3>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6 p-6">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="omregistreringsavgift_betales_av">
@@ -593,13 +597,13 @@ const PurchaseContractForm: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <h3 className="text-lg font-semibold">
+          <Card className="border border-gray-200/80 shadow-md hover:shadow-lg transition-shadow duration-200">
+            <CardHeader className="bg-gradient-to-r from-gray-50 to-white border-b">
+              <h3 className="text-lg font-semibold text-gray-900">
                 Utstyr inkludert i kjøpesum
               </h3>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <div className="flex space-x-4">
                 <div className="flex items-center space-x-2">
                   <Checkbox
@@ -639,13 +643,13 @@ const PurchaseContractForm: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <h3 className="text-lg font-semibold">
+          <Card className="border border-gray-200/80 shadow-md hover:shadow-lg transition-shadow duration-200">
+            <CardHeader className="bg-gradient-to-r from-gray-50 to-white border-b">
+              <h3 className="text-lg font-semibold text-gray-900">
                 Andre kommentarer / vilkår
               </h3>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <Textarea
                 id="andre_kommentarer"
                 {...formik.getFieldProps("andre_kommentarer")}
@@ -654,7 +658,7 @@ const PurchaseContractForm: React.FC = () => {
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-2">
               <Label htmlFor="sted_kjoper">Sted</Label>
               <Input
@@ -707,7 +711,7 @@ const PurchaseContractForm: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 p-4 bg-gray-50 rounded-lg border border-gray-200/80">
             <Checkbox
               id="include_disclaimer"
               checked={formik.values.include_disclaimer}
@@ -718,21 +722,47 @@ const PurchaseContractForm: React.FC = () => {
             </Label>
           </div>
 
+          {!isLoggedIn && (
+            <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-lg p-6 mb-4 shadow-sm">
+              <p className="text-yellow-700 text-center font-medium">
+                Du må være innlogget for å generere PDF. Logg inn eller
+                registrer deg for å fortsette.
+              </p>
+            </div>
+          )}
+
           <Button
             type="submit"
-            className="w-full"
-            disabled={isLoading || balance === null || balance < 9.9}
+            className={`w-full text-lg py-6 ${
+              isLoggedIn
+                ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+                : "bg-gray-400"
+            } transition-all duration-200 shadow-md hover:shadow-lg`}
+            disabled={
+              isLoading ||
+              !isLoggedIn ||
+              (isLoggedIn && balance !== null && balance < 9.9)
+            }
           >
             {getButtonText()}
           </Button>
+
           {!formik.isValid && (
-            <div className="text-red-500 mt-2">
+            <div className="text-red-500 mt-4 text-center font-medium">
               {"Fyll ut alle påkrevde felter"}
             </div>
           )}
 
-          {error && <div className="text-red-500 mt-2">{error}</div>}
-          {success && <div className="text-green-500 mt-2">{success}</div>}
+          {error && (
+            <div className="text-red-500 mt-4 text-center font-medium">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="text-green-500 mt-4 text-center font-medium">
+              {success}
+            </div>
+          )}
         </form>
       </CardContent>
     </Card>

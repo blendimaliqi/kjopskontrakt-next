@@ -1,41 +1,15 @@
-"use client";
+import { Metadata } from "next";
+import ClientPage from "./client-page";
 
-import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import PurchaseContractForm from "@/components/PurchaseContractForm";
-import MobilePurchaseContractForm from "@/components/MobilePurchaseContractForm";
-import LandingPageContent from "../components/Landingpage";
-import MobileLandingPageContent from "../components/MobileLandingPage";
+export const metadata: Metadata = {
+  title: "Kjøpskontrakt for bil | Lag en juridisk gyldig kjøpskontrakt enkelt",
+  description:
+    "Lag enkelt og raskt en juridisk gyldig kjøpskontrakt for kjøp og salg av bil med vår digitale tjeneste.",
+  alternates: {
+    canonical: "https://kjopskontrakt.no",
+  },
+};
 
-export default function Home() {
-  const { data: session } = useSession();
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768); // Adjust this breakpoint as needed
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  const LandingPageContents = isMobile
-    ? MobileLandingPageContent
-    : LandingPageContent;
-
-  const ContractForm = isMobile
-    ? MobilePurchaseContractForm
-    : PurchaseContractForm;
-
-  return (
-    <main className="container mx-auto px-4 py-8">
-      {session && session.user && session.user.email ? (
-        <ContractForm />
-      ) : (
-        <LandingPageContents />
-      )}
-    </main>
-  );
+export default function Page() {
+  return <ClientPage />;
 }

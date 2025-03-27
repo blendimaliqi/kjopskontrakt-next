@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Car } from "lucide-react";
 
 interface TitleProps {
   className?: string;
@@ -9,14 +10,17 @@ interface TitleProps {
 
 const Title: React.FC<TitleProps> = ({ className, href = "/" }) => {
   return (
-    <h1 className={cn("font-bold m-0 p-0", className)}>
+    <div className="flex items-center">
       <Link
         href={href}
-        className="no-underline text-inherit hover:text-gray-700 transition-colors"
+        className="flex items-center space-x-2 no-underline text-inherit hover:text-blue-600 transition-colors"
       >
-        Kjøpskontrakt
+        <Car className="h-5 w-5 text-blue-600" />
+        <h1 className={cn("font-bold m-0 p-0", className)}>
+          Kjøpskontrakt-bil
+        </h1>
       </Link>
-    </h1>
+    </div>
   );
 };
 

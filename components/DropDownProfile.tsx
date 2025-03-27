@@ -3,7 +3,14 @@
 import React from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
-import { User, LogOut, CreditCard, Settings, Coins } from "lucide-react";
+import {
+  User,
+  LogOut,
+  CreditCard,
+  Settings,
+  Coins,
+  ChevronDown,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -21,11 +28,15 @@ const DropdownProfile = () => {
 
   if (!session) {
     return (
-      <div className="flex space-x-4">
-        <Button asChild variant="outline">
+      <div className="flex space-x-3">
+        <Button
+          asChild
+          variant="ghost"
+          className="text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+        >
           <Link href="/auth/signin">Logg inn</Link>
         </Button>
-        <Button asChild>
+        <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
           <Link href="/auth/signup">Registrer</Link>
         </Button>
       </div>
@@ -39,9 +50,13 @@ const DropdownProfile = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="flex items-center">
+        <Button
+          variant="ghost"
+          className="flex items-center text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-4"
+        >
           <User className="mr-2 h-4 w-4" />
-          Profil
+          <span className="mr-1">{session.user.name || "Profil"}</span>
+          <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -50,9 +65,15 @@ const DropdownProfile = () => {
         side="bottom"
         sideOffset={5}
       >
-        <DropdownMenuLabel>
-          {" "}
-          <span className="text-sm truncate w-full">{session.user.email}</span>
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">
+              {session.user.name || "Bruker"}
+            </p>
+            <p className="text-xs leading-none text-gray-500">
+              {session.user.email}
+            </p>
+          </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
@@ -74,12 +95,6 @@ const DropdownProfile = () => {
               Pris
             </Link>
           </DropdownMenuItem>
-          {/* <DropdownMenuItem>
-            <Settings className="mr-2 h-4 w-4" />
-            <Link href="/settings" className="flex-grow">
-              Instillinger
-            </Link>
-          </DropdownMenuItem> */}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
 
@@ -90,9 +105,13 @@ const DropdownProfile = () => {
           </div>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}>
+
+        <DropdownMenuItem
+          onClick={handleSignOut}
+          className="text-red-600 focus:text-red-600 focus:bg-red-50"
+        >
           <LogOut className="mr-2 h-4 w-4" />
-          <span className="cursor-pointer">Logg ut</span>
+          <span>Logg ut</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

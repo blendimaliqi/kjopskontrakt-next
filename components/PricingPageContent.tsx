@@ -7,66 +7,160 @@ import {
   FileText,
   CreditCard,
   RefreshCcw,
+  Check,
 } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { motion } from "framer-motion";
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
 
 const PricingPageContent = () => {
   const { data: session } = useSession();
+
   return (
-    <div className="flex flex-col justify-center items-center p-6">
-      <div className="max-w-4xl w-full space-y-6">
-        <header className="text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold">Fleksibel prising</h1>
-          <p className="text-xl">Betal kun for det du bruker</p>
-        </header>
-
-        <main className="bg-white rounded-2xl shadow-xl p-8 space-y-8">
-          <p className="text-lg text-gray-700 leading-relaxed">
-            Med vår fleksible prismodell kan du enkelt sette inn penger og
-            betale per generert PDF. Ingen abonnement eller skjulte gebyrer.
+    <motion.div
+      className="flex flex-col justify-center items-center p-6"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-100px" }}
+      variants={{
+        hidden: {},
+        visible: {
+          transition: {
+            staggerChildren: 0.1,
+          },
+        },
+      }}
+    >
+      <div className="max-w-7xl w-full space-y-10">
+        <motion.header className="text-center space-y-4" variants={fadeIn}>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+            Enkel og fleksibel prising
+          </h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Betal kun for det du bruker - ingen abonnement eller skjulte gebyrer
           </p>
+        </motion.header>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[
-              { icon: Wallet, text: "Sett inn valgfritt beløp" },
-              { icon: FileText, text: "9,90 kr per generert PDF" },
-              { icon: CreditCard, text: "Sikker betaling" },
-              { icon: RefreshCcw, text: "Fyll på når du ønsker" },
-            ].map((feature, index) => (
-              <div key={index} className="flex items-center space-x-4">
-                <feature.icon className="w-8 h-8" />
-                <span className="text-gray-800">{feature.text}</span>
+        <motion.div
+          className="bg-white rounded-2xl shadow-xl overflow-hidden"
+          variants={fadeIn}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2">
+            {/* Left side - pricing details */}
+            <div className="p-8 md:p-10 flex flex-col justify-between">
+              <div>
+                <div className="inline-block px-4 py-1 rounded-full bg-blue-100 text-blue-700 font-medium text-sm mb-6">
+                  Forbruksbasert
+                </div>
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                  9,90 kr per PDF
+                </h3>
+                <p className="text-gray-600 mb-8">
+                  Sett inn valgfritt beløp og betal kun for de kontraktene du
+                  genererer
+                </p>
+
+                <ul className="space-y-3 mb-8">
+                  {[
+                    "Ingen månedlige kostnader",
+                    "Ubegrenset lagringstid",
+                    "Juridisk gyldige kontrakter",
+                    "PDF-er tilgjengelig umiddelbart",
+                    "Enkel betalingsløsning",
+                  ].map((feature, i) => (
+                    <li key={i} className="flex items-start">
+                      <Check className="h-5 w-5 text-blue-500 mr-3 flex-shrink-0 mt-0.5" />
+                      <span className="text-gray-600">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            ))}
+
+              <div className="mt-6">
+                {!session ? (
+                  <Button
+                    asChild
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    <Link href="/auth/signup">
+                      Kom i gang <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button
+                    asChild
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    <Link href="/dashboard">
+                      Gå til dashbordet <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Right side - How it works */}
+            <div className="bg-gray-50 p-8 md:p-10">
+              <h4 className="text-lg font-semibold text-gray-900 mb-6">
+                Slik fungerer det:
+              </h4>
+
+              <ol className="space-y-6">
+                {[
+                  {
+                    title: "Registrer deg",
+                    desc: "Opprett en konto for å komme i gang",
+                    icon: Wallet,
+                  },
+                  {
+                    title: "Sett inn penger",
+                    desc: "Fyll på kontoen din med ønsket beløp",
+                    icon: CreditCard,
+                  },
+                  {
+                    title: "Generer PDF-er",
+                    desc: "9,90 kr trekkes per generert kontrakt",
+                    icon: FileText,
+                  },
+                  {
+                    title: "Fyll på ved behov",
+                    desc: "Legg til mer penger når du trenger det",
+                    icon: RefreshCcw,
+                  },
+                ].map((step, i) => (
+                  <li key={i} className="flex">
+                    <div className="flex-shrink-0 mr-4">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600">
+                        <step.icon className="w-4 h-4" />
+                      </div>
+                    </div>
+                    <div>
+                      <h5 className="font-medium text-gray-900">
+                        {step.title}
+                      </h5>
+                      <p className="text-sm text-gray-600">{step.desc}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+
+              <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <p className="text-sm text-gray-700">
+                  <strong>Tips:</strong> Vi anbefaler å sette inn et større
+                  beløp (f.eks. 500 kr) for å ha saldo tilgjengelig til flere
+                  kontrakter etter behov.
+                </p>
+              </div>
+            </div>
           </div>
-
-          <div className="bg-gray-100 p-6 rounded-lg">
-            <h2 className="text-2xl font-semibold mb-4">Slik fungerer det:</h2>
-            <ol className="list-decimal list-inside space-y-2">
-              <li>Registrer deg for en konto</li>
-              <li>Sett inn ønsket beløp (f.eks. 100 kr, 500 kr)</li>
-              <li>Generer PDF-er etter behov</li>
-              <li>9,90 kr trekkes fra saldoen din per generert PDF</li>
-              <li>Fyll på kontoen din når saldoen blir lav</li>
-            </ol>
-          </div>
-
-          <p className="text-center text-lg font-semibold">
-            Kom i gang i dag og opplev friheten med vår fleksible prismodell!
-          </p>
-        </main>
-
-        {/* <div className="flex justify-center space-x-4">
-            <Button asChild variant="outline">
-              <Link href="/auth/signin">Logg inn</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/auth/signup">Registrer deg</Link>
-            </Button>
-          </div> */}
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

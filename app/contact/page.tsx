@@ -1,87 +1,87 @@
 import React from "react";
 import { Metadata } from "next";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Mail, Phone, MapPin } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Kontakt oss | asdasdasd",
+  title: "Kontakt Oss | Kjøpskontrakt-bil Generator",
   description:
-    "Har du spørsmål eller tilbakemeldinger? Kontakt oss for support og hjelp med Kjøpskontrakt-bil Generator. Vi er her for å hjelpe deg!",
-  keywords:
-    "kontakt, kundeservice, support, kjøpskontrakt, bil, generator, spørsmål, tilbakemeldinger",
-  openGraph: {
-    title: "Kontakt oss | Kjøpskontrakt-bil Generator",
-    description:
-      "Har du spørsmål eller tilbakemeldinger? Kontakt oss for support og hjelp med Kjøpskontrakt-bil Generator.",
-    type: "website",
-    url: "https://kjopskontrakt.no/contact",
-  },
-  robots: "index, follow",
+    "Kontakt oss for spørsmål, tilbakemeldinger eller hjelp med vår kjøpskontrakt-tjeneste.",
 };
 
-const ContactUsPage = () => {
+export default function ContactPage() {
   return (
-    <div className="container mx-auto py-8 px-4">
-      <Card className="w-full max-w-4xl mx-auto">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">Kontakt oss</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <section>
-            <h2 className="text-xl font-semibold mb-2">
-              Har du spørsmål eller tilbakemeldinger?
-            </h2>
-            <p>
-              Vi setter pris på alle henvendelser og tilbakemeldinger fra våre
-              brukere. Ikke nøl med å ta kontakt hvis du har spørsmål om
-              Kjøpskontrakt-bil Generator, trenger hjelp, eller bare vil dele
-              dine tanker om tjenesten.
-            </p>
-          </section>
+    <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+          Kontakt Oss
+        </h1>
 
-          <section>
-            <h2 className="text-xl font-semibold mb-2">Kontaktinformasjon</h2>
-            <p>E-post: support@kjopskontrakt.no</p>
-            <p>
-              Vi besvarer alle henvendelser så raskt som mulig, vanligvis innen
-              24 timer på hverdager.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold mb-2">Åpningstider</h2>
-            <p>
-              Vår kundeservice er tilgjengelig via e-post mandag til fredag, fra
-              09:00 til 17:00.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold mb-2">Ofte stilte spørsmål</h2>
-            <p>
-              Før du kontakter oss, kan det være lurt å sjekke vår{" "}
-              <a href="/faq" className="text-blue-600 hover:underline">
-                FAQ-side
-              </a>
-              . Der finner du svar på mange vanlige spørsmål om vår tjeneste.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold mb-2">Feilrapportering</h2>
-            <p>
-              Hvis du oppdager en feil eller et problem med tjenesten vår,
-              vennligst gi oss så detaljert informasjon som mulig. Dette hjelper
-              oss å identifisere og løse problemet raskere.
-            </p>
-          </section>
-
-          <p className="text-sm text-gray-500 mt-8">
-            Vi ser frem til å høre fra deg!
+        <div className="bg-white shadow-md rounded-xl p-8 mb-8">
+          <p className="text-lg text-gray-700 mb-8">
+            Har du spørsmål, tilbakemeldinger eller trenger du hjelp med vår
+            tjeneste? Ta gjerne kontakt med oss, og vi vil svare deg så raskt
+            som mulig.
           </p>
-        </CardContent>
-      </Card>
+
+          <div className="space-y-6">
+            <div className="flex items-start">
+              <MapPin className="h-6 w-6 text-blue-600 mr-4 mt-0.5" />
+              <div>
+                <h3 className="font-medium text-gray-900 mb-1">
+                  Besøksadresse
+                </h3>
+                <p className="text-gray-600">Kongensgate 1, 0153 Oslo</p>
+              </div>
+            </div>
+
+            <div className="flex items-start">
+              <Mail className="h-6 w-6 text-blue-600 mr-4 mt-0.5" />
+              <div>
+                <h3 className="font-medium text-gray-900 mb-1">E-post</h3>
+                <a
+                  href="mailto:kontakt@kjopskontrakt-bil.no"
+                  className="text-blue-600 hover:underline"
+                >
+                  kontakt@kjopskontrakt-bil.no
+                </a>
+              </div>
+            </div>
+
+            <div className="flex items-start">
+              <Phone className="h-6 w-6 text-blue-600 mr-4 mt-0.5" />
+              <div>
+                <h3 className="font-medium text-gray-900 mb-1">Telefon</h3>
+                <a
+                  href="tel:+4712345678"
+                  className="text-blue-600 hover:underline"
+                >
+                  +47 12 34 56 78
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white shadow-md rounded-xl p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Åpningstider
+          </h2>
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Mandag - Fredag:</span>
+              <span className="font-medium">09:00 - 16:00</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Lørdag:</span>
+              <span className="font-medium">Stengt</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Søndag:</span>
+              <span className="font-medium">Stengt</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default ContactUsPage;
+}
