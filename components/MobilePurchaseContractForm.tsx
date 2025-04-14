@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { generatePDF } from "../utils/pdfGenerator";
 import { useSession } from "next-auth/react";
+import { useContractFormStore } from "@/store/contractFormStore";
 
 interface FormData {
   selger_fornavn: string;
@@ -61,6 +62,8 @@ interface FormData {
 
 const MobilePurchaseContractForm: React.FC = () => {
   const { data: session } = useSession();
+  const { formData: storedFormData, setFormData: setStoredFormData } =
+    useContractFormStore();
 
   const validationSchema = Yup.object({
     selger_fornavn: Yup.string().required("Påkrevd"),
@@ -90,45 +93,50 @@ const MobilePurchaseContractForm: React.FC = () => {
 
   const formik = useFormik<FormData>({
     initialValues: {
-      selger_fornavn: "",
-      selger_etternavn: "",
-      selger_adresse: "",
-      selger_postnummer: "",
-      selger_poststed: "",
-      selger_fodselsdato: "",
-      selger_tlf_arbeid: "",
-      kjoper_fornavn: "",
-      kjoper_etternavn: "",
-      kjoper_adresse: "",
-      kjoper_postnummer: "",
-      kjoper_poststed: "",
-      kjoper_fodselsdato: "",
-      kjoper_tlf_arbeid: "",
-      regnr: "",
-      bilmerke: "",
-      type: "",
-      arsmodell: "",
-      km_stand: "",
-      siste_eu_kontroll: "",
-      kjopesum: "",
-      betalingsmate: "",
-      selgers_kontonummer: "",
-      omregistreringsavgift_betales_av: "kjoper",
-      omregistreringsavgift_belop: "",
-      utstyr_sommer: false,
-      utstyr_vinter: false,
-      utstyr_annet: false,
-      utstyr_spesifisert: "",
-      andre_kommentarer: "",
-      sted_selger: "",
-      dato_selger: "",
-      sted_kjoper: "",
-      dato_kjoper: "",
-      selgers_underskrift: "",
-      kjopers_underskrift: "",
-      include_disclaimer: true,
-      har_bilen_heftelser: "velg",
-      er_bilen_provekjort: "velg",
+      selger_fornavn: storedFormData.selger_fornavn || "",
+      selger_etternavn: storedFormData.selger_etternavn || "",
+      selger_adresse: storedFormData.selger_adresse || "",
+      selger_postnummer: storedFormData.selger_postnummer || "",
+      selger_poststed: storedFormData.selger_poststed || "",
+      selger_fodselsdato: storedFormData.selger_fodselsdato || "",
+      selger_tlf_arbeid: storedFormData.selger_tlf_arbeid || "",
+      kjoper_fornavn: storedFormData.kjoper_fornavn || "",
+      kjoper_etternavn: storedFormData.kjoper_etternavn || "",
+      kjoper_adresse: storedFormData.kjoper_adresse || "",
+      kjoper_postnummer: storedFormData.kjoper_postnummer || "",
+      kjoper_poststed: storedFormData.kjoper_poststed || "",
+      kjoper_fodselsdato: storedFormData.kjoper_fodselsdato || "",
+      kjoper_tlf_arbeid: storedFormData.kjoper_tlf_arbeid || "",
+      regnr: storedFormData.regnr || "",
+      bilmerke: storedFormData.bilmerke || "",
+      type: storedFormData.type || "",
+      arsmodell: storedFormData.arsmodell || "",
+      km_stand: storedFormData.km_stand || "",
+      siste_eu_kontroll: storedFormData.siste_eu_kontroll || "",
+      kjopesum: storedFormData.kjopesum || "",
+      betalingsmate: storedFormData.betalingsmate || "",
+      selgers_kontonummer: storedFormData.selgers_kontonummer || "",
+      omregistreringsavgift_betales_av:
+        storedFormData.omregistreringsavgift_betales_av || "kjoper",
+      omregistreringsavgift_belop:
+        storedFormData.omregistreringsavgift_belop || "",
+      utstyr_sommer: storedFormData.utstyr_sommer || false,
+      utstyr_vinter: storedFormData.utstyr_vinter || false,
+      utstyr_annet: storedFormData.utstyr_annet || false,
+      utstyr_spesifisert: storedFormData.utstyr_spesifisert || "",
+      andre_kommentarer: storedFormData.andre_kommentarer || "",
+      sted_selger: storedFormData.sted_selger || "",
+      dato_selger: storedFormData.dato_selger || "",
+      sted_kjoper: storedFormData.sted_kjoper || "",
+      dato_kjoper: storedFormData.dato_kjoper || "",
+      selgers_underskrift: storedFormData.selgers_underskrift || "",
+      kjopers_underskrift: storedFormData.kjopers_underskrift || "",
+      include_disclaimer:
+        storedFormData.include_disclaimer !== undefined
+          ? storedFormData.include_disclaimer
+          : true,
+      har_bilen_heftelser: storedFormData.har_bilen_heftelser || "velg",
+      er_bilen_provekjort: storedFormData.er_bilen_provekjort || "velg",
     },
     validationSchema,
     onSubmit: (values) => {
@@ -235,6 +243,10 @@ const MobilePurchaseContractForm: React.FC = () => {
       fetchBalance();
     }
   }, []);
+
+  useEffect(() => {
+    setStoredFormData(formik.values);
+  }, [formik.values, setStoredFormData]);
 
   const getButtonText = () => {
     if (!formik.isValid) return "Sjekk at alle obligatoriske felt er fylt ut";

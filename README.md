@@ -1,4 +1,40 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Kjøpskontrakt Next
+
+A web application for creating vehicle purchase contracts.
+
+## Features
+
+- Generate PDF purchase contracts for vehicle sales
+- Responsive design for both desktop and mobile devices
+- Form data persistence between page navigations
+- PDF preview and generation
+- Custom styling options for contracts
+
+## Form Data Persistence
+
+The application uses Zustand with persist middleware to store form data in localStorage. This ensures that users don't lose their form inputs when navigating between pages or refreshing the browser.
+
+The form state is managed by the `useContractFormStore` hook, which is defined in `store/contractFormStore.ts`.
+
+## Development
+
+### Installation
+
+```bash
+npm install
+```
+
+### Running the Development Server
+
+```bash
+npm run dev
+```
+
+### Building for Production
+
+```bash
+npm run build
+```
 
 ## Getting Started
 

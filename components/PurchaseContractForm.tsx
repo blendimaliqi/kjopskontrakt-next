@@ -23,7 +23,9 @@ import { Label } from "@/components/ui/label";
 import { generatePDF, generatePreviewPDF } from "../utils/pdfGenerator";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useContractFormStore } from "@/store/contractFormStore";
 
+// Keep the existing interface FormData in this file to avoid conflicts
 interface FormData {
   selger_fornavn: string;
   selger_etternavn: string;
@@ -79,7 +81,9 @@ interface FormData {
 
 const PurchaseContractForm: React.FC = () => {
   const { data: session } = useSession();
-  const isLoggedIn = Boolean(session && session.user && session.user.email);
+  const isLoggedIn = !!session?.user;
+  const { formData: storedFormData, setFormData: setStoredFormData } =
+    useContractFormStore();
   const [showColorPicker, setShowColorPicker] = useState(false);
   const colorPickerRef = useRef<HTMLDivElement>(null);
   const [sellerSignatureMode, setSellerSignatureMode] = useState<
@@ -126,56 +130,61 @@ const PurchaseContractForm: React.FC = () => {
 
   const formik = useFormik<FormData>({
     initialValues: {
-      selger_fornavn: "",
-      selger_etternavn: "",
-      selger_adresse: "",
-      selger_postnummer: "",
-      selger_poststed: "",
-      selger_fodselsdato: "",
-      selger_tlf_arbeid: "",
-      kjoper_fornavn: "",
-      kjoper_etternavn: "",
-      kjoper_adresse: "",
-      kjoper_postnummer: "",
-      kjoper_poststed: "",
-      kjoper_fodselsdato: "",
-      kjoper_tlf_arbeid: "",
-      regnr: "",
-      bilmerke: "",
-      type: "",
-      arsmodell: "",
-      km_stand: "",
-      siste_eu_kontroll: "",
-      kjopesum: "",
-      betalingsmate: "",
-      selgers_kontonummer: "",
-      omregistreringsavgift_betales_av: "kjoper",
-      omregistreringsavgift_belop: "",
-      utstyr_sommer: false,
-      utstyr_vinter: false,
-      utstyr_annet: false,
-      utstyr_spesifisert: "",
-      andre_kommentarer: "",
-      sted_selger: "",
-      dato_selger: "",
-      sted_kjoper: "",
-      dato_kjoper: "",
-      selgers_underskrift: "",
-      kjopers_underskrift: "",
-      include_disclaimer: true,
-      company_name: "",
-      company_address: "",
-      company_email: "",
-      company_phone: "",
+      selger_fornavn: storedFormData.selger_fornavn || "",
+      selger_etternavn: storedFormData.selger_etternavn || "",
+      selger_adresse: storedFormData.selger_adresse || "",
+      selger_postnummer: storedFormData.selger_postnummer || "",
+      selger_poststed: storedFormData.selger_poststed || "",
+      selger_fodselsdato: storedFormData.selger_fodselsdato || "",
+      selger_tlf_arbeid: storedFormData.selger_tlf_arbeid || "",
+      kjoper_fornavn: storedFormData.kjoper_fornavn || "",
+      kjoper_etternavn: storedFormData.kjoper_etternavn || "",
+      kjoper_adresse: storedFormData.kjoper_adresse || "",
+      kjoper_postnummer: storedFormData.kjoper_postnummer || "",
+      kjoper_poststed: storedFormData.kjoper_poststed || "",
+      kjoper_fodselsdato: storedFormData.kjoper_fodselsdato || "",
+      kjoper_tlf_arbeid: storedFormData.kjoper_tlf_arbeid || "",
+      regnr: storedFormData.regnr || "",
+      bilmerke: storedFormData.bilmerke || "",
+      type: storedFormData.type || "",
+      arsmodell: storedFormData.arsmodell || "",
+      km_stand: storedFormData.km_stand || "",
+      siste_eu_kontroll: storedFormData.siste_eu_kontroll || "",
+      kjopesum: storedFormData.kjopesum || "",
+      betalingsmate: storedFormData.betalingsmate || "",
+      selgers_kontonummer: storedFormData.selgers_kontonummer || "",
+      omregistreringsavgift_betales_av:
+        storedFormData.omregistreringsavgift_betales_av || "kjoper",
+      omregistreringsavgift_belop:
+        storedFormData.omregistreringsavgift_belop || "",
+      utstyr_sommer: storedFormData.utstyr_sommer || false,
+      utstyr_vinter: storedFormData.utstyr_vinter || false,
+      utstyr_annet: storedFormData.utstyr_annet || false,
+      utstyr_spesifisert: storedFormData.utstyr_spesifisert || "",
+      andre_kommentarer: storedFormData.andre_kommentarer || "",
+      sted_selger: storedFormData.sted_selger || "",
+      dato_selger: storedFormData.dato_selger || "",
+      sted_kjoper: storedFormData.sted_kjoper || "",
+      dato_kjoper: storedFormData.dato_kjoper || "",
+      selgers_underskrift: storedFormData.selgers_underskrift || "",
+      kjopers_underskrift: storedFormData.kjopers_underskrift || "",
+      include_disclaimer:
+        storedFormData.include_disclaimer !== undefined
+          ? storedFormData.include_disclaimer
+          : true,
+      company_name: storedFormData.company_name || "",
+      company_address: storedFormData.company_address || "",
+      company_email: storedFormData.company_email || "",
+      company_phone: storedFormData.company_phone || "",
       company_logo: null,
-      company_logo_base64: "",
-      include_company_info: false,
-      custom_header_text: "",
-      primary_color: "#1E3369",
-      har_bilen_heftelser: "velg",
-      er_bilen_provekjort: "velg",
-      remember_company_info: false,
-      company_file_name: "",
+      company_logo_base64: storedFormData.company_logo_base64 || "",
+      include_company_info: storedFormData.include_company_info || false,
+      custom_header_text: storedFormData.custom_header_text || "",
+      primary_color: storedFormData.primary_color || "#1E3369",
+      har_bilen_heftelser: storedFormData.har_bilen_heftelser || "velg",
+      er_bilen_provekjort: storedFormData.er_bilen_provekjort || "velg",
+      remember_company_info: storedFormData.remember_company_info || false,
+      company_file_name: storedFormData.company_file_name || "",
     },
     validationSchema,
     onSubmit: (values) => {
@@ -183,6 +192,11 @@ const PurchaseContractForm: React.FC = () => {
       handleGeneratePDF(values);
     },
   });
+
+  // Update Zustand store whenever form values change
+  useEffect(() => {
+    setStoredFormData(formik.values);
+  }, [formik.values, setStoredFormData]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
