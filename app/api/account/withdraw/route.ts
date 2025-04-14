@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     console.log("Session user:", session.user);
 
     const body = await req.json();
-    const { amount } = body;
+    const { amount, description } = body;
 
     if (!amount || amount <= 0) {
       console.log("Invalid amount:", amount);
@@ -63,6 +63,23 @@ export async function POST(req: NextRequest) {
         { error: "Database error updating balance" },
         { status: 500 }
       );
+    }
+
+    // Record the transaction
+    const { error: transactionError } = await supabase
+      .from("transactions")
+      .insert({
+        user_email: session.user?.email,
+        amount: -amount, // Negative amount for withdrawals
+        type: "usage",
+        description: description || "Generering av kjøpskontrakt",
+        created_at: new Date().toISOString(),
+      });
+
+    if (transactionError) {
+      console.error("Transaction recording error:", transactionError);
+      // We don't want to fail the whole operation if just the transaction recording fails
+      // But we should log it for investigation
     }
 
     console.log("New balance after withdrawal:", newBalance);

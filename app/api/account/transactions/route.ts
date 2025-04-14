@@ -15,33 +15,32 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // For now, return mock transactions
-    // In a real implementation, you would fetch from your database
-    const mockTransactions = [
-      {
-        id: "1",
-        date: "2023-09-15",
-        amount: 100,
-        type: "deposit",
-        description: "Påfylling av saldo",
-      },
-      {
-        id: "2",
-        date: "2023-09-16",
-        amount: -9.9,
-        type: "usage",
-        description: "Generering av kjøpskontrakt",
-      },
-      {
-        id: "3",
-        date: "2023-09-17",
-        amount: 50,
-        type: "deposit",
-        description: "Påfylling av saldo",
-      },
-    ];
+    // Fetch real transactions from the database
+    const { data: transactions, error } = await supabase
+      .from("transactions")
+      .select("*")
+      .eq("user_email", session.user?.email)
+      .order("created_at", { ascending: false })
+      .limit(20);
 
-    return NextResponse.json({ transactions: mockTransactions });
+    if (error) {
+      console.error("Error fetching transactions:", error);
+      return NextResponse.json(
+        { error: "Database error fetching transactions" },
+        { status: 500 }
+      );
+    }
+
+    // Transform data to match the expected format in the frontend
+    const formattedTransactions = transactions.map((tx) => ({
+      id: tx.id,
+      date: tx.created_at,
+      amount: tx.amount,
+      type: tx.type,
+      description: tx.description,
+    }));
+
+    return NextResponse.json({ transactions: formattedTransactions });
   } catch (error) {
     console.error("Unexpected error:", error);
     return NextResponse.json(
