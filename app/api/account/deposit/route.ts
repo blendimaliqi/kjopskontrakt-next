@@ -22,6 +22,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
     }
 
+    if (amount < 40) {
+      console.log("Amount below minimum:", amount);
+      return NextResponse.json(
+        { error: "Minimum amount is 40 NOK" },
+        { status: 400 }
+      );
+    }
+
     const { data: users, error: fetchError } = await supabase
       .from("users")
       .select("balance")

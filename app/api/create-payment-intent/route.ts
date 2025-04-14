@@ -10,6 +10,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
     }
 
+    if (amount < 40) {
+      return NextResponse.json(
+        { error: "Minimum amount is 40 NOK" },
+        { status: 400 }
+      );
+    }
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount * 100, // Stripe uses smallest currency unit (øre)
       currency: "nok",

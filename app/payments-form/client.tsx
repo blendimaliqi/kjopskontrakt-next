@@ -79,6 +79,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onSuccess, onCancel }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [amountError, setAmountError] = useState<string | null>(null);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -88,6 +89,13 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onSuccess, onCancel }) => {
 
     if (!stripe || !elements) {
       setError("Stripe er ikke lastet ennå.");
+      setIsLoading(false);
+      return;
+    }
+
+    const amountValue = parseFloat(amount);
+    if (isNaN(amountValue) || amountValue < 40) {
+      setError("Minimum innskuddsbeløp er 40 NOK");
       setIsLoading(false);
       return;
     }
@@ -157,6 +165,18 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onSuccess, onCancel }) => {
     const value = e.target.value;
     if (/^\d*\.?\d*$/.test(value)) {
       setAmount(value);
+
+      // Real-time validation for minimum amount
+      const numValue = parseFloat(value);
+      if (value && !isNaN(numValue)) {
+        if (numValue < 40) {
+          setAmountError("Beløpet må være minst 40 NOK");
+        } else {
+          setAmountError(null);
+        }
+      } else {
+        setAmountError(null);
+      }
     }
   };
 
@@ -170,8 +190,16 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onSuccess, onCancel }) => {
           value={amount}
           onChange={handleAmountChange}
           placeholder="Skriv inn innskuddsbeløp"
+          className={amountError ? "border-red-500" : ""}
           required
         />
+        {amountError ? (
+          <p className="text-xs text-red-500 mt-1">{amountError}</p>
+        ) : (
+          <p className="text-xs text-gray-500 mt-1">
+            Minimum innskuddsbeløp: 40 NOK
+          </p>
+        )}
       </div>
       <div>
         <Label htmlFor="card-number">Kortnummer</Label>
@@ -219,7 +247,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onSuccess, onCancel }) => {
         </Button>
         <Button
           type="submit"
-          disabled={isLoading || !stripe}
+          disabled={isLoading || !stripe || amountError !== null || !amount}
           className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
         >
           {isLoading ? "Behandler..." : "Legg til beløp"}
@@ -509,7 +537,7 @@ const Dashboard: React.FC<{
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Hver kjøpskontrakt koster 9,90 NOK</li>
                   <li>
-                    Du kan fylle på kontoen din med valgfritt beløp fra 50 NOK
+                    Du kan fylle på kontoen din med valgfritt beløp fra 40 NOK
                     og oppover
                   </li>
                 </ul>
