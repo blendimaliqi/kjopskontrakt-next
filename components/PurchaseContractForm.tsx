@@ -78,10 +78,10 @@ const PurchaseContractForm: React.FC = () => {
   const colorPickerRef = useRef<HTMLDivElement>(null);
   const [sellerSignatureMode, setSellerSignatureMode] = useState<
     "text" | "draw" | "upload"
-  >("text");
+  >("draw");
   const [buyerSignatureMode, setBuyerSignatureMode] = useState<
     "text" | "draw" | "upload"
-  >("text");
+  >("draw");
   const [sellerSignatureData, setSellerSignatureData] = useState<string>("");
   const [buyerSignatureData, setBuyerSignatureData] = useState<string>("");
   const sellerCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -1408,22 +1408,6 @@ const PurchaseContractForm: React.FC = () => {
               <div className="flex space-x-3 mb-2">
                 <Button
                   type="button"
-                  onClick={() => {
-                    setSellerSignatureMode("text");
-                    if (sellerSignatureMode !== "text") {
-                      formik.setFieldValue("selgers_underskrift", "");
-                    }
-                  }}
-                  className={`px-3 py-1 text-xs ${
-                    sellerSignatureMode === "text"
-                      ? "bg-blue-600"
-                      : "bg-gray-300"
-                  }`}
-                >
-                  Skriv inn
-                </Button>
-                <Button
-                  type="button"
                   onClick={() => setSellerSignatureMode("draw")}
                   className={`px-3 py-1 text-xs ${
                     sellerSignatureMode === "draw"
@@ -1433,6 +1417,21 @@ const PurchaseContractForm: React.FC = () => {
                 >
                   Tegn signatur
                 </Button>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setSellerSignatureMode("text");
+                    formik.setFieldValue("selgers_underskrift", "");
+                  }}
+                  className={`px-3 py-1 text-xs ${
+                    sellerSignatureMode === "text"
+                      ? "bg-blue-600"
+                      : "bg-gray-300"
+                  }`}
+                >
+                  Skriv inn
+                </Button>
+
                 <Button
                   type="button"
                   onClick={() => setSellerSignatureMode("upload")}
@@ -1459,21 +1458,27 @@ const PurchaseContractForm: React.FC = () => {
                 <div className="signature-container">
                   <canvas
                     ref={sellerCanvasRef}
-                    width={400}
-                    height={150}
-                    className="border border-gray-300 rounded cursor-crosshair bg-white"
+                    width={380}
+                    height={120}
+                    className="border border-gray-300 rounded cursor-crosshair bg-white w-full"
                     onMouseDown={handleSellerCanvasMouseDown}
                     onMouseMove={handleSellerCanvasMouseMove}
                     onMouseUp={handleSellerCanvasMouseUp}
                     onMouseLeave={handleSellerCanvasMouseUp}
                   ></canvas>
-                  <Button
-                    type="button"
-                    onClick={clearSellerCanvas}
-                    className="mt-2 px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 text-gray-700"
-                  >
-                    Tøm signatur
-                  </Button>
+                  <div className="flex justify-between mt-2">
+                    <Button
+                      type="button"
+                      onClick={clearSellerCanvas}
+                      className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 text-gray-700"
+                    >
+                      Tøm signatur
+                    </Button>
+                    <p className="text-xs text-gray-500 ml-2">
+                      Du kan la dette være tomt hvis du vil signere på selve
+                      PDF-en senere.
+                    </p>
+                  </div>
                 </div>
               )}
 
@@ -1517,22 +1522,6 @@ const PurchaseContractForm: React.FC = () => {
               <div className="flex space-x-3 mb-2">
                 <Button
                   type="button"
-                  onClick={() => {
-                    setBuyerSignatureMode("text");
-                    if (buyerSignatureMode !== "text") {
-                      formik.setFieldValue("kjopers_underskrift", "");
-                    }
-                  }}
-                  className={`px-3 py-1 text-xs ${
-                    buyerSignatureMode === "text"
-                      ? "bg-blue-600"
-                      : "bg-gray-300"
-                  }`}
-                >
-                  Skriv inn
-                </Button>
-                <Button
-                  type="button"
                   onClick={() => setBuyerSignatureMode("draw")}
                   className={`px-3 py-1 text-xs ${
                     buyerSignatureMode === "draw"
@@ -1542,6 +1531,21 @@ const PurchaseContractForm: React.FC = () => {
                 >
                   Tegn signatur
                 </Button>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setBuyerSignatureMode("text");
+                    formik.setFieldValue("kjopers_underskrift", "");
+                  }}
+                  className={`px-3 py-1 text-xs ${
+                    buyerSignatureMode === "text"
+                      ? "bg-blue-600"
+                      : "bg-gray-300"
+                  }`}
+                >
+                  Skriv inn
+                </Button>
+
                 <Button
                   type="button"
                   onClick={() => setBuyerSignatureMode("upload")}
@@ -1568,21 +1572,27 @@ const PurchaseContractForm: React.FC = () => {
                 <div className="signature-container">
                   <canvas
                     ref={buyerCanvasRef}
-                    width={400}
-                    height={150}
-                    className="border border-gray-300 rounded cursor-crosshair bg-white"
+                    width={380}
+                    height={120}
+                    className="border border-gray-300 rounded cursor-crosshair bg-white w-full"
                     onMouseDown={handleBuyerCanvasMouseDown}
                     onMouseMove={handleBuyerCanvasMouseMove}
                     onMouseUp={handleBuyerCanvasMouseUp}
                     onMouseLeave={handleBuyerCanvasMouseUp}
                   ></canvas>
-                  <Button
-                    type="button"
-                    onClick={clearBuyerCanvas}
-                    className="mt-2 px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 text-gray-700"
-                  >
-                    Tøm signatur
-                  </Button>
+                  <div className="flex justify-between mt-2">
+                    <Button
+                      type="button"
+                      onClick={clearBuyerCanvas}
+                      className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 text-gray-700"
+                    >
+                      Tøm signatur
+                    </Button>
+                    <p className="text-xs text-gray-500 ml-2">
+                      Du kan la dette være tomt hvis du vil signere på selve
+                      PDF-en senere.
+                    </p>
+                  </div>
                 </div>
               )}
 
