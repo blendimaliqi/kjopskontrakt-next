@@ -1,4 +1,10 @@
-import React, { useState, ChangeEvent, ClipboardEvent, useEffect } from "react";
+import React, {
+  useState,
+  ChangeEvent,
+  ClipboardEvent,
+  useEffect,
+  useRef,
+} from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
@@ -68,6 +74,8 @@ interface FormData {
 const PurchaseContractForm: React.FC = () => {
   const { data: session } = useSession();
   const isLoggedIn = Boolean(session && session.user && session.user.email);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const colorPickerRef = useRef<HTMLDivElement>(null);
 
   const validationSchema = Yup.object({
     selger_fornavn: Yup.string().required("Påkrevd"),
@@ -136,7 +144,7 @@ const PurchaseContractForm: React.FC = () => {
       company_logo_base64: "",
       include_company_info: false,
       custom_header_text: "",
-      primary_color: "",
+      primary_color: "#1E3369",
     },
     validationSchema,
     onSubmit: (values) => {
@@ -237,6 +245,26 @@ const PurchaseContractForm: React.FC = () => {
       fetchBalance();
     }
   }, [isLoggedIn]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        colorPickerRef.current &&
+        !colorPickerRef.current.contains(event.target as Node)
+      ) {
+        setShowColorPicker(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleColorChange = (color: string) => {
+    formik.setFieldValue("primary_color", color);
+  };
 
   const getButtonText = () => {
     if (!isLoggedIn) return "Logg inn for å generere PDF";
@@ -367,18 +395,144 @@ const PurchaseContractForm: React.FC = () => {
                       <div className="grid grid-cols-[1fr_auto] gap-2 items-center">
                         <Input
                           id="primary_color"
-                          {...formik.getFieldProps("primary_color")}
-                          placeholder="#0062cc"
-                          defaultValue="#0062cc"
-                          className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
-                        />
-                        <div
-                          className="w-8 h-8 rounded-md border shadow-inner"
-                          style={{
-                            backgroundColor:
-                              formik.values.primary_color || "#0062cc",
+                          name="primary_color"
+                          value={formik.values.primary_color}
+                          onChange={(e) => {
+                            // Ensure color value starts with # and is valid hex
+                            let colorValue = e.target.value;
+                            if (colorValue && !colorValue.startsWith("#")) {
+                              colorValue = "#" + colorValue;
+                            }
+                            formik.setFieldValue("primary_color", colorValue);
                           }}
+                          placeholder="#0062cc"
+                          className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                         />
+                        <div className="relative">
+                          <div
+                            className="w-10 h-10 rounded-md border shadow-inner cursor-pointer transition-all hover:scale-105 active:scale-95"
+                            style={{
+                              backgroundColor:
+                                formik.values.primary_color || "#1E3369",
+                            }}
+                            onClick={() => setShowColorPicker(!showColorPicker)}
+                          />
+                          {showColorPicker && (
+                            <div
+                              className="absolute z-10 right-0 top-full mt-2 w-64"
+                              ref={colorPickerRef}
+                            >
+                              <div className="p-4 bg-white rounded-lg shadow-lg border border-gray-200">
+                                <h4 className="text-sm font-semibold mb-3 text-gray-700">
+                                  Velg farge
+                                </h4>
+
+                                <div className="space-y-3">
+                                  <div className="space-y-2">
+                                    <p className="text-xs text-gray-500 font-medium">
+                                      Anbefalte farger
+                                    </p>
+                                    <div className="grid grid-cols-4 gap-2">
+                                      {[
+                                        { color: "#1E3369", name: "Navy" },
+                                        { color: "#0062cc", name: "Blue" },
+                                        { color: "#2E7D32", name: "Green" },
+                                        { color: "#C62828", name: "Red" },
+                                      ].map((colorItem) => (
+                                        <div
+                                          key={colorItem.color}
+                                          className="flex flex-col items-center"
+                                          onClick={() => {
+                                            handleColorChange(colorItem.color);
+                                            setShowColorPicker(false);
+                                          }}
+                                        >
+                                          <div
+                                            className="w-10 h-10 rounded-md border shadow cursor-pointer hover:scale-110 transition-transform"
+                                            style={{
+                                              backgroundColor: colorItem.color,
+                                            }}
+                                          />
+                                          <span className="text-xs mt-1">
+                                            {colorItem.name}
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <p className="text-xs text-gray-500 font-medium">
+                                      Andre farger
+                                    </p>
+                                    <div className="grid grid-cols-6 gap-1">
+                                      {[
+                                        "#FF8F00", // Orange
+                                        "#6A1B9A", // Purple
+                                        "#283593", // Indigo
+                                        "#00695C", // Teal
+                                        "#4E342E", // Brown
+                                        "#424242", // Dark grey
+                                        "#37474F", // Blue grey
+                                        "#000000", // Black
+                                        "#607D8B", // Blue Grey
+                                        "#795548", // Brown
+                                        "#9E9E9E", // Grey
+                                        "#3F51B5", // Indigo
+                                      ].map((color) => (
+                                        <div
+                                          key={color}
+                                          className="w-8 h-8 rounded-sm border shadow cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                                          style={{ backgroundColor: color }}
+                                          onClick={() => {
+                                            handleColorChange(color);
+                                            setShowColorPicker(false);
+                                          }}
+                                        />
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <p className="text-xs text-gray-500 font-medium">
+                                      Egendefinert
+                                    </p>
+                                    <div className="flex items-center gap-3">
+                                      <input
+                                        type="color"
+                                        value={
+                                          formik.values.primary_color ||
+                                          "#1E3369"
+                                        }
+                                        onChange={(e) =>
+                                          handleColorChange(e.target.value)
+                                        }
+                                        className="w-10 h-10 cursor-pointer rounded border-0 bg-transparent p-0"
+                                      />
+                                      <div className="text-xs text-gray-700 flex-1">
+                                        Velg en egendefinert farge
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
+                                  <span className="text-xs text-gray-500">
+                                    Nåværende:{" "}
+                                    {formik.values.primary_color || "#1E3369"}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="text-xs px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-gray-700 transition-colors"
+                                    onClick={() => setShowColorPicker(false)}
+                                  >
+                                    Lukk
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>

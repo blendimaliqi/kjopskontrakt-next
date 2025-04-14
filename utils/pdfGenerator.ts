@@ -66,14 +66,50 @@ export function generatePDF(formData: FormData): void {
   // Parse the hex color to RGB if provided
   let primaryColorRGB: [number, number, number] = defaultColorRGB;
   if (formData.primary_color) {
-    const hex = formData.primary_color.replace("#", "");
-    if (hex.length === 6) {
-      primaryColorRGB = [
-        parseInt(hex.substring(0, 2), 16),
-        parseInt(hex.substring(2, 4), 16),
-        parseInt(hex.substring(4, 6), 16),
-      ];
+    try {
+      // Ensure the color is properly formatted and trim any whitespace
+      const colorValue = formData.primary_color.trim();
+      // Handle colors with or without the # prefix
+      const hex = colorValue.startsWith("#")
+        ? colorValue.substring(1)
+        : colorValue;
+
+      if (hex.length === 6) {
+        // Parse each color component (R, G, B)
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+
+        // Validate that all values are valid numbers between 0-255
+        if (
+          !isNaN(r) &&
+          !isNaN(g) &&
+          !isNaN(b) &&
+          r >= 0 &&
+          r <= 255 &&
+          g >= 0 &&
+          g <= 255 &&
+          b >= 0 &&
+          b <= 255
+        ) {
+          primaryColorRGB = [r, g, b];
+          console.log(
+            `Using custom color: RGB(${r}, ${g}, ${b}) from HEX #${hex}`
+          );
+        } else {
+          console.warn(`Invalid color values in: #${hex}, using default color`);
+        }
+      } else {
+        console.warn(
+          `Invalid hex color length (${hex.length}), should be 6 characters. Using default.`
+        );
+      }
+    } catch (error) {
+      console.error("Error parsing primary color:", error);
+      console.log("Color value received:", formData.primary_color);
     }
+  } else {
+    console.log("No primary color provided, using default");
   }
 
   // Secondary color for alternating rows and accents - light blue
