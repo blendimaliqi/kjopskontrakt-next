@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { generatePDF } from "../utils/pdfGenerator";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useContractFormStore } from "@/store/contractFormStore";
 
 interface FormData {
@@ -799,14 +800,25 @@ const MobilePurchaseContractForm: React.FC = () => {
             </Label>
           </div>
 
-          <Button
-            type="submit"
-            className="w-full"
-            onClick={() => debugValidationErrors()}
-            disabled={isLoading || balance === null || balance < 9.9}
-          >
-            {getButtonText()}
-          </Button>
+          {balance !== null && balance < 9.9 ? (
+            <Button
+              type="button"
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              onClick={() => (window.location.href = "/payments-form")}
+            >
+              Legg til penger (Kun kr 9.90.- per generering)
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              className="w-full"
+              onClick={() => debugValidationErrors()}
+              disabled={isLoading}
+            >
+              {getButtonText()}
+            </Button>
+          )}
+
           {!formik.isValid && (
             <div className="text-red-500 mt-2">
               {"Fyll ut alle påkrevde felter"}
