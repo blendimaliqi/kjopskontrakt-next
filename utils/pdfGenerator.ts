@@ -46,6 +46,8 @@ interface FormData {
   include_company_info?: boolean;
   custom_header_text?: string;
   primary_color?: string;
+  har_bilen_heftelser?: "ja" | "nei" | "velg" | "";
+  er_bilen_provekjort?: "ja" | "nei" | "velg" | "";
 }
 
 export function generatePDF(formData: FormData): void {
@@ -660,6 +662,51 @@ export function generatePDF(formData: FormData): void {
   });
 
   yPosition += 18;
+
+  // Add the new selector fields if they have values (proper type checking)
+  if (
+    formData.har_bilen_heftelser &&
+    (formData.har_bilen_heftelser === "ja" ||
+      formData.har_bilen_heftelser === "nei")
+  ) {
+    // Check if we need to add a new page
+    if (yPosition > pageHeight - 40) {
+      addPage();
+      yPosition += 10;
+    }
+
+    addField(
+      "Har bilen heftelser",
+      formData.har_bilen_heftelser === "ja" ? "Ja" : "Nei",
+      margin,
+      yPosition,
+      (pageWidth - 2 * margin - 10) / 2
+    );
+
+    yPosition += 14;
+  }
+
+  if (
+    formData.er_bilen_provekjort &&
+    (formData.er_bilen_provekjort === "ja" ||
+      formData.er_bilen_provekjort === "nei")
+  ) {
+    // Check if we need to add a new page
+    if (yPosition > pageHeight - 40) {
+      addPage();
+      yPosition += 10;
+    }
+
+    addField(
+      "Er bilen prøvekjørt og besiktet",
+      formData.er_bilen_provekjort === "ja" ? "Ja" : "Nei",
+      margin,
+      yPosition,
+      (pageWidth - 2 * margin - 10) / 2
+    );
+
+    yPosition += 14;
+  }
 
   // Add specification field if any equipment is selected
   if (
@@ -1533,6 +1580,51 @@ export function generatePreviewPDF(formData: FormData): void {
   });
 
   yPosition += 18;
+
+  // Add the new selector fields if they have values (proper type checking)
+  if (
+    formData.har_bilen_heftelser &&
+    (formData.har_bilen_heftelser === "ja" ||
+      formData.har_bilen_heftelser === "nei")
+  ) {
+    // Check if we need to add a new page
+    if (yPosition > pageHeight - 40) {
+      addPage();
+      yPosition += 10;
+    }
+
+    addField(
+      "Har bilen heftelser",
+      formData.har_bilen_heftelser === "ja" ? "Ja" : "Nei",
+      margin,
+      yPosition,
+      (pageWidth - 2 * margin - 10) / 2
+    );
+
+    yPosition += 14;
+  }
+
+  if (
+    formData.er_bilen_provekjort &&
+    (formData.er_bilen_provekjort === "ja" ||
+      formData.er_bilen_provekjort === "nei")
+  ) {
+    // Check if we need to add a new page
+    if (yPosition > pageHeight - 40) {
+      addPage();
+      yPosition += 10;
+    }
+
+    addField(
+      "Er bilen prøvekjørt og besiktet",
+      formData.er_bilen_provekjort === "ja" ? "Ja" : "Nei",
+      margin,
+      yPosition,
+      (pageWidth - 2 * margin - 10) / 2
+    );
+
+    yPosition += 14;
+  }
 
   // Add specification field if any equipment is selected
   if (

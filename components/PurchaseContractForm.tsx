@@ -69,6 +69,8 @@ interface FormData {
   include_company_info: boolean;
   custom_header_text: string;
   primary_color: string;
+  har_bilen_heftelser: "ja" | "nei" | "velg" | "";
+  er_bilen_provekjort: "ja" | "nei" | "velg" | "";
 }
 
 const PurchaseContractForm: React.FC = () => {
@@ -109,6 +111,12 @@ const PurchaseContractForm: React.FC = () => {
     kjopesum: Yup.number().typeError("Må være et tall").required("Påkrevd"),
     omregistreringsavgift_betales_av: Yup.string()
       .oneOf(["kjoper", "selger"])
+      .required("Påkrevd"),
+    har_bilen_heftelser: Yup.string()
+      .oneOf(["ja", "nei"], "Velg ja eller nei")
+      .required("Påkrevd"),
+    er_bilen_provekjort: Yup.string()
+      .oneOf(["ja", "nei"], "Velg ja eller nei")
       .required("Påkrevd"),
   });
 
@@ -158,6 +166,8 @@ const PurchaseContractForm: React.FC = () => {
       include_company_info: false,
       custom_header_text: "",
       primary_color: "#1E3369",
+      har_bilen_heftelser: "velg",
+      er_bilen_provekjort: "velg",
     },
     validationSchema,
     onSubmit: (values) => {
@@ -1332,6 +1342,52 @@ const PurchaseContractForm: React.FC = () => {
                   onPaste={handlePaste}
                   className="border-gray-200 focus:border-blue-500 focus:ring-blue-500 min-h-[80px]"
                 />
+              </div>
+
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="har_bilen_heftelser" className="font-medium">
+                    Har bilen heftelser
+                  </Label>
+                  <Select
+                    value={formik.values.har_bilen_heftelser}
+                    onValueChange={handleSelectChange("har_bilen_heftelser")}
+                  >
+                    <SelectTrigger
+                      id="har_bilen_heftelser"
+                      className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                    >
+                      <SelectValue placeholder="Velg" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="velg">Velg</SelectItem>
+                      <SelectItem value="ja">Ja</SelectItem>
+                      <SelectItem value="nei">Nei</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="er_bilen_provekjort" className="font-medium">
+                    Er bilen prøvekjørt og besiktet
+                  </Label>
+                  <Select
+                    value={formik.values.er_bilen_provekjort}
+                    onValueChange={handleSelectChange("er_bilen_provekjort")}
+                  >
+                    <SelectTrigger
+                      id="er_bilen_provekjort"
+                      className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                    >
+                      <SelectValue placeholder="Velg" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="velg">Velg</SelectItem>
+                      <SelectItem value="ja">Ja</SelectItem>
+                      <SelectItem value="nei">Nei</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </CardContent>
           </Card>

@@ -53,6 +53,8 @@ interface FormData {
   selgers_underskrift: string;
   kjopers_underskrift: string;
   include_disclaimer: boolean;
+  har_bilen_heftelser: "ja" | "nei" | "velg" | "";
+  er_bilen_provekjort: "ja" | "nei" | "velg" | "";
 }
 
 const MobilePurchaseContractForm: React.FC = () => {
@@ -74,22 +76,16 @@ const MobilePurchaseContractForm: React.FC = () => {
     kjoper_fodselsdato: Yup.string().required("Påkrevd"),
     kjoper_tlf_arbeid: Yup.string().required("Påkrevd"),
     regnr: Yup.string().required("Påkrevd"),
-    // bilmerke: Yup.string().required("Påkrevd"),
-    // type: Yup.string().required("Påkrevd"),
-    // arsmodell: Yup.string().required("Påkrevd"),
-    // km_stand: Yup.string().required("Påkrevd"),
-    // siste_eu_kontroll: Yup.date().required("Påkrevd"),
     kjopesum: Yup.number().required("Påkrevd"),
-    // betalingsmate: Yup.string().required("Påkrevd"),
-    // selgers_kontonummer: Yup.string().required("Påkrevd"),
     omregistreringsavgift_betales_av: Yup.string()
       .oneOf(["kjoper", "selger"])
       .required("Påkrevd"),
-    // omregistreringsavgift_belop: Yup.number().required("Påkrevd"),
-    // sted_kjoper: Yup.string().required("Påkrevd"),
-    // dato_kjoper: Yup.date().required("Påkrevd"),
-    // selgers_underskrift: Yup.string().required("Påkrevd"),
-    // kjopers_underskrift: Yup.string().required("Påkrevd"),
+    har_bilen_heftelser: Yup.string()
+      .oneOf(["ja", "nei"], "Velg ja eller nei")
+      .required("Påkrevd"),
+    er_bilen_provekjort: Yup.string()
+      .oneOf(["ja", "nei"], "Velg ja eller nei")
+      .required("Påkrevd"),
   });
 
   const formik = useFormik<FormData>({
@@ -129,6 +125,8 @@ const MobilePurchaseContractForm: React.FC = () => {
       selgers_underskrift: "",
       kjopers_underskrift: "",
       include_disclaimer: true,
+      har_bilen_heftelser: "velg",
+      er_bilen_provekjort: "velg",
     },
     validationSchema,
     onSubmit: (values) => {
@@ -615,6 +613,46 @@ const MobilePurchaseContractForm: React.FC = () => {
                   {...formik.getFieldProps("utstyr_spesifisert")}
                   onPaste={handlePaste}
                 />
+              </div>
+
+              <div className="mt-6 space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="har_bilen_heftelser">
+                    Har bilen heftelser
+                  </Label>
+                  <Select
+                    value={formik.values.har_bilen_heftelser}
+                    onValueChange={handleSelectChange("har_bilen_heftelser")}
+                  >
+                    <SelectTrigger id="har_bilen_heftelser">
+                      <SelectValue placeholder="Velg" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="velg">Velg</SelectItem>
+                      <SelectItem value="ja">Ja</SelectItem>
+                      <SelectItem value="nei">Nei</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="er_bilen_provekjort">
+                    Er bilen prøvekjørt og besiktet
+                  </Label>
+                  <Select
+                    value={formik.values.er_bilen_provekjort}
+                    onValueChange={handleSelectChange("er_bilen_provekjort")}
+                  >
+                    <SelectTrigger id="er_bilen_provekjort">
+                      <SelectValue placeholder="Velg" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="velg">Velg</SelectItem>
+                      <SelectItem value="ja">Ja</SelectItem>
+                      <SelectItem value="nei">Nei</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </CardContent>
           </Card>
