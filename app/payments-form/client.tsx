@@ -308,6 +308,10 @@ const Dashboard: React.FC<{
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(true);
   const [transactionError, setTransactionError] = useState<string | null>(null);
+  const [expandedTransaction, setExpandedTransaction] = useState<string | null>(
+    null
+  );
+  const [visibleTransactions, setVisibleTransactions] = useState(5);
 
   useEffect(() => {
     fetchTransactions();
@@ -333,10 +337,22 @@ const Dashboard: React.FC<{
     }
   };
 
+  const toggleTransaction = (id: string) => {
+    if (expandedTransaction === id) {
+      setExpandedTransaction(null);
+    } else {
+      setExpandedTransaction(id);
+    }
+  };
+
+  const loadMoreTransactions = () => {
+    setVisibleTransactions((prev) => prev + 5);
+  };
+
   return (
     <div className="space-y-6">
-      <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100">
-        <CardHeader>
+      <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-100 shadow-md rounded-xl overflow-hidden">
+        <CardHeader className="pb-2">
           <div className="flex justify-between items-center">
             <CardTitle className="text-xl text-blue-900">Din Saldo</CardTitle>
             <Button
@@ -353,25 +369,25 @@ const Dashboard: React.FC<{
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center">
-            <div className="text-3xl font-bold text-blue-700 mb-1">
+          <div className="flex flex-col items-center py-4">
+            <div className="text-4xl font-bold text-blue-700 mb-2">
               {balance.toFixed(2)} NOK
             </div>
-            <p className="text-sm text-blue-600 mb-4">
+            <p className="text-sm text-blue-600 mb-5">
               Nok til {Math.floor(balance / 9.9)} kontrakter
             </p>
             <Button
               onClick={onAddFunds}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 px-6 py-5 rounded-lg shadow-sm"
             >
-              <Plus className="mr-2 h-4 w-4" /> Legg til saldo
+              <Plus className="mr-2 h-5 w-5" /> Legg til saldo
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="transactions">
-        <TabsList className="grid grid-cols-2 mb-4">
+      <Tabs defaultValue="transactions" className="mt-8">
+        <TabsList className="grid grid-cols-2 mb-4 rounded-lg">
           <TabsTrigger value="transactions" className="flex items-center">
             <History className="mr-2 h-4 w-4" /> Transaksjoner
           </TabsTrigger>
@@ -381,7 +397,7 @@ const Dashboard: React.FC<{
         </TabsList>
 
         <TabsContent value="transactions" className="space-y-4">
-          <Card>
+          <Card className="rounded-xl overflow-hidden shadow-md">
             <CardHeader>
               <CardTitle className="text-lg">
                 Dine siste transaksjoner
@@ -398,38 +414,79 @@ const Dashboard: React.FC<{
                   {transactionError}
                 </div>
               ) : (
-                <div className="divide-y">
-                  {transactions.length > 0 ? (
-                    transactions.map((transaction) => (
-                      <div
-                        key={transaction.id}
-                        className="p-4 flex justify-between items-center"
-                      >
-                        <div>
-                          <p className="font-medium">
-                            {transaction.description}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {new Date(transaction.date).toLocaleDateString(
-                              "nb-NO"
+                <div>
+                  <div className="divide-y max-h-[300px] overflow-y-auto">
+                    {transactions.length > 0 ? (
+                      transactions
+                        .slice(0, visibleTransactions)
+                        .map((transaction) => (
+                          <div
+                            key={transaction.id}
+                            className="p-4 hover:bg-gray-50 cursor-pointer"
+                            onClick={() => toggleTransaction(transaction.id)}
+                          >
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="font-medium">
+                                  {transaction.description}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {new Date(
+                                    transaction.date
+                                  ).toLocaleDateString("nb-NO")}
+                                </p>
+                              </div>
+                              <div
+                                className={`font-semibold ${
+                                  transaction.amount > 0
+                                    ? "text-green-600"
+                                    : "text-red-600"
+                                }`}
+                              >
+                                {transaction.amount > 0 ? "+" : ""}
+                                {transaction.amount.toFixed(2)} NOK
+                              </div>
+                            </div>
+                            {expandedTransaction === transaction.id && (
+                              <div className="mt-3 pt-3 border-t text-sm text-gray-600">
+                                <p>
+                                  <strong>Transaksjonsdetaljer:</strong>
+                                </p>
+                                <p>
+                                  Dato:{" "}
+                                  {new Date(transaction.date).toLocaleString(
+                                    "nb-NO"
+                                  )}
+                                </p>
+                                <p>
+                                  Type:{" "}
+                                  {transaction.type === "deposit"
+                                    ? "Innskudd"
+                                    : "Bruk"}
+                                </p>
+                                <p>
+                                  Beløp: {transaction.amount.toFixed(2)} NOK
+                                </p>
+                                <p>Transaksjon ID: {transaction.id}</p>
+                              </div>
                             )}
-                          </p>
-                        </div>
-                        <div
-                          className={`font-semibold ${
-                            transaction.amount > 0
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }`}
-                        >
-                          {transaction.amount > 0 ? "+" : ""}
-                          {transaction.amount.toFixed(2)} NOK
-                        </div>
+                          </div>
+                        ))
+                    ) : (
+                      <div className="p-4 text-center text-gray-500">
+                        Ingen transaksjoner ennå
                       </div>
-                    ))
-                  ) : (
-                    <div className="p-4 text-center text-gray-500">
-                      Ingen transaksjoner ennå
+                    )}
+                  </div>
+                  {transactions.length > visibleTransactions && (
+                    <div className="p-3 text-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={loadMoreTransactions}
+                      >
+                        Vis flere transaksjoner
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -588,18 +645,33 @@ const PaymentPage: React.FC = () => {
         />
       ) : (
         <div>
-          <Card className="shadow-lg">
-            <CardHeader className="p-6">
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold text-blue-800 mb-3">
+              Profesjonelle kjøpskontrakter
+            </h2>
+            <p className="text-gray-700 leading-relaxed">
+              Ved å fylle på saldo får du umiddelbar tilgang til å generere
+              profesjonelle kjøpskontrakter når du trenger dem. Hver kontrakt
+              koster kun 9,90 NOK, og du kan generere så mange du trenger når du
+              har saldo tilgjengelig.
+            </p>
+          </div>
+
+          <Card className="shadow-lg border-0 rounded-xl overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white">
               <div className="flex flex-col items-center">
                 <div className="flex items-center mb-2">
-                  <Shield className="mr-3 h-8 w-8 text-blue-600" />
+                  <Shield className="mr-3 h-9 w-9 text-white opacity-90" />
                   <CardTitle className="text-2xl font-bold">
                     Legg til saldo
                   </CardTitle>
                 </div>
+                <CardDescription className="text-blue-100 text-center max-w-md">
+                  Fyll på kontoen din for å få tilgang til alle funksjoner
+                </CardDescription>
               </div>
             </CardHeader>
-            <CardContent className="">
+            <CardContent className="p-6">
               <Elements stripe={stripePromise}>
                 <PaymentForm
                   onSuccess={handlePaymentSuccess}
@@ -632,7 +704,7 @@ const PaymentPage: React.FC = () => {
             </CardFooter>
           </Card>
 
-          <div className="mt-4 flex justify-center">
+          <div className="mt-5 flex justify-center">
             <Button
               variant="ghost"
               onClick={handleBackToDashboard}
@@ -643,12 +715,10 @@ const PaymentPage: React.FC = () => {
             </Button>
           </div>
 
-          <div className="mt-6">
-            <div className="flex justify-center space-x-4 mb-2">
-              <img src="/stripe.png" alt="Stripe" className="h-7" />
-              <img src="/visa2.png" alt="Visa" className="h-7" />
-              <img src="/mastercard.png" alt="Mastercard" className="h-7" />
-            </div>
+          <div className="mt-8 flex justify-center items-center space-x-6 mb-2">
+            <img src="/stripe.png" alt="Stripe" className="h-8" />
+            <img src="/visa2.png" alt="Visa" className="h-7" />
+            <img src="/mastercard.png" alt="Mastercard" className="h-7" />
           </div>
         </div>
       )}
