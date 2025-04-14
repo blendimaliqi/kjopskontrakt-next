@@ -195,29 +195,42 @@ export function generatePDF(formData: FormData): void {
     const fieldHeight = multiline ? 15 : 6;
 
     // For signature fields that contain base64 data, render as image
-    if (isSignature && value && value.startsWith("data:image")) {
-      // Draw the field background and border
-      doc.rect(x, fieldY, width, 20, "FD");
+    if (isSignature) {
+      // Always draw the signature field box with consistent height for signature
+      const signatureFieldHeight = 20;
+      doc.rect(x, fieldY, width, signatureFieldHeight, "FD");
 
-      try {
-        // Add the signature image
-        doc.addImage(
+      if (value && value.startsWith("data:image")) {
+        try {
+          // Add the signature image
+          doc.addImage(
+            value,
+            "PNG",
+            x + 2,
+            fieldY + 1,
+            width - 4,
+            18,
+            undefined,
+            "FAST"
+          );
+        } catch (error) {
+          console.error("Error adding signature to PDF:", error);
+          // If image fails, leave blank box
+        }
+      } else if (value) {
+        // If it's text, display the text centered in the signature box
+        addText(
           value,
-          "PNG",
-          x + 2,
-          fieldY + 1,
-          width - 4,
-          18,
-          undefined,
-          "FAST"
+          x + width / 2,
+          fieldY + signatureFieldHeight / 2,
+          9,
+          "normal",
+          "center"
         );
-        return 25; // Return taller height for signature images
-      } catch (error) {
-        console.error("Error adding signature to PDF:", error);
-        // Fallback to text if image fails
-        addText(value, x + 2, fieldY + 4, 9, "normal", "left");
-        return fieldHeight + 7;
       }
+
+      // Always return the same height for signature fields
+      return 25;
     } else {
       // Regular text field
       doc.rect(x, fieldY, width, fieldHeight, "FD");
@@ -1083,29 +1096,42 @@ export function generatePreviewPDF(formData: FormData): void {
     const fieldHeight = multiline ? 15 : 6;
 
     // For signature fields that contain base64 data, render as image
-    if (isSignature && value && value.startsWith("data:image")) {
-      // Draw the field background and border
-      doc.rect(x, fieldY, width, 20, "FD");
+    if (isSignature) {
+      // Always draw the signature field box with consistent height for signature
+      const signatureFieldHeight = 20;
+      doc.rect(x, fieldY, width, signatureFieldHeight, "FD");
 
-      try {
-        // Add the signature image
-        doc.addImage(
+      if (value && value.startsWith("data:image")) {
+        try {
+          // Add the signature image
+          doc.addImage(
+            value,
+            "PNG",
+            x + 2,
+            fieldY + 1,
+            width - 4,
+            18,
+            undefined,
+            "FAST"
+          );
+        } catch (error) {
+          console.error("Error adding signature to PDF:", error);
+          // If image fails, leave blank box
+        }
+      } else if (value) {
+        // If it's text, display the text centered in the signature box
+        addText(
           value,
-          "PNG",
-          x + 2,
-          fieldY + 1,
-          width - 4,
-          18,
-          undefined,
-          "FAST"
+          x + width / 2,
+          fieldY + signatureFieldHeight / 2,
+          9,
+          "normal",
+          "center"
         );
-        return 25; // Return taller height for signature images
-      } catch (error) {
-        console.error("Error adding signature to PDF:", error);
-        // Fallback to text if image fails
-        addText(value, x + 2, fieldY + 4, 9, "normal", "left");
-        return fieldHeight + 7;
       }
+
+      // Always return the same height for signature fields
+      return 25;
     } else {
       // Regular text field
       doc.rect(x, fieldY, width, fieldHeight, "FD");
