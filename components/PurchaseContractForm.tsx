@@ -264,7 +264,11 @@ const PurchaseContractForm: React.FC = () => {
 
     const target = e.target as HTMLTextAreaElement;
     const { name } = target;
-    formik.setFieldValue(name, sanitizedText);
+    const currentValue = formik.values[name as keyof FormData] as string;
+    const newValue = currentValue
+      ? `${currentValue} ${sanitizedText}`
+      : sanitizedText;
+    formik.setFieldValue(name, newValue);
   };
 
   const fetchBalance = async (retryCount = 0) => {
@@ -1547,17 +1551,21 @@ const PurchaseContractForm: React.FC = () => {
                   </Label>
                 </div>
               </div>
-              <div className="mt-4 space-y-2">
-                <Label htmlFor="utstyr_spesifisert" className="font-medium">
-                  Hvis ja, vennligst spesifiser
-                </Label>
-                <Textarea
-                  id="utstyr_spesifisert"
-                  {...formik.getFieldProps("utstyr_spesifisert")}
-                  onPaste={handlePaste}
-                  className="border-gray-200 focus:border-blue-500 focus:ring-blue-500 min-h-[80px]"
-                />
-              </div>
+              {(formik.values.utstyr_sommer ||
+                formik.values.utstyr_vinter ||
+                formik.values.utstyr_annet) && (
+                <div className="mt-4 space-y-2">
+                  <Label htmlFor="utstyr_spesifisert" className="font-medium">
+                    Hvis ja, vennligst spesifiser
+                  </Label>
+                  <Textarea
+                    id="utstyr_spesifisert"
+                    {...formik.getFieldProps("utstyr_spesifisert")}
+                    onPaste={handlePaste}
+                    className="border-gray-200 focus:border-blue-500 focus:ring-blue-500 min-h-[80px]"
+                  />
+                </div>
+              )}
 
               <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">

@@ -662,53 +662,6 @@ export function generatePDF(formData: FormData): void {
   let additionalFieldsAdded = false;
   yPosition += 18;
 
-  // Add the new selector fields if they have values (proper type checking)
-  if (
-    formData.har_bilen_heftelser &&
-    (formData.har_bilen_heftelser === "ja" ||
-      formData.har_bilen_heftelser === "nei")
-  ) {
-    // Check if we need to add a new page
-    if (yPosition > pageHeight - 40) {
-      addPage();
-      yPosition += 10;
-    }
-
-    addField(
-      "Har bilen heftelser",
-      formData.har_bilen_heftelser === "ja" ? "Ja" : "Nei",
-      margin,
-      yPosition,
-      (pageWidth - 2 * margin - 10) / 2
-    );
-
-    yPosition += 14;
-    additionalFieldsAdded = true;
-  }
-
-  if (
-    formData.er_bilen_provekjort &&
-    (formData.er_bilen_provekjort === "ja" ||
-      formData.er_bilen_provekjort === "nei")
-  ) {
-    // Check if we need to add a new page
-    if (yPosition > pageHeight - 40) {
-      addPage();
-      yPosition += 10;
-    }
-
-    addField(
-      "Er bilen prøvekjørt og besiktet",
-      formData.er_bilen_provekjort === "ja" ? "Ja" : "Nei",
-      margin,
-      yPosition,
-      (pageWidth - 2 * margin - 10) / 2
-    );
-
-    yPosition += 14;
-    additionalFieldsAdded = true;
-  }
-
   // Add specification field if any equipment is selected
   if (
     formData.utstyr_sommer ||
@@ -721,7 +674,7 @@ export function generatePDF(formData: FormData): void {
       yPosition += 10;
     }
 
-    addText("Spesifisering av utstyr:", margin, yPosition, 9, "bold");
+    addText("Hvis ja, vennligst spesifiser:", margin, yPosition, 9, "bold");
     yPosition += 6;
 
     // Draw the box around equipment details
@@ -741,6 +694,48 @@ export function generatePDF(formData: FormData): void {
     );
 
     yPosition += Math.max(20, equipmentLines * 5) + 5;
+    additionalFieldsAdded = true;
+  }
+
+  // Add the new selector fields if they have values (proper type checking)
+  if (
+    formData.har_bilen_heftelser &&
+    (formData.har_bilen_heftelser === "ja" ||
+      formData.har_bilen_heftelser === "nei")
+  ) {
+    // Check if we need to add a new page
+    if (yPosition > pageHeight - 40) {
+      addPage();
+      yPosition += 10;
+    }
+
+    // Calculate field width for side-by-side layout
+    const fieldWidth = (pageWidth - 2 * margin - 10) / 2;
+
+    addField(
+      "Har bilen heftelser",
+      formData.har_bilen_heftelser === "ja" ? "Ja" : "Nei",
+      margin,
+      yPosition,
+      fieldWidth - 5
+    );
+
+    // Add "Er bilen prøvekjørt" field next to it if it has a value
+    if (
+      formData.er_bilen_provekjort &&
+      (formData.er_bilen_provekjort === "ja" ||
+        formData.er_bilen_provekjort === "nei")
+    ) {
+      addField(
+        "Er bilen prøvekjørt og besiktet",
+        formData.er_bilen_provekjort === "ja" ? "Ja" : "Nei",
+        margin + fieldWidth + 10,
+        yPosition,
+        fieldWidth - 5
+      );
+    }
+
+    yPosition += 14;
     additionalFieldsAdded = true;
   }
 
@@ -1606,53 +1601,6 @@ export function generatePreviewPDF(formData: FormData): void {
   let additionalFieldsAdded = false;
   yPosition += 18;
 
-  // Add the new selector fields if they have values (proper type checking)
-  if (
-    formData.har_bilen_heftelser &&
-    (formData.har_bilen_heftelser === "ja" ||
-      formData.har_bilen_heftelser === "nei")
-  ) {
-    // Check if we need to add a new page
-    if (yPosition > pageHeight - 40) {
-      addPage();
-      yPosition += 10;
-    }
-
-    addField(
-      "Har bilen heftelser",
-      formData.har_bilen_heftelser === "ja" ? "Ja" : "Nei",
-      margin,
-      yPosition,
-      (pageWidth - 2 * margin - 10) / 2
-    );
-
-    yPosition += 14;
-    additionalFieldsAdded = true;
-  }
-
-  if (
-    formData.er_bilen_provekjort &&
-    (formData.er_bilen_provekjort === "ja" ||
-      formData.er_bilen_provekjort === "nei")
-  ) {
-    // Check if we need to add a new page
-    if (yPosition > pageHeight - 40) {
-      addPage();
-      yPosition += 10;
-    }
-
-    addField(
-      "Er bilen prøvekjørt og besiktet",
-      formData.er_bilen_provekjort === "ja" ? "Ja" : "Nei",
-      margin,
-      yPosition,
-      (pageWidth - 2 * margin - 10) / 2
-    );
-
-    yPosition += 14;
-    additionalFieldsAdded = true;
-  }
-
   // Add specification field if any equipment is selected
   if (
     formData.utstyr_sommer ||
@@ -1665,7 +1613,7 @@ export function generatePreviewPDF(formData: FormData): void {
       yPosition += 10;
     }
 
-    addText("Spesifisering av utstyr:", margin, yPosition, 9, "bold");
+    addText("Hvis ja, vennligst spesifiser:", margin, yPosition, 9, "bold");
     yPosition += 6;
 
     // Draw the box around equipment details
@@ -1685,6 +1633,48 @@ export function generatePreviewPDF(formData: FormData): void {
     );
 
     yPosition += Math.max(20, equipmentLines * 5) + 5;
+    additionalFieldsAdded = true;
+  }
+
+  // Add the new selector fields if they have values (proper type checking)
+  if (
+    formData.har_bilen_heftelser &&
+    (formData.har_bilen_heftelser === "ja" ||
+      formData.har_bilen_heftelser === "nei")
+  ) {
+    // Check if we need to add a new page
+    if (yPosition > pageHeight - 40) {
+      addPage();
+      yPosition += 10;
+    }
+
+    // Calculate field width for side-by-side layout
+    const fieldWidth = (pageWidth - 2 * margin - 10) / 2;
+
+    addField(
+      "Har bilen heftelser",
+      formData.har_bilen_heftelser === "ja" ? "Ja" : "Nei",
+      margin,
+      yPosition,
+      fieldWidth - 5
+    );
+
+    // Add "Er bilen prøvekjørt" field next to it if it has a value
+    if (
+      formData.er_bilen_provekjort &&
+      (formData.er_bilen_provekjort === "ja" ||
+        formData.er_bilen_provekjort === "nei")
+    ) {
+      addField(
+        "Er bilen prøvekjørt og besiktet",
+        formData.er_bilen_provekjort === "ja" ? "Ja" : "Nei",
+        margin + fieldWidth + 10,
+        yPosition,
+        fieldWidth - 5
+      );
+    }
+
+    yPosition += 14;
     additionalFieldsAdded = true;
   }
 

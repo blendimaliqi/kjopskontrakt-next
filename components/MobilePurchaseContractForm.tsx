@@ -168,7 +168,17 @@ const MobilePurchaseContractForm: React.FC = () => {
 
     const target = e.target as HTMLTextAreaElement;
     const { name } = target;
-    formik.setFieldValue(name, sanitizedText);
+
+    // Get the current value from Formik
+    const currentValue = formik.values[name as keyof FormData] || "";
+
+    // Append the pasted text to the current value
+    const newValue = currentValue
+      ? `${currentValue} ${sanitizedText}`
+      : sanitizedText;
+
+    // Update the field with the combined value
+    formik.setFieldValue(name, newValue);
   };
 
   const fetchBalance = async (retryCount = 0) => {
@@ -626,16 +636,20 @@ const MobilePurchaseContractForm: React.FC = () => {
                   <Label htmlFor="utstyr_annet">Annet</Label>
                 </div>
               </div>
-              <div className="mt-4 space-y-2">
-                <Label htmlFor="utstyr_spesifisert">
-                  Hvis ja, vennligst spesifiser
-                </Label>
-                <Textarea
-                  id="utstyr_spesifisert"
-                  {...formik.getFieldProps("utstyr_spesifisert")}
-                  onPaste={handlePaste}
-                />
-              </div>
+              {(formik.values.utstyr_sommer ||
+                formik.values.utstyr_vinter ||
+                formik.values.utstyr_annet) && (
+                <div className="mt-4 space-y-2">
+                  <Label htmlFor="utstyr_spesifisert">
+                    Hvis ja, vennligst spesifiser
+                  </Label>
+                  <Textarea
+                    id="utstyr_spesifisert"
+                    {...formik.getFieldProps("utstyr_spesifisert")}
+                    onPaste={handlePaste}
+                  />
+                </div>
+              )}
 
               <div className="mt-6 space-y-4">
                 <div className="space-y-2">
