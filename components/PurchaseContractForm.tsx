@@ -297,7 +297,7 @@ const PurchaseContractForm: React.FC = () => {
       }
 
       fetchBalance();
-      setSuccess("PDF er generert og beløpet er trukket fra din konto.");
+      setSuccess("PDF er generert");
     } catch (error) {
       console.error("Withdrawal error:", error);
       setError(`Betalingsfeil: ${error}`);
@@ -757,10 +757,6 @@ const PurchaseContractForm: React.FC = () => {
           <h2 className="text-xl sm:text-2xl font-bold text-blue-600 text-center sm:text-left">
             {formik.values.custom_header_text || "Kjøpskontrakt"}
           </h2>
-          <p className="text-gray-500 mt-1 text-sm text-center sm:text-left">
-            Fyll ut alle nødvendige detaljer for å generere en juridisk bindende
-            kontrakt. <span className="text-red-500">*</span> = påkrevde felt
-          </p>
         </div>
         {formik.values.include_company_info &&
           formik.values.company_logo_base64 && (
