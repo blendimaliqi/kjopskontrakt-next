@@ -513,16 +513,6 @@ export function generatePDF(formData: FormData): void {
       yPosition += 10;
     }
 
-    // Use light blue background for even rows like in the image
-    if (index % 2 === 0) {
-      doc.setFillColor(
-        secondaryColorRGB[0],
-        secondaryColorRGB[1],
-        secondaryColorRGB[2]
-      );
-      doc.rect(margin - 2, yPosition - 2, pageWidth - 2 * margin + 4, 18, "F"); // Reduced from 20 to 18
-    }
-
     // First column
     addField(
       row[0].label,
@@ -564,13 +554,6 @@ export function generatePDF(formData: FormData): void {
     }
 
     yPosition += 4;
-    doc.setFillColor(
-      secondaryColorRGB[0],
-      secondaryColorRGB[1],
-      secondaryColorRGB[2]
-    );
-    doc.rect(margin - 2, yPosition - 2, pageWidth - 2 * margin + 4, 18, "F"); // Reduced from 20 to 18
-
     addField(
       "Omregistreringsavgift beløp",
       formData.omregistreringsavgift_belop,
@@ -600,14 +583,6 @@ export function generatePDF(formData: FormData): void {
     { field: "utstyr_annet", label: "Annet utstyr" },
   ];
 
-  // Add light blue background for entire checkbox area as in the image
-  doc.setFillColor(
-    secondaryColorRGB[0],
-    secondaryColorRGB[1],
-    secondaryColorRGB[2]
-  );
-  doc.rect(margin - 2, yPosition - 4, pageWidth - 2 * margin + 4, 14, "F");
-
   equipment.forEach((item, index) => {
     const xPos = margin + index * ((pageWidth - 2 * margin) / 3);
     addCheckbox(
@@ -634,10 +609,6 @@ export function generatePDF(formData: FormData): void {
 
     addText("Spesifisering av utstyr:", margin, yPosition, 9, "bold");
     yPosition += 6;
-
-    // Add a clean background for equipment details
-    doc.setFillColor(250, 250, 250);
-    doc.rect(margin, yPosition - 2, pageWidth - 2 * margin, 20, "F");
 
     // Draw the box around equipment details
     doc.setDrawColor(220, 220, 220);
@@ -672,10 +643,6 @@ export function generatePDF(formData: FormData): void {
 
   // Add text area for comments
   if (formData.andre_kommentarer) {
-    // Create a clean background for comments
-    doc.setFillColor(250, 250, 250);
-    doc.rect(margin, yPosition, pageWidth - 2 * margin, 30, "F");
-
     // Draw the box around comments
     doc.setDrawColor(220, 220, 220);
     doc.setLineWidth(0.2);
@@ -695,9 +662,6 @@ export function generatePDF(formData: FormData): void {
     yPosition += Math.max(30, commentLines * 5 + 10);
   } else {
     // Empty box for comments
-    doc.setFillColor(250, 250, 250);
-    doc.rect(margin, yPosition, pageWidth - 2 * margin, 30, "F");
-
     doc.setDrawColor(220, 220, 220);
     doc.setLineWidth(0.2);
     doc.rect(margin, yPosition, pageWidth - 2 * margin, 30, "S");
@@ -717,14 +681,6 @@ export function generatePDF(formData: FormData): void {
 
   // Add place and date fields
   const signatureFieldWidth = (pageWidth - 2 * margin - 10) / 2;
-
-  // Create a subtle background for signature area
-  doc.setFillColor(
-    secondaryColorRGB[0],
-    secondaryColorRGB[1],
-    secondaryColorRGB[2]
-  );
-  doc.rect(margin - 2, yPosition - 2, pageWidth - 2 * margin + 4, 50, "F");
 
   // Sted field
   addField(
@@ -786,14 +742,6 @@ export function generatePDF(formData: FormData): void {
     );
 
     yPosition += 5;
-
-    // Add a light background for disclaimer
-    doc.setFillColor(
-      secondaryColorRGB[0],
-      secondaryColorRGB[1],
-      secondaryColorRGB[2]
-    );
-    doc.rect(margin - 2, yPosition, pageWidth - 2 * margin + 4, 25, "F");
 
     // Add disclaimer text
     const disclaimerText =
