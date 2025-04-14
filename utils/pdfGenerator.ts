@@ -440,29 +440,6 @@ export function generatePDF(formData: FormData): void {
 
   yPosition += 20;
 
-  // Add the date on the right with an elegant format
-  const today = formData.dato_kjoper
-    ? new Date(formData.dato_kjoper)
-    : new Date();
-  const dateStr = today.toLocaleDateString("no-NO", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
-  doc.setDrawColor(220, 220, 220);
-  doc.rect(pageWidth - margin - 60, yPosition - 5, 60, 8, "S");
-  addText(
-    `Dato: ${dateStr}`,
-    pageWidth - margin - 30,
-    yPosition,
-    9,
-    "normal",
-    "center"
-  );
-
-  yPosition += 15;
-
   // --- Person Information ---
   yPosition = addSectionHeader("PERSONOPPLYSNINGER", yPosition);
   yPosition += 10;
@@ -1389,29 +1366,6 @@ export function generatePreviewPDF(formData: FormData): void {
   );
 
   yPosition += 20;
-
-  // Add the date on the right with an elegant format
-  const today = formData.dato_kjoper
-    ? new Date(formData.dato_kjoper)
-    : new Date();
-  const dateStr = today.toLocaleDateString("no-NO", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
-  doc.setDrawColor(220, 220, 220);
-  doc.rect(pageWidth - margin - 60, yPosition - 5, 60, 8, "S");
-  addText(
-    `Dato: ${dateStr}`,
-    pageWidth - margin - 30,
-    yPosition,
-    9,
-    "normal",
-    "center"
-  );
-
-  yPosition += 15;
 
   // --- Person Information ---
   yPosition = addSectionHeader("PERSONOPPLYSNINGER", yPosition);
