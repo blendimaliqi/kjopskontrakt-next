@@ -195,6 +195,49 @@ const PurchaseContractForm: React.FC = () => {
 
   const handleCheckboxChange = (name: string) => (checked: boolean) => {
     formik.setFieldValue(name, checked);
+
+    // Handle localStorage management when include_company_info changes
+    if (name === "include_company_info" && !checked) {
+      // If unchecking the include_company_info, remove data from localStorage
+      localStorage.removeItem("companyInfo");
+    } else if (name === "remember_company_info" && !checked) {
+      // If unchecking the remember_company_info, remove data from localStorage
+      localStorage.removeItem("companyInfo");
+    } else if (
+      name === "include_company_info" &&
+      checked &&
+      formik.values.remember_company_info
+    ) {
+      // If checking the include_company_info and remember is also checked, save to localStorage
+      const companyInfo = {
+        company_name: formik.values.company_name,
+        company_address: formik.values.company_address,
+        company_email: formik.values.company_email,
+        company_phone: formik.values.company_phone,
+        company_logo_base64: formik.values.company_logo_base64,
+        custom_header_text: formik.values.custom_header_text,
+        primary_color: formik.values.primary_color,
+        company_file_name: formik.values.company_file_name,
+      };
+      localStorage.setItem("companyInfo", JSON.stringify(companyInfo));
+    } else if (
+      name === "remember_company_info" &&
+      checked &&
+      formik.values.include_company_info
+    ) {
+      // If checking the remember_company_info and include is also checked, save to localStorage
+      const companyInfo = {
+        company_name: formik.values.company_name,
+        company_address: formik.values.company_address,
+        company_email: formik.values.company_email,
+        company_phone: formik.values.company_phone,
+        company_logo_base64: formik.values.company_logo_base64,
+        custom_header_text: formik.values.custom_header_text,
+        primary_color: formik.values.primary_color,
+        company_file_name: formik.values.company_file_name,
+      };
+      localStorage.setItem("companyInfo", JSON.stringify(companyInfo));
+    }
   };
 
   const handlePaste = (e: ClipboardEvent<HTMLTextAreaElement>) => {
@@ -537,10 +580,42 @@ const PurchaseContractForm: React.FC = () => {
         company_file_name: values.company_file_name,
       };
       localStorage.setItem("companyInfo", JSON.stringify(companyInfo));
-    } else if (!values.remember_company_info) {
+    } else {
+      // If either checkbox is unchecked during form submission, remove data
       localStorage.removeItem("companyInfo");
     }
   };
+
+  // Add useEffect to update localStorage when relevant fields change
+  useEffect(() => {
+    if (
+      formik.values.remember_company_info &&
+      formik.values.include_company_info
+    ) {
+      const companyInfo = {
+        company_name: formik.values.company_name,
+        company_address: formik.values.company_address,
+        company_email: formik.values.company_email,
+        company_phone: formik.values.company_phone,
+        company_logo_base64: formik.values.company_logo_base64,
+        custom_header_text: formik.values.custom_header_text,
+        primary_color: formik.values.primary_color,
+        company_file_name: formik.values.company_file_name,
+      };
+      localStorage.setItem("companyInfo", JSON.stringify(companyInfo));
+    }
+  }, [
+    formik.values.company_name,
+    formik.values.company_address,
+    formik.values.company_email,
+    formik.values.company_phone,
+    formik.values.company_logo_base64,
+    formik.values.custom_header_text,
+    formik.values.primary_color,
+    formik.values.company_file_name,
+    formik.values.remember_company_info,
+    formik.values.include_company_info,
+  ]);
 
   return (
     <Card className="w-full max-w-4xl mx-auto bg-white shadow-xl border-t border-blue-500 rounded-xl overflow-hidden">

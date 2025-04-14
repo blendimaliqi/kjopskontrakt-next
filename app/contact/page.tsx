@@ -25,16 +25,6 @@ export default function ContactPage() {
 
           <div className="space-y-6">
             <div className="flex items-start">
-              <MapPin className="h-6 w-6 text-blue-600 mr-4 mt-0.5" />
-              <div>
-                <h3 className="font-medium text-gray-900 mb-1">
-                  Besøksadresse
-                </h3>
-                <p className="text-gray-600">Kongensgate 1, 0153 Oslo</p>
-              </div>
-            </div>
-
-            <div className="flex items-start">
               <Mail className="h-6 w-6 text-blue-600 mr-4 mt-0.5" />
               <div>
                 <h3 className="font-medium text-gray-900 mb-1">E-post</h3>

@@ -102,25 +102,12 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4 text-white">Kontakt</h3>
             <ul className="space-y-3">
               <li className="flex items-start">
-                <MapPin className="h-5 w-5 text-blue-400 mr-2 mt-0.5" />
-                <span className="text-gray-400">Kongensgate 1, 0153 Oslo</span>
-              </li>
-              <li className="flex items-start">
                 <Mail className="h-5 w-5 text-blue-400 mr-2 mt-0.5" />
                 <a
                   href="mailto:support@kjopskontrakt.no"
                   className="text-gray-400 hover:text-blue-400 transition-colors"
                 >
                   support@kjopskontrakt.no
-                </a>
-              </li>
-              <li className="flex items-start">
-                <Phone className="h-5 w-5 text-blue-400 mr-2 mt-0.5" />
-                <a
-                  href="tel:+4712345678"
-                  className="text-gray-400 hover:text-blue-400 transition-colors"
-                >
-                  +47 12 34 56 78
                 </a>
               </li>
             </ul>
