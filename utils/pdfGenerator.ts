@@ -61,7 +61,7 @@ export function generatePDF(formData: FormData): void {
   let yPosition = margin;
 
   // Use the navy blue color shown in the image
-  const defaultColorRGB: [number, number, number] = [36, 59, 119];
+  const defaultColorRGB: [number, number, number] = [30, 51, 105];
 
   // Parse the hex color to RGB if provided
   let primaryColorRGB: [number, number, number] = defaultColorRGB;
@@ -131,7 +131,7 @@ export function generatePDF(formData: FormData): void {
     return y + 12;
   }
 
-  // Function to add a simple field
+  // Function to add a simple field with proper spacing as shown in the image
   function addField(
     label: string,
     value: string,
@@ -140,24 +140,30 @@ export function generatePDF(formData: FormData): void {
     width: number = 50,
     multiline: boolean = false
   ): number {
-    // Add label above field
-    addText(label, x, y - 4, 8, "normal", "left", undefined, [80, 80, 80]);
+    // Position the label slightly above the field with proper spacing
+    addText(label, x, y, 8, "normal", "left", undefined, [80, 80, 80]);
+
+    // Calculate position for input field with optimal spacing from label
+    const fieldY = y + 3.5;
 
     // Add field background
-    doc.setFillColor(250, 250, 250);
+    doc.setFillColor(245, 245, 250);
 
     // Add field border
     doc.setDrawColor(220, 220, 220);
     doc.setLineWidth(0.1);
 
     const fieldHeight = multiline ? 15 : 6;
-    doc.rect(x, y, width, fieldHeight, "FD");
+    doc.rect(x, fieldY, width, fieldHeight, "FD");
 
     if (multiline) {
-      return addText(value, x + 2, y + 4, 9, "normal", "left", width - 4) * 5;
+      return (
+        addText(value, x + 2, fieldY + 4, 9, "normal", "left", width - 4) * 5 +
+        5
+      );
     } else {
-      addText(value, x + 2, y + 4, 9, "normal", "left");
-      return fieldHeight + 6;
+      addText(value, x + 2, fieldY + 4, 9, "normal", "left");
+      return fieldHeight + 7; // Reduced from 10 to 7 to reduce space between fields
     }
   }
 
@@ -378,10 +384,10 @@ export function generatePDF(formData: FormData): void {
   yPosition = addSectionHeader("PERSONOPPLYSNINGER", yPosition);
   yPosition += 10;
 
-  // Seller and Buyer sections
+  // Seller and Buyer sections - match the spacing seen in the image
   const sectionWidth = (pageWidth - 2 * margin - 10) / 2;
 
-  // Seller Section - background like in the image
+  // SELGER Header - match the color and style in the image
   doc.setFillColor(primaryColorRGB[0], primaryColorRGB[1], primaryColorRGB[2]);
   doc.rect(margin, yPosition - 2, sectionWidth, 8, "F");
   addText(
@@ -395,7 +401,7 @@ export function generatePDF(formData: FormData): void {
     [255, 255, 255]
   );
 
-  // Buyer Section - background like in the image
+  // KJØPER Header - match the color and style in the image
   doc.setFillColor(primaryColorRGB[0], primaryColorRGB[1], primaryColorRGB[2]);
   doc.rect(margin + sectionWidth + 10, yPosition - 2, sectionWidth, 8, "F");
   addText(
@@ -409,8 +415,9 @@ export function generatePDF(formData: FormData): void {
     [255, 255, 255]
   );
 
-  yPosition += 14;
+  yPosition += 14; // Reduced from 16 to 14
 
+  // Person fields with refined spacing
   const personFields = [
     ["fornavn", "Fornavn"],
     ["etternavn", "Etternavn"],
@@ -431,7 +438,7 @@ export function generatePDF(formData: FormData): void {
     }
 
     // Selger column
-    const sellerFieldHeight = addField(
+    addField(
       label,
       formData[`selger_${fieldName}` as keyof FormData] as string,
       margin,
@@ -440,7 +447,7 @@ export function generatePDF(formData: FormData): void {
     );
 
     // Kjøper column
-    const buyerFieldHeight = addField(
+    addField(
       label,
       formData[`kjoper_${fieldName}` as keyof FormData] as string,
       margin + sectionWidth + 10,
@@ -448,10 +455,11 @@ export function generatePDF(formData: FormData): void {
       sectionWidth - 5
     );
 
-    yPosition += Math.max(sellerFieldHeight, buyerFieldHeight);
+    // Optimized spacing between fields
+    yPosition += 14; // Reduced from 16 to 14
   });
 
-  yPosition += 15;
+  yPosition += 6; // Reduced from 8 to 6
 
   // Check if we need a new page before vehicle info
   if (yPosition > pageHeight - 150) {
@@ -512,11 +520,11 @@ export function generatePDF(formData: FormData): void {
         secondaryColorRGB[1],
         secondaryColorRGB[2]
       );
-      doc.rect(margin - 2, yPosition - 2, pageWidth - 2 * margin + 4, 16, "F");
+      doc.rect(margin - 2, yPosition - 2, pageWidth - 2 * margin + 4, 18, "F"); // Reduced from 20 to 18
     }
 
     // First column
-    const field1Height = addField(
+    addField(
       row[0].label,
       row[0].name === "omregistreringsavgift_betales_av"
         ? formData[row[0].name] === "kjoper"
@@ -529,9 +537,8 @@ export function generatePDF(formData: FormData): void {
     );
 
     // Second column
-    let field2Height = 0;
     if (row[1]) {
-      field2Height = addField(
+      addField(
         row[1].label,
         row[1].name === "omregistreringsavgift_betales_av"
           ? formData[row[1].name] === "kjoper"
@@ -544,8 +551,8 @@ export function generatePDF(formData: FormData): void {
       );
     }
 
-    // Add more spacing between rows to avoid overlap as seen in the image
-    yPosition += Math.max(field1Height, field2Height) + 4;
+    // Optimized spacing between rows
+    yPosition += 18; // Reduced from 20 to 18
   });
 
   // Add omregistreringsavgift amount if needed
@@ -562,7 +569,7 @@ export function generatePDF(formData: FormData): void {
       secondaryColorRGB[1],
       secondaryColorRGB[2]
     );
-    doc.rect(margin - 2, yPosition - 2, pageWidth - 2 * margin + 4, 16, "F");
+    doc.rect(margin - 2, yPosition - 2, pageWidth - 2 * margin + 4, 18, "F"); // Reduced from 20 to 18
 
     addField(
       "Omregistreringsavgift beløp",
@@ -571,7 +578,7 @@ export function generatePDF(formData: FormData): void {
       yPosition,
       colWidth - 5
     );
-    yPosition += 16;
+    yPosition += 18; // Reduced from 20 to 18
   }
 
   yPosition += 15;
