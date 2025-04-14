@@ -73,6 +73,8 @@ interface FormData {
   primary_color: string;
   har_bilen_heftelser: "ja" | "nei" | "velg" | "";
   er_bilen_provekjort: "ja" | "nei" | "velg" | "";
+  remember_company_info: boolean;
+  company_file_name: string;
 }
 
 const PurchaseContractForm: React.FC = () => {
@@ -93,6 +95,7 @@ const PurchaseContractForm: React.FC = () => {
   const [isDrawingSellerSignature, setIsDrawingSellerSignature] =
     useState(false);
   const [isDrawingBuyerSignature, setIsDrawingBuyerSignature] = useState(false);
+  const [logoFileName, setLogoFileName] = useState<string>("");
 
   const validationSchema = Yup.object({
     selger_fornavn: Yup.string().required("Påkrevd"),
@@ -171,9 +174,12 @@ const PurchaseContractForm: React.FC = () => {
       primary_color: "#1E3369",
       har_bilen_heftelser: "velg",
       er_bilen_provekjort: "velg",
+      remember_company_info: false,
+      company_file_name: "",
     },
     validationSchema,
     onSubmit: (values) => {
+      saveCompanyInfoToLocalStorage(values);
       handleGeneratePDF(values);
     },
   });
@@ -483,6 +489,59 @@ const PurchaseContractForm: React.FC = () => {
     formik.setFieldValue("kjopers_underskrift", "");
   };
 
+  // Load company info from localStorage on component mount
+  useEffect(() => {
+    const savedCompanyInfo = localStorage.getItem("companyInfo");
+    if (savedCompanyInfo) {
+      const companyInfo = JSON.parse(savedCompanyInfo);
+      formik.setFieldValue("company_name", companyInfo.company_name || "");
+      formik.setFieldValue(
+        "company_address",
+        companyInfo.company_address || ""
+      );
+      formik.setFieldValue("company_email", companyInfo.company_email || "");
+      formik.setFieldValue("company_phone", companyInfo.company_phone || "");
+      formik.setFieldValue(
+        "company_logo_base64",
+        companyInfo.company_logo_base64 || ""
+      );
+      formik.setFieldValue(
+        "custom_header_text",
+        companyInfo.custom_header_text || ""
+      );
+      formik.setFieldValue(
+        "primary_color",
+        companyInfo.primary_color || "#1E3369"
+      );
+      formik.setFieldValue("include_company_info", true);
+      formik.setFieldValue("remember_company_info", true);
+      // Set file name if logo exists
+      if (companyInfo.company_logo_base64) {
+        const fileName = companyInfo.company_file_name || "Lagret logo.png";
+        setLogoFileName(fileName);
+        formik.setFieldValue("company_file_name", fileName);
+      }
+    }
+  }, []);
+
+  const saveCompanyInfoToLocalStorage = (values: FormData) => {
+    if (values.remember_company_info && values.include_company_info) {
+      const companyInfo = {
+        company_name: values.company_name,
+        company_address: values.company_address,
+        company_email: values.company_email,
+        company_phone: values.company_phone,
+        company_logo_base64: values.company_logo_base64,
+        custom_header_text: values.custom_header_text,
+        primary_color: values.primary_color,
+        company_file_name: values.company_file_name,
+      };
+      localStorage.setItem("companyInfo", JSON.stringify(companyInfo));
+    } else if (!values.remember_company_info) {
+      localStorage.removeItem("companyInfo");
+    }
+  };
+
   return (
     <Card className="w-full max-w-4xl mx-auto bg-white shadow-xl border-t border-blue-500 rounded-xl overflow-hidden">
       <CardHeader className="border-b bg-white p-6 flex flex-row justify-between items-center">
@@ -532,6 +591,22 @@ const PurchaseContractForm: React.FC = () => {
 
               {formik.values.include_company_info && (
                 <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Checkbox
+                      id="remember_company_info"
+                      checked={formik.values.remember_company_info}
+                      onCheckedChange={handleCheckboxChange(
+                        "remember_company_info"
+                      )}
+                    />
+                    <Label
+                      htmlFor="remember_company_info"
+                      className="font-medium text-sm text-blue-700"
+                    >
+                      Husk denne informasjonen til neste gang
+                    </Label>
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="company_name" className="font-medium">
@@ -751,29 +826,63 @@ const PurchaseContractForm: React.FC = () => {
                       Firmalogo
                     </Label>
                     <div className="bg-white p-4 rounded-md border border-blue-100">
-                      <Input
-                        id="company_logo"
-                        type="file"
-                        accept="image/png, image/jpeg"
-                        className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0] || null;
-                          formik.setFieldValue("company_logo", file);
+                      <div className="relative">
+                        <Input
+                          id="company_logo"
+                          type="file"
+                          accept="image/png, image/jpeg"
+                          className={`border-blue-200 focus:border-blue-500 focus:ring-blue-500 ${
+                            logoFileName ? "opacity-0 h-[38px]" : ""
+                          }`}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0] || null;
+                            formik.setFieldValue("company_logo", file);
 
-                          // Convert the image file to base64
-                          if (file) {
-                            const reader = new FileReader();
-                            reader.onload = () => {
-                              const base64String = reader.result as string;
+                            // Save the file name
+                            if (file) {
+                              const fileName = file.name;
+                              setLogoFileName(fileName);
                               formik.setFieldValue(
-                                "company_logo_base64",
-                                base64String
+                                "company_file_name",
+                                fileName
                               );
-                            };
-                            reader.readAsDataURL(file);
-                          }
-                        }}
-                      />
+
+                              const reader = new FileReader();
+                              reader.onload = () => {
+                                const base64String = reader.result as string;
+                                formik.setFieldValue(
+                                  "company_logo_base64",
+                                  base64String
+                                );
+                              };
+                              reader.readAsDataURL(file);
+                            } else {
+                              setLogoFileName("");
+                              formik.setFieldValue("company_file_name", "");
+                            }
+                          }}
+                        />
+                        {logoFileName && (
+                          <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center border rounded-md border-gray-200">
+                            <span className="truncate px-3 flex-1">
+                              {logoFileName}
+                            </span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              className="h-full px-3 rounded-l-none hover:bg-gray-100"
+                              onClick={() => {
+                                setLogoFileName("");
+                                formik.setFieldValue("company_file_name", "");
+                                formik.setFieldValue("company_logo", null);
+                                formik.setFieldValue("company_logo_base64", "");
+                              }}
+                            >
+                              Endre
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                       <p className="text-xs text-gray-500 mt-2">
                         Logo vil bli plassert på toppen av PDF-dokumentet.
                         Anbefalt størrelse: 200x100px.
