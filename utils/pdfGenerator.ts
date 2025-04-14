@@ -305,7 +305,8 @@ export function generatePDF(formData: FormData): void {
   // Function to add company header - with option for smaller header on subsequent pages
   function addCompanyHeader(isSecondaryPage = false): void {
     let logoHeight = 0;
-    const headerHeight = isSecondaryPage ? 20 : 25;
+    // Make the header height even smaller
+    const headerHeight = isSecondaryPage ? 16 : 20; // Further reduced from 20/25 to 16/20
 
     // Create a clean white background for the header
     doc.setFillColor(255, 255, 255);
@@ -313,9 +314,9 @@ export function generatePDF(formData: FormData): void {
     // Add company logo if provided as base64
     if (formData.company_logo_base64) {
       try {
-        // Make logo smaller on all pages
-        const logoWidth = isSecondaryPage ? 20 : 25;
-        logoHeight = isSecondaryPage ? 12 : 15;
+        // Make logo smaller
+        const logoWidth = isSecondaryPage ? 16 : 20; // Further reduced from 20/25 to 16/20
+        logoHeight = isSecondaryPage ? 10 : 12; // Further reduced from 12/15 to 10/12
 
         // Calculate logo position (right aligned as in the image)
         const logoX = pageWidth - margin - logoWidth;
@@ -344,11 +345,11 @@ export function generatePDF(formData: FormData): void {
 
     // Add company name and information
     const infoX = margin + 5;
-    let infoY = margin + 5;
+    let infoY = margin + 4; // Further reduced from margin + 5
 
-    // Use smaller text on all pages
-    const nameSize = isSecondaryPage ? 10 : 12;
-    const infoSize = isSecondaryPage ? 7 : 8;
+    // Use even smaller text
+    const nameSize = isSecondaryPage ? 9 : 10; // Further reduced from 10/12 to 9/10
+    const infoSize = isSecondaryPage ? 6 : 7; // Further reduced from 7/8 to 6/7
 
     if (formData.company_name) {
       addText(
@@ -361,7 +362,7 @@ export function generatePDF(formData: FormData): void {
         undefined,
         primaryColorRGB
       );
-      infoY += isSecondaryPage ? 5 : 6;
+      infoY += isSecondaryPage ? 4 : 5; // Further reduced from 5/6 to 4/5
     }
 
     if (formData.company_address) {
@@ -373,7 +374,7 @@ export function generatePDF(formData: FormData): void {
         "normal",
         "left"
       );
-      infoY += isSecondaryPage ? 3 : 4;
+      infoY += isSecondaryPage ? 2.5 : 3; // Further reduced from 3/4 to 2.5/3
     }
 
     // Add company email and phone
@@ -390,17 +391,17 @@ export function generatePDF(formData: FormData): void {
 
       if (contactInfo) {
         addText(contactInfo, infoX, infoY, infoSize, "normal", "left");
-        infoY += isSecondaryPage ? 3 : 4;
+        infoY += isSecondaryPage ? 2.5 : 3; // Further reduced from 3/4 to 2.5/3
       }
     }
 
     // Add some spacing after the header
-    const headerSpacing = isSecondaryPage ? 5 : 8;
+    const headerSpacing = isSecondaryPage ? 3 : 5; // Further reduced from 5/8 to 3/5
 
     // Update the yPosition to below the header
     yPosition = Math.max(
       infoY + headerSpacing,
-      margin + headerHeight + (isSecondaryPage ? 3 : 5)
+      margin + headerHeight + (isSecondaryPage ? 2 : 3) // Further reduced from 3/5 to 2/3
     );
   }
 
@@ -453,11 +454,11 @@ export function generatePDF(formData: FormData): void {
   doc.line(margin, yPosition + 4, margin + sectionWidth, yPosition + 4);
   addText(
     "SELGER",
-    margin + sectionWidth / 2,
+    margin,
     yPosition + 3,
     10,
     "bold",
-    "center",
+    "left",
     undefined,
     primaryColorRGB
   );
@@ -471,11 +472,11 @@ export function generatePDF(formData: FormData): void {
   );
   addText(
     "KJØPER",
-    margin + sectionWidth + 10 + sectionWidth / 2,
+    margin + sectionWidth + 10,
     yPosition + 3,
     10,
     "bold",
-    "center",
+    "left",
     undefined,
     primaryColorRGB
   );
@@ -1245,7 +1246,8 @@ export function generatePreviewPDF(formData: FormData): void {
   // Function to add company header - with option for smaller header on subsequent pages
   function addCompanyHeader(isSecondaryPage = false): void {
     let logoHeight = 0;
-    const headerHeight = isSecondaryPage ? 20 : 25;
+    // Make the header height even smaller
+    const headerHeight = isSecondaryPage ? 16 : 20; // Further reduced from 20/25 to 16/20
 
     // Create a clean white background for the header
     doc.setFillColor(255, 255, 255);
@@ -1253,9 +1255,9 @@ export function generatePreviewPDF(formData: FormData): void {
     // Add company logo if provided as base64
     if (formData.company_logo_base64) {
       try {
-        // Make logo smaller on all pages
-        const logoWidth = isSecondaryPage ? 20 : 25;
-        logoHeight = isSecondaryPage ? 12 : 15;
+        // Make logo smaller
+        const logoWidth = isSecondaryPage ? 16 : 20; // Further reduced from 20/25 to 16/20
+        logoHeight = isSecondaryPage ? 10 : 12; // Further reduced from 12/15 to 10/12
 
         // Calculate logo position (right aligned as in the image)
         const logoX = pageWidth - margin - logoWidth;
@@ -1284,11 +1286,11 @@ export function generatePreviewPDF(formData: FormData): void {
 
     // Add company name and information
     const infoX = margin + 5;
-    let infoY = margin + 5;
+    let infoY = margin + 4; // Further reduced from margin + 5
 
-    // Use smaller text on all pages
-    const nameSize = isSecondaryPage ? 10 : 12;
-    const infoSize = isSecondaryPage ? 7 : 8;
+    // Use even smaller text
+    const nameSize = isSecondaryPage ? 9 : 10; // Further reduced from 10/12 to 9/10
+    const infoSize = isSecondaryPage ? 6 : 7; // Further reduced from 7/8 to 6/7
 
     if (formData.company_name) {
       addText(
@@ -1301,7 +1303,7 @@ export function generatePreviewPDF(formData: FormData): void {
         undefined,
         primaryColorRGB
       );
-      infoY += isSecondaryPage ? 5 : 6;
+      infoY += isSecondaryPage ? 4 : 5; // Further reduced from 5/6 to 4/5
     }
 
     if (formData.company_address) {
@@ -1313,7 +1315,7 @@ export function generatePreviewPDF(formData: FormData): void {
         "normal",
         "left"
       );
-      infoY += isSecondaryPage ? 3 : 4;
+      infoY += isSecondaryPage ? 2.5 : 3; // Further reduced from 3/4 to 2.5/3
     }
 
     // Add company email and phone
@@ -1330,17 +1332,17 @@ export function generatePreviewPDF(formData: FormData): void {
 
       if (contactInfo) {
         addText(contactInfo, infoX, infoY, infoSize, "normal", "left");
-        infoY += isSecondaryPage ? 3 : 4;
+        infoY += isSecondaryPage ? 2.5 : 3; // Further reduced from 3/4 to 2.5/3
       }
     }
 
     // Add some spacing after the header
-    const headerSpacing = isSecondaryPage ? 5 : 8;
+    const headerSpacing = isSecondaryPage ? 3 : 5; // Further reduced from 5/8 to 3/5
 
     // Update the yPosition to below the header
     yPosition = Math.max(
       infoY + headerSpacing,
-      margin + headerHeight + (isSecondaryPage ? 3 : 5)
+      margin + headerHeight + (isSecondaryPage ? 2 : 3) // Further reduced from 3/5 to 2/3
     );
   }
 
@@ -1396,11 +1398,11 @@ export function generatePreviewPDF(formData: FormData): void {
   doc.line(margin, yPosition + 4, margin + sectionWidth, yPosition + 4);
   addText(
     "SELGER",
-    margin + sectionWidth / 2,
+    margin,
     yPosition + 3,
     10,
     "bold",
-    "center",
+    "left",
     undefined,
     primaryColorRGB
   );
@@ -1414,11 +1416,11 @@ export function generatePreviewPDF(formData: FormData): void {
   );
   addText(
     "KJØPER",
-    margin + sectionWidth + 10 + sectionWidth / 2,
+    margin + sectionWidth + 10,
     yPosition + 3,
     10,
     "bold",
-    "center",
+    "left",
     undefined,
     primaryColorRGB
   );
