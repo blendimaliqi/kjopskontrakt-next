@@ -96,5 +96,40 @@ const dummyData: FormData = {
 };
 
 export function generateDemoPDF(): void {
-  generatePDF(dummyData);
+  // Create a copy of the dummy data and add company info
+  const dummyDataWithCompany = {
+    ...dummyData,
+    include_company_info: true,
+    company_name: "Ditt Firma AS",
+    company_address: "Firmabakken 24",
+    company_email: "post@dittfirma.no",
+    company_phone: "+47 12345678",
+    primary_color: "#1E3369",
+  };
+
+  // Load the logo as base64
+  if (typeof window !== "undefined") {
+    const img = new Image();
+    img.onload = function () {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      ctx?.drawImage(img, 0, 0);
+      const dataURL = canvas.toDataURL("image/png");
+
+      // Now generate the PDF with the logo
+      dummyDataWithCompany.company_logo_base64 = dataURL;
+      generatePDF(dummyDataWithCompany);
+    };
+    img.onerror = function () {
+      console.error("Error loading logo");
+      // Generate PDF without logo if there's an error
+      generatePDF(dummyDataWithCompany);
+    };
+    img.src = "/borgen.png";
+  } else {
+    // Fallback for server-side
+    generatePDF(dummyDataWithCompany);
+  }
 }
