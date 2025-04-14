@@ -23,7 +23,25 @@ import { Label } from "@/components/ui/label";
 import { generatePDF, generatePreviewPDF } from "../utils/pdfGenerator";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { generateDemoPDF } from "../utils/demoPDF";
+import { useRouter } from "next/router";
+import { signIn } from "next-auth/react";
 import { useContractFormStore } from "@/store/contractFormStore";
+
+// Add CSS for error highlighting
+const errorHighlightStyle = `
+  @keyframes pulseError {
+    0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.5); }
+    70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+  }
+  
+  .error-highlight {
+    animation: pulseError 1.5s ease-in-out;
+    border-color: #dc2626 !important;
+    background-color: rgba(254, 226, 226, 0.5) !important;
+  }
+`;
 
 // Keep the existing interface FormData in this file to avoid conflicts
 interface FormData {
@@ -204,6 +222,7 @@ const PurchaseContractForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
+  const [pdfGenerating, setPdfGenerating] = useState<boolean>(false);
 
   const handleSelectChange = (name: string) => (value: string) => {
     formik.setFieldValue(name, value);
@@ -260,7 +279,6 @@ const PurchaseContractForm: React.FC = () => {
   const handleWithdraw = async () => {
     setIsLoading(true);
     setError(null);
-    setSuccess(null);
 
     try {
       const response = await fetch("/api/account/withdraw", {
@@ -278,18 +296,136 @@ const PurchaseContractForm: React.FC = () => {
         throw new Error(data.error || "An unknown error occurred");
       }
 
-      generatePDF(formik.values);
       fetchBalance();
+      setSuccess("PDF er generert og beløpet er trukket fra din konto.");
     } catch (error) {
       console.error("Withdrawal error:", error);
-      setError(`Withdrawal failed: ${error}`);
+      setError(`Betalingsfeil: ${error}`);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleGeneratePDF = (values: FormData) => {
-    handleWithdraw();
+    setIsLoading(true);
+    setPdfGenerating(true);
+    setSuccess("PDF genereres nå. Den åpnes i ny fane om et øyeblikk.");
+
+    // Give the UI time to update before starting PDF generation
+    setTimeout(() => {
+      try {
+        // First generate the PDF regardless of payment processing
+        generatePDF(formik.values);
+
+        // Then process the payment
+        handleWithdraw();
+      } catch (error) {
+        console.error("Error generating PDF:", error);
+        setError("Det oppstod en feil ved generering av PDF. Prøv igjen.");
+      } finally {
+        setPdfGenerating(false);
+      }
+    }, 100);
+  };
+
+  // Add this helper function to debug validation issues
+  const debugValidationErrors = () => {
+    console.log("Form validation errors:", formik.errors);
+    console.log("Form values:", formik.values);
+    return Object.keys(formik.errors).length > 0;
+  };
+
+  // Add a new function to show validation errors
+  const showValidationErrors = () => {
+    // Touch all fields to display validation errors
+    Object.keys(formik.values).forEach((field) => {
+      formik.setFieldTouched(field, true, false);
+    });
+
+    // Force formik to revalidate all fields
+    formik.validateForm().then((errors) => {
+      // Build a human-readable error message
+      const errorFields = Object.keys(errors);
+      if (errorFields.length > 0) {
+        const fieldLabels = {
+          selger_fornavn: "Selgers fornavn",
+          selger_etternavn: "Selgers etternavn",
+          selger_adresse: "Selgers adresse",
+          selger_postnummer: "Selgers postnummer",
+          selger_poststed: "Selgers poststed",
+          selger_fodselsdato: "Selgers fødselsdato",
+          selger_tlf_arbeid: "Selgers telefon",
+          kjoper_fornavn: "Kjøpers fornavn",
+          kjoper_etternavn: "Kjøpers etternavn",
+          kjoper_adresse: "Kjøpers adresse",
+          kjoper_postnummer: "Kjøpers postnummer",
+          kjoper_poststed: "Kjøpers poststed",
+          kjoper_fodselsdato: "Kjøpers fødselsdato",
+          kjoper_tlf_arbeid: "Kjøpers telefon",
+          regnr: "Registreringsnummer",
+          kjopesum: "Kjøpesum",
+          omregistreringsavgift_betales_av:
+            "Hvem betaler omregistreringsavgift",
+        };
+
+        // List the first 3 fields (to avoid too long error messages)
+        const displayFields = errorFields.slice(0, 3);
+        const moreFields =
+          errorFields.length > 3
+            ? `og ${errorFields.length - 3} andre felt`
+            : "";
+
+        // Build error message by translating field names
+        const errorMessage = `Følgende felt mangler: ${displayFields
+          .map(
+            (field) => fieldLabels[field as keyof typeof fieldLabels] || field
+          )
+          .join(", ")}${moreFields ? ` ${moreFields}` : ""}`;
+
+        setError(errorMessage);
+
+        // Scroll to the first error field with some visual cue
+        if (errorFields.length > 0) {
+          const firstErrorField = errorFields[0];
+          const element = document.querySelector(`[id="${firstErrorField}"]`);
+          if (element) {
+            // Scroll to element with offset
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+
+            // Add a temporary highlight class to the element
+            element.classList.add("error-highlight");
+            setTimeout(() => {
+              element.classList.remove("error-highlight");
+            }, 2000);
+          }
+        }
+      }
+    });
+  };
+
+  // Add a new direct generation function that doesn't rely on submit
+  const handleDirectGeneratePDF = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    // Prevent action if button should be disabled
+    if (isLoading || !session?.user || (balance !== null && balance < 9.9)) {
+      return;
+    }
+
+    // Debug validation if needed
+    debugValidationErrors();
+
+    // Validate form and show errors if needed
+    formik.validateForm().then((errors) => {
+      // If form is valid, generate PDF directly
+      if (Object.keys(errors).length === 0) {
+        // Set state to show immediate feedback
+        setSuccess("PDF genereres nå. Den åpnes i ny fane om et øyeblikk.");
+        handleGeneratePDF(formik.values);
+      } else {
+        // Show validation errors
+        showValidationErrors();
+      }
+    });
   };
 
   const handlePreviewPDF = () => {
@@ -298,11 +434,10 @@ const PurchaseContractForm: React.FC = () => {
     }
   };
 
-  // Add this helper function to debug validation issues
-  const debugValidationErrors = () => {
-    console.log("Form validation errors:", formik.errors);
-    console.log("Form values:", formik.values);
-    return Object.keys(formik.errors).length > 0;
+  // Add direct preview handler for touch events
+  const handleDirectPreviewPDF = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    handlePreviewPDF();
   };
 
   useEffect(() => {
@@ -340,6 +475,7 @@ const PurchaseContractForm: React.FC = () => {
   };
 
   const getButtonText = () => {
+    if (pdfGenerating) return "Genererer PDF...";
     if (!formik.isValid) return "Sjekk at alle obligatoriske felt er fylt ut";
     if (!session?.user) return "Logg inn for å generere PDF";
     if (isLoading) return "Genererer...";
@@ -562,8 +698,60 @@ const PurchaseContractForm: React.FC = () => {
     };
   }, [isDrawingSellerSignature, isDrawingBuyerSignature]);
 
+  // Add a component for required field labels
+  const RequiredLabel: React.FC<{
+    htmlFor: string;
+    className?: string;
+    children: React.ReactNode;
+  }> = ({ htmlFor, className = "", children }) => (
+    <Label htmlFor={htmlFor} className={`${className} flex items-center`}>
+      {children}
+      <span className="text-red-500 ml-1">*</span>
+    </Label>
+  );
+
+  // Add a utility component for form inputs with validation
+  const FormInput: React.FC<{
+    id: string;
+    label: string;
+    required?: boolean;
+    formik: any;
+    type?: string;
+  }> = ({ id, label, required = false, formik, type = "text" }) => {
+    const fieldProps = formik.getFieldProps(id);
+    const hasError = formik.touched[id] && formik.errors[id];
+
+    return (
+      <div className="space-y-2">
+        {required ? (
+          <RequiredLabel htmlFor={id} className="font-medium">
+            {label}
+          </RequiredLabel>
+        ) : (
+          <Label htmlFor={id} className="font-medium">
+            {label}
+          </Label>
+        )}
+        <Input
+          id={id}
+          type={type}
+          {...fieldProps}
+          className={`border-gray-200 focus:border-blue-500 focus:ring-blue-500 ${
+            hasError ? "border-red-500" : ""
+          }`}
+        />
+        {hasError && (
+          <div className="text-red-500 text-xs">{formik.errors[id]}</div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <Card className="w-full max-w-4xl mx-auto bg-white shadow-xl border-t border-blue-500 rounded-xl overflow-hidden">
+      {/* Add style tag for error highlighting */}
+      <style dangerouslySetInnerHTML={{ __html: errorHighlightStyle }} />
+
       <CardHeader className="border-b bg-white p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-center">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-blue-600 text-center sm:text-left">
@@ -571,7 +759,7 @@ const PurchaseContractForm: React.FC = () => {
           </h2>
           <p className="text-gray-500 mt-1 text-sm text-center sm:text-left">
             Fyll ut alle nødvendige detaljer for å generere en juridisk bindende
-            kontrakt
+            kontrakt. <span className="text-red-500">*</span> = påkrevde felt
           </p>
         </div>
         {formik.values.include_company_info &&
@@ -635,9 +823,12 @@ const PurchaseContractForm: React.FC = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="company_name" className="font-medium">
+                      <RequiredLabel
+                        htmlFor="company_name"
+                        className="font-medium"
+                      >
                         Firmanavn
-                      </Label>
+                      </RequiredLabel>
                       <Input
                         id="company_name"
                         {...formik.getFieldProps("company_name")}
@@ -646,9 +837,12 @@ const PurchaseContractForm: React.FC = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="company_address" className="font-medium">
+                      <RequiredLabel
+                        htmlFor="company_address"
+                        className="font-medium"
+                      >
                         Firmaadresse
-                      </Label>
+                      </RequiredLabel>
                       <Input
                         id="company_address"
                         {...formik.getFieldProps("company_address")}
@@ -660,9 +854,12 @@ const PurchaseContractForm: React.FC = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="company_email" className="font-medium">
+                      <RequiredLabel
+                        htmlFor="company_email"
+                        className="font-medium"
+                      >
                         Firma e-post
-                      </Label>
+                      </RequiredLabel>
                       <Input
                         id="company_email"
                         {...formik.getFieldProps("company_email")}
@@ -671,9 +868,12 @@ const PurchaseContractForm: React.FC = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="company_phone" className="font-medium">
+                      <RequiredLabel
+                        htmlFor="company_phone"
+                        className="font-medium"
+                      >
                         Firma telefon
-                      </Label>
+                      </RequiredLabel>
                       <Input
                         id="company_phone"
                         {...formik.getFieldProps("company_phone")}
@@ -685,12 +885,12 @@ const PurchaseContractForm: React.FC = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label
+                      <RequiredLabel
                         htmlFor="custom_header_text"
                         className="font-medium"
                       >
-                        Overskrift
-                      </Label>
+                        Overskrift på kontrakten
+                      </RequiredLabel>
                       <Input
                         id="custom_header_text"
                         {...formik.getFieldProps("custom_header_text")}
@@ -942,13 +1142,21 @@ const PurchaseContractForm: React.FC = () => {
               <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="selger_fornavn" className="font-medium">
+                    <RequiredLabel
+                      htmlFor="selger_fornavn"
+                      className="font-medium"
+                    >
                       Fornavn
-                    </Label>
+                    </RequiredLabel>
                     <Input
                       id="selger_fornavn"
                       {...formik.getFieldProps("selger_fornavn")}
-                      className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      className={`border-gray-200 focus:border-blue-500 focus:ring-blue-500 ${
+                        formik.touched.selger_fornavn &&
+                        formik.errors.selger_fornavn
+                          ? "border-red-500"
+                          : ""
+                      }`}
                     />
                     {formik.touched.selger_fornavn &&
                     formik.errors.selger_fornavn ? (
@@ -958,13 +1166,21 @@ const PurchaseContractForm: React.FC = () => {
                     ) : null}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="selger_etternavn" className="font-medium">
+                    <RequiredLabel
+                      htmlFor="selger_etternavn"
+                      className="font-medium"
+                    >
                       Etternavn
-                    </Label>
+                    </RequiredLabel>
                     <Input
                       id="selger_etternavn"
                       {...formik.getFieldProps("selger_etternavn")}
-                      className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      className={`border-gray-200 focus:border-blue-500 focus:ring-blue-500 ${
+                        formik.touched.selger_etternavn &&
+                        formik.errors.selger_etternavn
+                          ? "border-red-500"
+                          : ""
+                      }`}
                     />
                     {formik.touched.selger_etternavn &&
                     formik.errors.selger_etternavn ? (
@@ -1238,7 +1454,12 @@ const PurchaseContractForm: React.FC = () => {
                   >
                     <SelectTrigger
                       id="omregistreringsavgift_betales_av"
-                      className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      className={`border-gray-200 focus:border-blue-500 focus:ring-blue-500 ${
+                        formik.touched.omregistreringsavgift_betales_av &&
+                        formik.errors.omregistreringsavgift_betales_av
+                          ? "border-red-500"
+                          : ""
+                      }`}
                     >
                       <SelectValue />
                     </SelectTrigger>
@@ -1275,21 +1496,12 @@ const PurchaseContractForm: React.FC = () => {
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
-                <div className="space-y-2">
-                  <Label htmlFor="regnr" className="font-medium">
-                    Reg.nr
-                  </Label>
-                  <Input
-                    id="regnr"
-                    {...formik.getFieldProps("regnr")}
-                    className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                  />
-                  {formik.touched.regnr && formik.errors.regnr ? (
-                    <div className="text-red-500 text-xs">
-                      {formik.errors.regnr}
-                    </div>
-                  ) : null}
-                </div>
+                <FormInput
+                  id="regnr"
+                  label="Reg.nr"
+                  required={true}
+                  formik={formik}
+                />
                 <div className="space-y-2">
                   <Label htmlFor="bilmerke" className="font-medium">
                     Bilmerke
@@ -1371,21 +1583,12 @@ const PurchaseContractForm: React.FC = () => {
                     </div>
                   ) : null}
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="kjopesum" className="font-medium">
-                    Kjøpesum
-                  </Label>
-                  <Input
-                    id="kjopesum"
-                    {...formik.getFieldProps("kjopesum")}
-                    className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                  />
-                  {formik.touched.kjopesum && formik.errors.kjopesum ? (
-                    <div className="text-red-500 text-xs">
-                      {formik.errors.kjopesum}
-                    </div>
-                  ) : null}
-                </div>
+                <FormInput
+                  id="kjopesum"
+                  label="Kjøpesum"
+                  required={true}
+                  formik={formik}
+                />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                 <div className="space-y-2">
@@ -2068,6 +2271,11 @@ const PurchaseContractForm: React.FC = () => {
             <Button
               type="button"
               onClick={handlePreviewPDF}
+              onTouchStart={(e) => {
+                // Prevent default behavior to avoid double triggers
+                e.preventDefault();
+              }}
+              onTouchEnd={handleDirectPreviewPDF}
               className="w-full sm:w-1/3 py-4 sm:py-6 bg-gray-600 hover:bg-gray-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
             >
               <svg
@@ -2098,6 +2306,14 @@ const PurchaseContractForm: React.FC = () => {
                 type="button"
                 className="w-full sm:w-2/3 py-4 sm:py-6 bg-blue-600 hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
                 onClick={() => (window.location.href = "/payments-form")}
+                onTouchStart={(e) => {
+                  // Prevent default behavior to avoid double triggers
+                  e.preventDefault();
+                }}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  window.location.href = "/payments-form";
+                }}
               >
                 Legg til penger (Kun kr 9.90.- per generering)
               </Button>
@@ -2109,8 +2325,13 @@ const PurchaseContractForm: React.FC = () => {
                     ? "bg-blue-600 hover:bg-blue-700"
                     : "bg-gray-400"
                 } transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2`}
-                onClick={() => debugValidationErrors()}
-                disabled={isLoading || !session?.user}
+                onClick={handleDirectGeneratePDF}
+                onTouchStart={(e) => {
+                  // Prevent default behavior to avoid double triggers
+                  e.preventDefault();
+                }}
+                onTouchEnd={handleDirectGeneratePDF}
+                disabled={isLoading || !session?.user || pdfGenerating}
               >
                 {isLoading ? (
                   <svg

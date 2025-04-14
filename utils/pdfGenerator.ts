@@ -967,23 +967,65 @@ export function generatePDF(formData: FormData): void {
   downloadLink.style.display = "none";
   document.body.appendChild(downloadLink);
 
-  // Check if it's iOS device (MSStream is used to exclude IE11)
+  // Improved mobile detection
   const isIOS =
     /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  const isAndroid = /android/i.test(navigator.userAgent);
+  const isMobile =
+    isIOS || isAndroid || /Mobi|Android/i.test(navigator.userAgent);
 
-  if (isIOS || isSafari) {
-    // For iOS devices, open in a new window
+  try {
+    if (isMobile) {
+      // For mobile devices, always open in a new window for consistency
+      window.open(pdfUrl, "_blank");
+    } else {
+      // For desktop devices, trigger download
+      downloadLink.click();
+    }
+  } catch (error) {
+    console.error("Error opening PDF:", error);
+    // Fallback to basic download if all else fails
     window.open(pdfUrl, "_blank");
-  } else {
-    // For other devices, trigger download
-    downloadLink.click();
+  }
+
+  // Display a message to alert the user where to find the PDF
+  if (isMobile) {
+    // Create a message element
+    const messageElement = document.createElement("div");
+    messageElement.style.position = "fixed";
+    messageElement.style.bottom = "20px";
+    messageElement.style.left = "50%";
+    messageElement.style.transform = "translateX(-50%)";
+    messageElement.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+    messageElement.style.color = "white";
+    messageElement.style.padding = "10px 20px";
+    messageElement.style.borderRadius = "5px";
+    messageElement.style.zIndex = "10000";
+    messageElement.style.textAlign = "center";
+    messageElement.innerHTML =
+      "PDF åpnes i ny fane. Sjekk nettleser-faner hvis du ikke ser den.";
+
+    document.body.appendChild(messageElement);
+
+    // Remove the message after 5 seconds
+    setTimeout(() => {
+      if (document.body.contains(messageElement)) {
+        document.body.removeChild(messageElement);
+      }
+    }, 5000);
   }
 
   // Clean up
   setTimeout(() => {
     URL.revokeObjectURL(pdfUrl);
-    document.body.removeChild(downloadLink);
+    try {
+      document.body.removeChild(downloadLink);
+    } catch (e) {
+      console.log(
+        "Download link cleanup failed, this is normal if the page was refreshed"
+      );
+    }
   }, 100);
 }
 
@@ -1919,22 +1961,64 @@ export function generatePreviewPDF(formData: FormData): void {
   downloadLink.style.display = "none";
   document.body.appendChild(downloadLink);
 
-  // Check if it's iOS device (MSStream is used to exclude IE11)
+  // Improved mobile detection
   const isIOS =
     /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  const isAndroid = /android/i.test(navigator.userAgent);
+  const isMobile =
+    isIOS || isAndroid || /Mobi|Android/i.test(navigator.userAgent);
 
-  if (isIOS || isSafari) {
-    // For iOS devices, open in a new window
+  try {
+    if (isMobile) {
+      // For mobile devices, always open in a new window for consistency
+      window.open(pdfUrl, "_blank");
+    } else {
+      // For desktop devices, trigger download
+      downloadLink.click();
+    }
+  } catch (error) {
+    console.error("Error opening PDF:", error);
+    // Fallback to basic download if all else fails
     window.open(pdfUrl, "_blank");
-  } else {
-    // For other devices, trigger download
-    downloadLink.click();
+  }
+
+  // Display a message to alert the user where to find the PDF
+  if (isMobile) {
+    // Create a message element
+    const messageElement = document.createElement("div");
+    messageElement.style.position = "fixed";
+    messageElement.style.bottom = "20px";
+    messageElement.style.left = "50%";
+    messageElement.style.transform = "translateX(-50%)";
+    messageElement.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+    messageElement.style.color = "white";
+    messageElement.style.padding = "10px 20px";
+    messageElement.style.borderRadius = "5px";
+    messageElement.style.zIndex = "10000";
+    messageElement.style.textAlign = "center";
+    messageElement.innerHTML =
+      "PDF åpnes i ny fane. Sjekk nettleser-faner hvis du ikke ser den.";
+
+    document.body.appendChild(messageElement);
+
+    // Remove the message after 5 seconds
+    setTimeout(() => {
+      if (document.body.contains(messageElement)) {
+        document.body.removeChild(messageElement);
+      }
+    }, 5000);
   }
 
   // Clean up
   setTimeout(() => {
     URL.revokeObjectURL(pdfUrl);
-    document.body.removeChild(downloadLink);
+    try {
+      document.body.removeChild(downloadLink);
+    } catch (e) {
+      console.log(
+        "Download link cleanup failed, this is normal if the page was refreshed"
+      );
+    }
   }, 100);
 }
