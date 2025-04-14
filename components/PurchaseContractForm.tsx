@@ -591,20 +591,26 @@ const PurchaseContractForm: React.FC = () => {
 
               {formik.values.include_company_info && (
                 <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                  <div className="flex items-center space-x-2 mb-4">
+                  <div className="flex items-center space-x-3 p-3 mb-4 bg-white rounded-md border-2 border-blue-300 shadow-sm">
                     <Checkbox
                       id="remember_company_info"
                       checked={formik.values.remember_company_info}
                       onCheckedChange={handleCheckboxChange(
                         "remember_company_info"
                       )}
+                      className="text-blue-600 h-5 w-5"
                     />
-                    <Label
-                      htmlFor="remember_company_info"
-                      className="font-medium text-sm text-blue-700"
-                    >
-                      Husk denne informasjonen til neste gang
-                    </Label>
+                    <div className="flex flex-col">
+                      <Label
+                        htmlFor="remember_company_info"
+                        className="font-medium text-blue-700"
+                      >
+                        Husk denne informasjonen til neste gang
+                      </Label>
+                      <p className="text-xs text-blue-600 mt-0.5">
+                        Informasjonen lagres lokalt på din enhet
+                      </p>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
