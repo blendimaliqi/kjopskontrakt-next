@@ -1408,7 +1408,12 @@ const PurchaseContractForm: React.FC = () => {
               <div className="flex space-x-3 mb-2">
                 <Button
                   type="button"
-                  onClick={() => setSellerSignatureMode("text")}
+                  onClick={() => {
+                    setSellerSignatureMode("text");
+                    if (sellerSignatureMode !== "text") {
+                      formik.setFieldValue("selgers_underskrift", "");
+                    }
+                  }}
                   className={`px-3 py-1 text-xs ${
                     sellerSignatureMode === "text"
                       ? "bg-blue-600"
@@ -1512,7 +1517,12 @@ const PurchaseContractForm: React.FC = () => {
               <div className="flex space-x-3 mb-2">
                 <Button
                   type="button"
-                  onClick={() => setBuyerSignatureMode("text")}
+                  onClick={() => {
+                    setBuyerSignatureMode("text");
+                    if (buyerSignatureMode !== "text") {
+                      formik.setFieldValue("kjopers_underskrift", "");
+                    }
+                  }}
                   className={`px-3 py-1 text-xs ${
                     buyerSignatureMode === "text"
                       ? "bg-blue-600"
