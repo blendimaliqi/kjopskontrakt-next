@@ -148,27 +148,21 @@ export function generatePDF(formData: FormData): void {
 
   // Function to add a section header (match the design from the image)
   function addSectionHeader(text: string, y: number): number {
-    // Add full-width header background
+    // Remove full-width header background and replace with underline style
     const gradientWidth = pageWidth - 2 * margin;
-    doc.setFillColor(
+
+    // Add underline for section header
+    doc.setDrawColor(
       primaryColorRGB[0],
       primaryColorRGB[1],
       primaryColorRGB[2]
     );
-    doc.rect(margin, y - 5, gradientWidth, 12, "F");
+    doc.setLineWidth(0.3);
+    doc.line(margin, y + 4, margin + gradientWidth, y + 4);
 
-    // Add the section header text in white
-    addText(
-      text,
-      margin + 5,
-      y + 1.5,
-      11,
-      "bold",
-      "left",
-      undefined,
-      [255, 255, 255]
-    );
-    return y + 12;
+    // Add the section header text in primary color instead of white
+    addText(text, margin, y, 11, "bold", "left", undefined, primaryColorRGB);
+    return y + 8; // Reduced spacing from 12 to 8
   }
 
   // Function to add a simple field with proper spacing as shown in the image
@@ -311,7 +305,7 @@ export function generatePDF(formData: FormData): void {
   // Function to add company header - with option for smaller header on subsequent pages
   function addCompanyHeader(isSecondaryPage = false): void {
     let logoHeight = 0;
-    const headerHeight = isSecondaryPage ? 25 : 35;
+    const headerHeight = isSecondaryPage ? 20 : 25;
 
     // Create a clean white background for the header
     doc.setFillColor(255, 255, 255);
@@ -319,9 +313,9 @@ export function generatePDF(formData: FormData): void {
     // Add company logo if provided as base64
     if (formData.company_logo_base64) {
       try {
-        // Make logo smaller on subsequent pages
-        const logoWidth = isSecondaryPage ? 25 : 35;
-        logoHeight = isSecondaryPage ? 15 : 20;
+        // Make logo smaller on all pages
+        const logoWidth = isSecondaryPage ? 20 : 25;
+        logoHeight = isSecondaryPage ? 12 : 15;
 
         // Calculate logo position (right aligned as in the image)
         const logoX = pageWidth - margin - logoWidth;
@@ -350,11 +344,11 @@ export function generatePDF(formData: FormData): void {
 
     // Add company name and information
     const infoX = margin + 5;
-    let infoY = margin + 6;
+    let infoY = margin + 5;
 
-    // Use smaller text on subsequent pages
-    const nameSize = isSecondaryPage ? 12 : 14;
-    const infoSize = isSecondaryPage ? 8 : 9;
+    // Use smaller text on all pages
+    const nameSize = isSecondaryPage ? 10 : 12;
+    const infoSize = isSecondaryPage ? 7 : 8;
 
     if (formData.company_name) {
       addText(
@@ -367,7 +361,7 @@ export function generatePDF(formData: FormData): void {
         undefined,
         primaryColorRGB
       );
-      infoY += isSecondaryPage ? 6 : 8;
+      infoY += isSecondaryPage ? 5 : 6;
     }
 
     if (formData.company_address) {
@@ -379,7 +373,7 @@ export function generatePDF(formData: FormData): void {
         "normal",
         "left"
       );
-      infoY += isSecondaryPage ? 4 : 6;
+      infoY += isSecondaryPage ? 3 : 4;
     }
 
     // Add company email and phone
@@ -396,17 +390,17 @@ export function generatePDF(formData: FormData): void {
 
       if (contactInfo) {
         addText(contactInfo, infoX, infoY, infoSize, "normal", "left");
-        infoY += isSecondaryPage ? 4 : 6;
+        infoY += isSecondaryPage ? 3 : 4;
       }
     }
 
     // Add some spacing after the header
-    const headerSpacing = isSecondaryPage ? 8 : 15;
+    const headerSpacing = isSecondaryPage ? 5 : 8;
 
     // Update the yPosition to below the header
     yPosition = Math.max(
       infoY + headerSpacing,
-      margin + headerHeight + (isSecondaryPage ? 5 : 10)
+      margin + headerHeight + (isSecondaryPage ? 3 : 5)
     );
   }
 
@@ -422,20 +416,26 @@ export function generatePDF(formData: FormData): void {
   yPosition += 5;
   const titleText = formData.custom_header_text || "KJØPEKONTRAKT";
 
-  // Add a clean background for the title
-  doc.setFillColor(primaryColorRGB[0], primaryColorRGB[1], primaryColorRGB[2]);
-  doc.rect(pageWidth / 2 - 50, yPosition - 8, 100, 14, "F");
+  // Remove background color and instead use an underline style for the title
+  doc.setDrawColor(primaryColorRGB[0], primaryColorRGB[1], primaryColorRGB[2]);
+  doc.setLineWidth(0.5);
+  doc.line(
+    pageWidth / 2 - 50,
+    yPosition + 4,
+    pageWidth / 2 + 50,
+    yPosition + 4
+  );
 
-  // Add title text in white
+  // Add title text in primary color rather than white on blue
   addText(
     titleText.toUpperCase(),
     pageWidth / 2,
-    yPosition + 1,
+    yPosition,
     14,
     "bold",
     "center",
     undefined,
-    [255, 255, 255]
+    primaryColorRGB
   );
 
   yPosition += 20;
@@ -447,9 +447,10 @@ export function generatePDF(formData: FormData): void {
   // Seller and Buyer sections - match the spacing seen in the image
   const sectionWidth = (pageWidth - 2 * margin - 10) / 2;
 
-  // SELGER Header - match the color and style in the image
-  doc.setFillColor(primaryColorRGB[0], primaryColorRGB[1], primaryColorRGB[2]);
-  doc.rect(margin, yPosition - 2, sectionWidth, 8, "F");
+  // SELGER Header - remove background color and use underline instead
+  doc.setDrawColor(primaryColorRGB[0], primaryColorRGB[1], primaryColorRGB[2]);
+  doc.setLineWidth(0.3);
+  doc.line(margin, yPosition + 4, margin + sectionWidth, yPosition + 4);
   addText(
     "SELGER",
     margin + sectionWidth / 2,
@@ -458,12 +459,16 @@ export function generatePDF(formData: FormData): void {
     "bold",
     "center",
     undefined,
-    [255, 255, 255]
+    primaryColorRGB
   );
 
-  // KJØPER Header - match the color and style in the image
-  doc.setFillColor(primaryColorRGB[0], primaryColorRGB[1], primaryColorRGB[2]);
-  doc.rect(margin + sectionWidth + 10, yPosition - 2, sectionWidth, 8, "F");
+  // KJØPER Header - remove background color and use underline instead
+  doc.line(
+    margin + sectionWidth + 10,
+    yPosition + 4,
+    margin + sectionWidth * 2 + 10,
+    yPosition + 4
+  );
   addText(
     "KJØPER",
     margin + sectionWidth + 10 + sectionWidth / 2,
@@ -472,7 +477,7 @@ export function generatePDF(formData: FormData): void {
     "bold",
     "center",
     undefined,
-    [255, 255, 255]
+    primaryColorRGB
   );
 
   yPosition += 14; // Reduced from 16 to 14
@@ -653,6 +658,7 @@ export function generatePDF(formData: FormData): void {
     );
   });
 
+  let additionalFieldsAdded = false;
   yPosition += 18;
 
   // Add the new selector fields if they have values (proper type checking)
@@ -676,6 +682,7 @@ export function generatePDF(formData: FormData): void {
     );
 
     yPosition += 14;
+    additionalFieldsAdded = true;
   }
 
   if (
@@ -698,6 +705,7 @@ export function generatePDF(formData: FormData): void {
     );
 
     yPosition += 14;
+    additionalFieldsAdded = true;
   }
 
   // Add specification field if any equipment is selected
@@ -732,9 +740,15 @@ export function generatePDF(formData: FormData): void {
     );
 
     yPosition += Math.max(20, equipmentLines * 5) + 5;
+    additionalFieldsAdded = true;
   }
 
-  yPosition += 10;
+  // Adjust spacing before comments section based on whether additional fields were added
+  if (additionalFieldsAdded) {
+    yPosition += 10; // Standard spacing when we had extra content
+  } else {
+    yPosition += 25; // More spacing when we only had checkboxes
+  }
 
   // Check if we need a new page
   if (yPosition > pageHeight - 50) {
@@ -744,7 +758,7 @@ export function generatePDF(formData: FormData): void {
 
   // --- Comments Section ---
   yPosition = addSectionHeader("ANDRE KOMMENTARER / VILKÅR", yPosition);
-  yPosition += 10;
+  yPosition += 5; // Reduced from 10 to 5 to bring the box closer to header
 
   // Add text area for comments
   if (formData.andre_kommentarer) {
@@ -774,6 +788,9 @@ export function generatePDF(formData: FormData): void {
     yPosition += 35;
   }
 
+  // Add more spacing after comments box before signatures
+  yPosition += 15; // Increased from implicit spacing to 15
+
   // Check if we need a new page for signatures
   if (yPosition > pageHeight - 80) {
     addPage();
@@ -782,7 +799,6 @@ export function generatePDF(formData: FormData): void {
 
   // --- Signatures Section ---
   yPosition = addSectionHeader("SIGNATURER", yPosition);
-  yPosition += 10;
 
   // Create signature sections
   const signatureFieldWidth = (pageWidth - 2 * margin - 10) / 2;
@@ -1045,27 +1061,21 @@ export function generatePreviewPDF(formData: FormData): void {
 
   // Function to add a section header (match the design from the image)
   function addSectionHeader(text: string, y: number): number {
-    // Add full-width header background
+    // Remove full-width header background and replace with underline style
     const gradientWidth = pageWidth - 2 * margin;
-    doc.setFillColor(
+
+    // Add underline for section header
+    doc.setDrawColor(
       primaryColorRGB[0],
       primaryColorRGB[1],
       primaryColorRGB[2]
     );
-    doc.rect(margin, y - 5, gradientWidth, 12, "F");
+    doc.setLineWidth(0.3);
+    doc.line(margin, y + 4, margin + gradientWidth, y + 4);
 
-    // Add the section header text in white
-    addText(
-      text,
-      margin + 5,
-      y + 1.5,
-      11,
-      "bold",
-      "left",
-      undefined,
-      [255, 255, 255]
-    );
-    return y + 12;
+    // Add the section header text in primary color instead of white
+    addText(text, margin, y, 11, "bold", "left", undefined, primaryColorRGB);
+    return y + 8; // Reduced spacing from 12 to 8
   }
 
   // Function to add a simple field with proper spacing as shown in the image
@@ -1235,7 +1245,7 @@ export function generatePreviewPDF(formData: FormData): void {
   // Function to add company header - with option for smaller header on subsequent pages
   function addCompanyHeader(isSecondaryPage = false): void {
     let logoHeight = 0;
-    const headerHeight = isSecondaryPage ? 25 : 35;
+    const headerHeight = isSecondaryPage ? 20 : 25;
 
     // Create a clean white background for the header
     doc.setFillColor(255, 255, 255);
@@ -1243,9 +1253,9 @@ export function generatePreviewPDF(formData: FormData): void {
     // Add company logo if provided as base64
     if (formData.company_logo_base64) {
       try {
-        // Make logo smaller on subsequent pages
-        const logoWidth = isSecondaryPage ? 25 : 35;
-        logoHeight = isSecondaryPage ? 15 : 20;
+        // Make logo smaller on all pages
+        const logoWidth = isSecondaryPage ? 20 : 25;
+        logoHeight = isSecondaryPage ? 12 : 15;
 
         // Calculate logo position (right aligned as in the image)
         const logoX = pageWidth - margin - logoWidth;
@@ -1274,11 +1284,11 @@ export function generatePreviewPDF(formData: FormData): void {
 
     // Add company name and information
     const infoX = margin + 5;
-    let infoY = margin + 6;
+    let infoY = margin + 5;
 
-    // Use smaller text on subsequent pages
-    const nameSize = isSecondaryPage ? 12 : 14;
-    const infoSize = isSecondaryPage ? 8 : 9;
+    // Use smaller text on all pages
+    const nameSize = isSecondaryPage ? 10 : 12;
+    const infoSize = isSecondaryPage ? 7 : 8;
 
     if (formData.company_name) {
       addText(
@@ -1291,7 +1301,7 @@ export function generatePreviewPDF(formData: FormData): void {
         undefined,
         primaryColorRGB
       );
-      infoY += isSecondaryPage ? 6 : 8;
+      infoY += isSecondaryPage ? 5 : 6;
     }
 
     if (formData.company_address) {
@@ -1303,7 +1313,7 @@ export function generatePreviewPDF(formData: FormData): void {
         "normal",
         "left"
       );
-      infoY += isSecondaryPage ? 4 : 6;
+      infoY += isSecondaryPage ? 3 : 4;
     }
 
     // Add company email and phone
@@ -1320,17 +1330,17 @@ export function generatePreviewPDF(formData: FormData): void {
 
       if (contactInfo) {
         addText(contactInfo, infoX, infoY, infoSize, "normal", "left");
-        infoY += isSecondaryPage ? 4 : 6;
+        infoY += isSecondaryPage ? 3 : 4;
       }
     }
 
     // Add some spacing after the header
-    const headerSpacing = isSecondaryPage ? 8 : 15;
+    const headerSpacing = isSecondaryPage ? 5 : 8;
 
     // Update the yPosition to below the header
     yPosition = Math.max(
       infoY + headerSpacing,
-      margin + headerHeight + (isSecondaryPage ? 5 : 10)
+      margin + headerHeight + (isSecondaryPage ? 3 : 5)
     );
   }
 
@@ -1349,20 +1359,26 @@ export function generatePreviewPDF(formData: FormData): void {
   yPosition += 5;
   const titleText = formData.custom_header_text || "KJØPEKONTRAKT";
 
-  // Add a clean background for the title
-  doc.setFillColor(primaryColorRGB[0], primaryColorRGB[1], primaryColorRGB[2]);
-  doc.rect(pageWidth / 2 - 50, yPosition - 8, 100, 14, "F");
+  // Remove background color and instead use an underline style for the title
+  doc.setDrawColor(primaryColorRGB[0], primaryColorRGB[1], primaryColorRGB[2]);
+  doc.setLineWidth(0.5);
+  doc.line(
+    pageWidth / 2 - 50,
+    yPosition + 4,
+    pageWidth / 2 + 50,
+    yPosition + 4
+  );
 
-  // Add title text in white
+  // Add title text in primary color rather than white on blue
   addText(
     titleText.toUpperCase(),
     pageWidth / 2,
-    yPosition + 1,
+    yPosition,
     14,
     "bold",
     "center",
     undefined,
-    [255, 255, 255]
+    primaryColorRGB
   );
 
   yPosition += 20;
@@ -1374,9 +1390,10 @@ export function generatePreviewPDF(formData: FormData): void {
   // Seller and Buyer sections - match the spacing seen in the image
   const sectionWidth = (pageWidth - 2 * margin - 10) / 2;
 
-  // SELGER Header - match the color and style in the image
-  doc.setFillColor(primaryColorRGB[0], primaryColorRGB[1], primaryColorRGB[2]);
-  doc.rect(margin, yPosition - 2, sectionWidth, 8, "F");
+  // SELGER Header - remove background color and use underline instead
+  doc.setDrawColor(primaryColorRGB[0], primaryColorRGB[1], primaryColorRGB[2]);
+  doc.setLineWidth(0.3);
+  doc.line(margin, yPosition + 4, margin + sectionWidth, yPosition + 4);
   addText(
     "SELGER",
     margin + sectionWidth / 2,
@@ -1385,12 +1402,16 @@ export function generatePreviewPDF(formData: FormData): void {
     "bold",
     "center",
     undefined,
-    [255, 255, 255]
+    primaryColorRGB
   );
 
-  // KJØPER Header - match the color and style in the image
-  doc.setFillColor(primaryColorRGB[0], primaryColorRGB[1], primaryColorRGB[2]);
-  doc.rect(margin + sectionWidth + 10, yPosition - 2, sectionWidth, 8, "F");
+  // KJØPER Header - remove background color and use underline instead
+  doc.line(
+    margin + sectionWidth + 10,
+    yPosition + 4,
+    margin + sectionWidth * 2 + 10,
+    yPosition + 4
+  );
   addText(
     "KJØPER",
     margin + sectionWidth + 10 + sectionWidth / 2,
@@ -1399,7 +1420,7 @@ export function generatePreviewPDF(formData: FormData): void {
     "bold",
     "center",
     undefined,
-    [255, 255, 255]
+    primaryColorRGB
   );
 
   yPosition += 14; // Reduced from 16 to 14
@@ -1580,6 +1601,7 @@ export function generatePreviewPDF(formData: FormData): void {
     );
   });
 
+  let additionalFieldsAdded = false;
   yPosition += 18;
 
   // Add the new selector fields if they have values (proper type checking)
@@ -1603,6 +1625,7 @@ export function generatePreviewPDF(formData: FormData): void {
     );
 
     yPosition += 14;
+    additionalFieldsAdded = true;
   }
 
   if (
@@ -1625,6 +1648,7 @@ export function generatePreviewPDF(formData: FormData): void {
     );
 
     yPosition += 14;
+    additionalFieldsAdded = true;
   }
 
   // Add specification field if any equipment is selected
@@ -1659,9 +1683,15 @@ export function generatePreviewPDF(formData: FormData): void {
     );
 
     yPosition += Math.max(20, equipmentLines * 5) + 5;
+    additionalFieldsAdded = true;
   }
 
-  yPosition += 10;
+  // Adjust spacing before comments section based on whether additional fields were added
+  if (additionalFieldsAdded) {
+    yPosition += 10; // Standard spacing when we had extra content
+  } else {
+    yPosition += 25; // More spacing when we only had checkboxes
+  }
 
   // Check if we need a new page
   if (yPosition > pageHeight - 50) {
@@ -1671,7 +1701,7 @@ export function generatePreviewPDF(formData: FormData): void {
 
   // --- Comments Section ---
   yPosition = addSectionHeader("ANDRE KOMMENTARER / VILKÅR", yPosition);
-  yPosition += 10;
+  yPosition += 5; // Reduced from 10 to 5 to bring the box closer to header
 
   // Add text area for comments
   if (formData.andre_kommentarer) {
@@ -1701,6 +1731,9 @@ export function generatePreviewPDF(formData: FormData): void {
     yPosition += 35;
   }
 
+  // Add more spacing after comments box before signatures
+  yPosition += 15; // Increased from implicit spacing to 15
+
   // Check if we need a new page for signatures
   if (yPosition > pageHeight - 80) {
     addPage();
@@ -1709,7 +1742,6 @@ export function generatePreviewPDF(formData: FormData): void {
 
   // --- Signatures Section ---
   yPosition = addSectionHeader("SIGNATURER", yPosition);
-  yPosition += 10;
 
   // Create signature sections
   const signatureFieldWidth = (pageWidth - 2 * margin - 10) / 2;
