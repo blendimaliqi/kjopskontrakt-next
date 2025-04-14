@@ -55,6 +55,8 @@ interface FormData {
   utstyr_annet: boolean;
   utstyr_spesifisert: string;
   andre_kommentarer: string;
+  sted_selger: string;
+  dato_selger: string;
   sted_kjoper: string;
   dato_kjoper: string;
   selgers_underskrift: string;
@@ -112,12 +114,11 @@ const PurchaseContractForm: React.FC = () => {
     omregistreringsavgift_betales_av: Yup.string()
       .oneOf(["kjoper", "selger"])
       .required("Påkrevd"),
-    har_bilen_heftelser: Yup.string()
-      .oneOf(["ja", "nei"], "Velg ja eller nei")
-      .required("Påkrevd"),
-    er_bilen_provekjort: Yup.string()
-      .oneOf(["ja", "nei"], "Velg ja eller nei")
-      .required("Påkrevd"),
+    // Removing validation for these fields
+    sted_selger: Yup.string(),
+    dato_selger: Yup.string(),
+    sted_kjoper: Yup.string(),
+    dato_kjoper: Yup.string(),
   });
 
   const formik = useFormik<FormData>({
@@ -152,6 +153,8 @@ const PurchaseContractForm: React.FC = () => {
       utstyr_annet: false,
       utstyr_spesifisert: "",
       andre_kommentarer: "",
+      sted_selger: "",
+      dato_selger: "",
       sted_kjoper: "",
       dato_kjoper: "",
       selgers_underskrift: "",
@@ -269,6 +272,13 @@ const PurchaseContractForm: React.FC = () => {
     }
   };
 
+  // Add this helper function to debug validation issues
+  const debugValidationErrors = () => {
+    console.log("Form validation errors:", formik.errors);
+    console.log("Form values:", formik.values);
+    return Object.keys(formik.errors).length > 0;
+  };
+
   useEffect(() => {
     if (isLoggedIn) {
       fetchBalance();
@@ -296,6 +306,7 @@ const PurchaseContractForm: React.FC = () => {
   };
 
   const getButtonText = () => {
+    if (!formik.isValid) return "Sjekk at alle obligatoriske felt er fylt ut";
     if (!isLoggedIn) return "Logg inn for å generere PDF";
     if (isLoading) return "Genererer...";
     if (balance !== null && Number(balance) < 9.9)
@@ -1421,268 +1432,339 @@ const PurchaseContractForm: React.FC = () => {
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-2 bg-white p-6 rounded-lg border border-blue-200 shadow-sm">
-              <Label htmlFor="sted_kjoper" className="font-medium">
-                Sted
-              </Label>
-              <Input
-                id="sted_kjoper"
-                {...formik.getFieldProps("sted_kjoper")}
-                className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-              />
-              {formik.touched.sted_kjoper && formik.errors.sted_kjoper ? (
-                <div className="text-red-500 text-xs">
-                  {formik.errors.sted_kjoper}
-                </div>
-              ) : null}
-            </div>
-            <div className="space-y-2 bg-white p-6 rounded-lg border border-blue-200 shadow-sm">
-              <Label htmlFor="dato_kjoper" className="font-medium">
-                Dato
-              </Label>
-              <Input
-                id="dato_kjoper"
-                type="date"
-                {...formik.getFieldProps("dato_kjoper")}
-                className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-              />
-              {formik.touched.dato_kjoper && formik.errors.dato_kjoper ? (
-                <div className="text-red-500 text-xs">
-                  {formik.errors.dato_kjoper}
-                </div>
-              ) : null}
-            </div>
-          </div>
+          <div className="grid grid-cols-1 gap-8">
+            <Card className="border border-blue-200 shadow-sm hover:shadow-md transition-shadow duration-200 bg-white">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 py-4">
+                <h3 className="text-lg font-semibold text-blue-700 flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 mr-2"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                  Signaturer og datoer
+                </h3>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="border rounded-lg p-4 bg-blue-50/30">
+                    <h4 className="text-md font-semibold text-blue-700 mb-4">
+                      Selger
+                    </h4>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="sted_selger" className="font-medium">
+                          Sted (selger)
+                        </Label>
+                        <Input
+                          id="sted_selger"
+                          {...formik.getFieldProps("sted_selger")}
+                          className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                        {formik.touched.sted_selger &&
+                        formik.errors.sted_selger ? (
+                          <div className="text-red-500 text-xs">
+                            {formik.errors.sted_selger}
+                          </div>
+                        ) : null}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="dato_selger" className="font-medium">
+                          Dato (selger)
+                        </Label>
+                        <Input
+                          id="dato_selger"
+                          type="date"
+                          {...formik.getFieldProps("dato_selger")}
+                          className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                        {formik.touched.dato_selger &&
+                        formik.errors.dato_selger ? (
+                          <div className="text-red-500 text-xs">
+                            {formik.errors.dato_selger}
+                          </div>
+                        ) : null}
+                      </div>
+                      <div className="space-y-4">
+                        <Label
+                          htmlFor="selgers_underskrift"
+                          className="font-medium"
+                        >
+                          Selgers underskrift
+                        </Label>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-4 bg-white p-6 rounded-lg border border-blue-200 shadow-sm">
-              <Label htmlFor="selgers_underskrift" className="font-medium">
-                Selgers underskrift
-              </Label>
+                        <div className="flex space-x-3 mb-2">
+                          <Button
+                            type="button"
+                            onClick={() => setSellerSignatureMode("draw")}
+                            className={`px-3 py-1 text-xs ${
+                              sellerSignatureMode === "draw"
+                                ? "bg-blue-600"
+                                : "bg-gray-300"
+                            }`}
+                          >
+                            Tegn signatur
+                          </Button>
+                          <Button
+                            type="button"
+                            onClick={() => {
+                              setSellerSignatureMode("text");
+                              formik.setFieldValue("selgers_underskrift", "");
+                            }}
+                            className={`px-3 py-1 text-xs ${
+                              sellerSignatureMode === "text"
+                                ? "bg-blue-600"
+                                : "bg-gray-300"
+                            }`}
+                          >
+                            Skriv inn
+                          </Button>
 
-              <div className="flex space-x-3 mb-2">
-                <Button
-                  type="button"
-                  onClick={() => setSellerSignatureMode("draw")}
-                  className={`px-3 py-1 text-xs ${
-                    sellerSignatureMode === "draw"
-                      ? "bg-blue-600"
-                      : "bg-gray-300"
-                  }`}
-                >
-                  Tegn signatur
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => {
-                    setSellerSignatureMode("text");
-                    formik.setFieldValue("selgers_underskrift", "");
-                  }}
-                  className={`px-3 py-1 text-xs ${
-                    sellerSignatureMode === "text"
-                      ? "bg-blue-600"
-                      : "bg-gray-300"
-                  }`}
-                >
-                  Skriv inn
-                </Button>
+                          <Button
+                            type="button"
+                            onClick={() => setSellerSignatureMode("upload")}
+                            className={`px-3 py-1 text-xs ${
+                              sellerSignatureMode === "upload"
+                                ? "bg-blue-600"
+                                : "bg-gray-300"
+                            }`}
+                          >
+                            Last opp
+                          </Button>
+                        </div>
 
-                <Button
-                  type="button"
-                  onClick={() => setSellerSignatureMode("upload")}
-                  className={`px-3 py-1 text-xs ${
-                    sellerSignatureMode === "upload"
-                      ? "bg-blue-600"
-                      : "bg-gray-300"
-                  }`}
-                >
-                  Last opp
-                </Button>
-              </div>
+                        {sellerSignatureMode === "text" && (
+                          <Input
+                            id="selgers_underskrift"
+                            {...formik.getFieldProps("selgers_underskrift")}
+                            className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                            placeholder="Skriv inn ditt navn"
+                          />
+                        )}
 
-              {sellerSignatureMode === "text" && (
-                <Input
-                  id="selgers_underskrift"
-                  {...formik.getFieldProps("selgers_underskrift")}
-                  className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Skriv inn ditt navn"
-                />
-              )}
+                        {sellerSignatureMode === "draw" && (
+                          <div className="signature-container">
+                            <canvas
+                              ref={sellerCanvasRef}
+                              width={380}
+                              height={120}
+                              className="border border-gray-300 rounded cursor-crosshair bg-white w-full"
+                              onMouseDown={handleSellerCanvasMouseDown}
+                              onMouseMove={handleSellerCanvasMouseMove}
+                              onMouseUp={handleSellerCanvasMouseUp}
+                              onMouseLeave={handleSellerCanvasMouseUp}
+                            ></canvas>
+                            <div className="flex justify-between mt-2">
+                              <Button
+                                type="button"
+                                onClick={clearSellerCanvas}
+                                className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 text-gray-700"
+                              >
+                                Tøm signatur
+                              </Button>
+                              <p className="text-xs text-gray-500 ml-2">
+                                Du kan la dette være tomt hvis du vil signere på
+                                selve PDF-en senere.
+                              </p>
+                            </div>
+                          </div>
+                        )}
 
-              {sellerSignatureMode === "draw" && (
-                <div className="signature-container">
-                  <canvas
-                    ref={sellerCanvasRef}
-                    width={380}
-                    height={120}
-                    className="border border-gray-300 rounded cursor-crosshair bg-white w-full"
-                    onMouseDown={handleSellerCanvasMouseDown}
-                    onMouseMove={handleSellerCanvasMouseMove}
-                    onMouseUp={handleSellerCanvasMouseUp}
-                    onMouseLeave={handleSellerCanvasMouseUp}
-                  ></canvas>
-                  <div className="flex justify-between mt-2">
-                    <Button
-                      type="button"
-                      onClick={clearSellerCanvas}
-                      className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 text-gray-700"
-                    >
-                      Tøm signatur
-                    </Button>
-                    <p className="text-xs text-gray-500 ml-2">
-                      Du kan la dette være tomt hvis du vil signere på selve
-                      PDF-en senere.
-                    </p>
+                        {sellerSignatureMode === "upload" && (
+                          <div className="space-y-2">
+                            <Input
+                              id="sellerSignatureUpload"
+                              type="file"
+                              accept="image/*"
+                              onChange={handleSellerSignatureUpload}
+                              className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                            />
+                            {sellerSignatureData && (
+                              <div className="mt-2">
+                                <p className="text-sm text-gray-600 mb-1">
+                                  Forhåndsvisning av signatur:
+                                </p>
+                                <img
+                                  src={sellerSignatureData}
+                                  alt="Seller Signature"
+                                  className="max-w-full h-auto max-h-[100px] border rounded p-1"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {formik.touched.selgers_underskrift &&
+                        formik.errors.selgers_underskrift ? (
+                          <div className="text-red-500 text-xs">
+                            {formik.errors.selgers_underskrift}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border rounded-lg p-4 bg-blue-50/30">
+                    <h4 className="text-md font-semibold text-blue-700 mb-4">
+                      Kjøper
+                    </h4>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="sted_kjoper" className="font-medium">
+                          Sted (kjøper)
+                        </Label>
+                        <Input
+                          id="sted_kjoper"
+                          {...formik.getFieldProps("sted_kjoper")}
+                          className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                        {formik.touched.sted_kjoper &&
+                        formik.errors.sted_kjoper ? (
+                          <div className="text-red-500 text-xs">
+                            {formik.errors.sted_kjoper}
+                          </div>
+                        ) : null}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="dato_kjoper" className="font-medium">
+                          Dato (kjøper)
+                        </Label>
+                        <Input
+                          id="dato_kjoper"
+                          type="date"
+                          {...formik.getFieldProps("dato_kjoper")}
+                          className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                        {formik.touched.dato_kjoper &&
+                        formik.errors.dato_kjoper ? (
+                          <div className="text-red-500 text-xs">
+                            {formik.errors.dato_kjoper}
+                          </div>
+                        ) : null}
+                      </div>
+                      <div className="space-y-4">
+                        <Label
+                          htmlFor="kjopers_underskrift"
+                          className="font-medium"
+                        >
+                          Kjøpers underskrift
+                        </Label>
+
+                        <div className="flex space-x-3 mb-2">
+                          <Button
+                            type="button"
+                            onClick={() => setBuyerSignatureMode("draw")}
+                            className={`px-3 py-1 text-xs ${
+                              buyerSignatureMode === "draw"
+                                ? "bg-blue-600"
+                                : "bg-gray-300"
+                            }`}
+                          >
+                            Tegn signatur
+                          </Button>
+                          <Button
+                            type="button"
+                            onClick={() => {
+                              setBuyerSignatureMode("text");
+                              formik.setFieldValue("kjopers_underskrift", "");
+                            }}
+                            className={`px-3 py-1 text-xs ${
+                              buyerSignatureMode === "text"
+                                ? "bg-blue-600"
+                                : "bg-gray-300"
+                            }`}
+                          >
+                            Skriv inn
+                          </Button>
+
+                          <Button
+                            type="button"
+                            onClick={() => setBuyerSignatureMode("upload")}
+                            className={`px-3 py-1 text-xs ${
+                              buyerSignatureMode === "upload"
+                                ? "bg-blue-600"
+                                : "bg-gray-300"
+                            }`}
+                          >
+                            Last opp
+                          </Button>
+                        </div>
+
+                        {buyerSignatureMode === "text" && (
+                          <Input
+                            id="kjopers_underskrift"
+                            {...formik.getFieldProps("kjopers_underskrift")}
+                            className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                            placeholder="Skriv inn ditt navn"
+                          />
+                        )}
+
+                        {buyerSignatureMode === "draw" && (
+                          <div className="signature-container">
+                            <canvas
+                              ref={buyerCanvasRef}
+                              width={380}
+                              height={120}
+                              className="border border-gray-300 rounded cursor-crosshair bg-white w-full"
+                              onMouseDown={handleBuyerCanvasMouseDown}
+                              onMouseMove={handleBuyerCanvasMouseMove}
+                              onMouseUp={handleBuyerCanvasMouseUp}
+                              onMouseLeave={handleBuyerCanvasMouseUp}
+                            ></canvas>
+                            <div className="flex justify-between mt-2">
+                              <Button
+                                type="button"
+                                onClick={clearBuyerCanvas}
+                                className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 text-gray-700"
+                              >
+                                Tøm signatur
+                              </Button>
+                              <p className="text-xs text-gray-500 ml-2">
+                                Du kan la dette være tomt hvis du vil signere på
+                                selve PDF-en senere.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {buyerSignatureMode === "upload" && (
+                          <div className="space-y-2">
+                            <Input
+                              id="buyerSignatureUpload"
+                              type="file"
+                              accept="image/*"
+                              onChange={handleBuyerSignatureUpload}
+                              className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                            />
+                            {buyerSignatureData && (
+                              <div className="mt-2">
+                                <p className="text-sm text-gray-600 mb-1">
+                                  Forhåndsvisning av signatur:
+                                </p>
+                                <img
+                                  src={buyerSignatureData}
+                                  alt="Buyer Signature"
+                                  className="max-w-full h-auto max-h-[100px] border rounded p-1"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {formik.touched.kjopers_underskrift &&
+                        formik.errors.kjopers_underskrift ? (
+                          <div className="text-red-500 text-xs">
+                            {formik.errors.kjopers_underskrift}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              )}
-
-              {sellerSignatureMode === "upload" && (
-                <div className="space-y-2">
-                  <Input
-                    id="sellerSignatureUpload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleSellerSignatureUpload}
-                    className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                  />
-                  {sellerSignatureData && (
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-600 mb-1">
-                        Forhåndsvisning av signatur:
-                      </p>
-                      <img
-                        src={sellerSignatureData}
-                        alt="Seller Signature"
-                        className="max-w-full h-auto max-h-[100px] border rounded p-1"
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {formik.touched.selgers_underskrift &&
-              formik.errors.selgers_underskrift ? (
-                <div className="text-red-500 text-xs">
-                  {formik.errors.selgers_underskrift}
-                </div>
-              ) : null}
-            </div>
-
-            <div className="space-y-4 bg-white p-6 rounded-lg border border-blue-200 shadow-sm">
-              <Label htmlFor="kjopers_underskrift" className="font-medium">
-                Kjøpers underskrift
-              </Label>
-
-              <div className="flex space-x-3 mb-2">
-                <Button
-                  type="button"
-                  onClick={() => setBuyerSignatureMode("draw")}
-                  className={`px-3 py-1 text-xs ${
-                    buyerSignatureMode === "draw"
-                      ? "bg-blue-600"
-                      : "bg-gray-300"
-                  }`}
-                >
-                  Tegn signatur
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => {
-                    setBuyerSignatureMode("text");
-                    formik.setFieldValue("kjopers_underskrift", "");
-                  }}
-                  className={`px-3 py-1 text-xs ${
-                    buyerSignatureMode === "text"
-                      ? "bg-blue-600"
-                      : "bg-gray-300"
-                  }`}
-                >
-                  Skriv inn
-                </Button>
-
-                <Button
-                  type="button"
-                  onClick={() => setBuyerSignatureMode("upload")}
-                  className={`px-3 py-1 text-xs ${
-                    buyerSignatureMode === "upload"
-                      ? "bg-blue-600"
-                      : "bg-gray-300"
-                  }`}
-                >
-                  Last opp
-                </Button>
-              </div>
-
-              {buyerSignatureMode === "text" && (
-                <Input
-                  id="kjopers_underskrift"
-                  {...formik.getFieldProps("kjopers_underskrift")}
-                  className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Skriv inn ditt navn"
-                />
-              )}
-
-              {buyerSignatureMode === "draw" && (
-                <div className="signature-container">
-                  <canvas
-                    ref={buyerCanvasRef}
-                    width={380}
-                    height={120}
-                    className="border border-gray-300 rounded cursor-crosshair bg-white w-full"
-                    onMouseDown={handleBuyerCanvasMouseDown}
-                    onMouseMove={handleBuyerCanvasMouseMove}
-                    onMouseUp={handleBuyerCanvasMouseUp}
-                    onMouseLeave={handleBuyerCanvasMouseUp}
-                  ></canvas>
-                  <div className="flex justify-between mt-2">
-                    <Button
-                      type="button"
-                      onClick={clearBuyerCanvas}
-                      className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 text-gray-700"
-                    >
-                      Tøm signatur
-                    </Button>
-                    <p className="text-xs text-gray-500 ml-2">
-                      Du kan la dette være tomt hvis du vil signere på selve
-                      PDF-en senere.
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {buyerSignatureMode === "upload" && (
-                <div className="space-y-2">
-                  <Input
-                    id="buyerSignatureUpload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleBuyerSignatureUpload}
-                    className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                  />
-                  {buyerSignatureData && (
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-600 mb-1">
-                        Forhåndsvisning av signatur:
-                      </p>
-                      <img
-                        src={buyerSignatureData}
-                        alt="Buyer Signature"
-                        className="max-w-full h-auto max-h-[100px] border rounded p-1"
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {formik.touched.kjopers_underskrift &&
-              formik.errors.kjopers_underskrift ? (
-                <div className="text-red-500 text-xs">
-                  {formik.errors.kjopers_underskrift}
-                </div>
-              ) : null}
-            </div>
+              </CardContent>
+            </Card>
           </div>
 
           <div className="flex items-center space-x-2 p-4 bg-blue-50 rounded-lg border border-blue-100">
@@ -1769,6 +1851,7 @@ const PurchaseContractForm: React.FC = () => {
               className={`w-2/3 text-lg py-6 ${
                 isLoggedIn ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400"
               } transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2`}
+              onClick={() => debugValidationErrors()}
               disabled={
                 isLoading ||
                 !isLoggedIn ||

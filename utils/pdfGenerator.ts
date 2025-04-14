@@ -32,6 +32,8 @@ interface FormData {
   utstyr_annet: boolean;
   utstyr_spesifisert: string;
   andre_kommentarer: string;
+  sted_selger: string;
+  dato_selger: string;
   sted_kjoper: string;
   dato_kjoper: string;
   selgers_underskrift: string;
@@ -805,30 +807,48 @@ export function generatePDF(formData: FormData): void {
   yPosition = addSectionHeader("SIGNATURER", yPosition);
   yPosition += 10;
 
-  // Add place and date fields
+  // Create signature sections
   const signatureFieldWidth = (pageWidth - 2 * margin - 10) / 2;
 
-  // Sted field
+  // Add seller place and date fields on left side
   addField(
-    "Sted",
-    formData.sted_kjoper,
+    "Sted (selger)",
+    formData.sted_selger,
     margin,
     yPosition,
     signatureFieldWidth
   );
 
-  // Dato field
+  // Add seller date field
   addField(
-    "Dato",
-    formData.dato_kjoper,
+    "Dato (selger)",
+    formData.dato_selger,
+    margin,
+    yPosition + 15,
+    signatureFieldWidth
+  );
+
+  // Add buyer place and date fields on right side
+  addField(
+    "Sted (kjøper)",
+    formData.sted_kjoper,
     margin + signatureFieldWidth + 10,
     yPosition,
     signatureFieldWidth
   );
 
-  yPosition += 15;
+  // Add buyer date field
+  addField(
+    "Dato (kjøper)",
+    formData.dato_kjoper,
+    margin + signatureFieldWidth + 10,
+    yPosition + 15,
+    signatureFieldWidth
+  );
 
-  // Add signature fields
+  yPosition += 30;
+
+  // Add seller signature field on left
   addField(
     "Selgers underskrift",
     formData.selgers_underskrift,
@@ -839,6 +859,7 @@ export function generatePDF(formData: FormData): void {
     true // Mark as signature
   );
 
+  // Add buyer signature field on right
   addField(
     "Kjøpers underskrift",
     formData.kjopers_underskrift || "",
@@ -849,7 +870,7 @@ export function generatePDF(formData: FormData): void {
     true // Mark as signature
   );
 
-  yPosition += 40; // Increased from 25 to add more space before disclaimer
+  yPosition += 40;
 
   // Add disclaimer if checkbox is checked
   if (formData.include_disclaimer) {
@@ -1736,30 +1757,48 @@ export function generatePreviewPDF(formData: FormData): void {
   yPosition = addSectionHeader("SIGNATURER", yPosition);
   yPosition += 10;
 
-  // Add place and date fields
+  // Create signature sections
   const signatureFieldWidth = (pageWidth - 2 * margin - 10) / 2;
 
-  // Sted field
+  // Add seller place and date fields on left side
   addField(
-    "Sted",
-    formData.sted_kjoper,
+    "Sted (selger)",
+    formData.sted_selger,
     margin,
     yPosition,
     signatureFieldWidth
   );
 
-  // Dato field
+  // Add seller date field
   addField(
-    "Dato",
-    formData.dato_kjoper,
+    "Dato (selger)",
+    formData.dato_selger,
+    margin,
+    yPosition + 15,
+    signatureFieldWidth
+  );
+
+  // Add buyer place and date fields on right side
+  addField(
+    "Sted (kjøper)",
+    formData.sted_kjoper,
     margin + signatureFieldWidth + 10,
     yPosition,
     signatureFieldWidth
   );
 
-  yPosition += 15;
+  // Add buyer date field
+  addField(
+    "Dato (kjøper)",
+    formData.dato_kjoper,
+    margin + signatureFieldWidth + 10,
+    yPosition + 15,
+    signatureFieldWidth
+  );
 
-  // Add signature fields
+  yPosition += 30;
+
+  // Add seller signature field on left
   addField(
     "Selgers underskrift",
     formData.selgers_underskrift,
@@ -1770,6 +1809,7 @@ export function generatePreviewPDF(formData: FormData): void {
     true // Mark as signature
   );
 
+  // Add buyer signature field on right
   addField(
     "Kjøpers underskrift",
     formData.kjopers_underskrift || "",
@@ -1780,7 +1820,7 @@ export function generatePreviewPDF(formData: FormData): void {
     true // Mark as signature
   );
 
-  yPosition += 40; // Increased from 25 to add more space before disclaimer
+  yPosition += 40;
 
   // Add disclaimer if checkbox is checked
   if (formData.include_disclaimer) {

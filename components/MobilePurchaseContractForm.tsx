@@ -48,6 +48,8 @@ interface FormData {
   utstyr_annet: boolean;
   utstyr_spesifisert: string;
   andre_kommentarer: string;
+  sted_selger: string;
+  dato_selger: string;
   sted_kjoper: string;
   dato_kjoper: string;
   selgers_underskrift: string;
@@ -76,16 +78,14 @@ const MobilePurchaseContractForm: React.FC = () => {
     kjoper_fodselsdato: Yup.string().required("Påkrevd"),
     kjoper_tlf_arbeid: Yup.string().required("Påkrevd"),
     regnr: Yup.string().required("Påkrevd"),
-    kjopesum: Yup.number().required("Påkrevd"),
+    kjopesum: Yup.number().typeError("Må være et tall").required("Påkrevd"),
     omregistreringsavgift_betales_av: Yup.string()
       .oneOf(["kjoper", "selger"])
       .required("Påkrevd"),
-    har_bilen_heftelser: Yup.string()
-      .oneOf(["ja", "nei"], "Velg ja eller nei")
-      .required("Påkrevd"),
-    er_bilen_provekjort: Yup.string()
-      .oneOf(["ja", "nei"], "Velg ja eller nei")
-      .required("Påkrevd"),
+    sted_selger: Yup.string(),
+    dato_selger: Yup.string(),
+    sted_kjoper: Yup.string(),
+    dato_kjoper: Yup.string(),
   });
 
   const formik = useFormik<FormData>({
@@ -120,6 +120,8 @@ const MobilePurchaseContractForm: React.FC = () => {
       utstyr_annet: false,
       utstyr_spesifisert: "",
       andre_kommentarer: "",
+      sted_selger: "",
+      dato_selger: "",
       sted_kjoper: "",
       dato_kjoper: "",
       selgers_underskrift: "",
@@ -222,6 +224,12 @@ const MobilePurchaseContractForm: React.FC = () => {
     handleWithdraw();
   };
 
+  const debugValidationErrors = () => {
+    console.log("Form validation errors:", formik.errors);
+    console.log("Form values:", formik.values);
+    return Object.keys(formik.errors).length > 0;
+  };
+
   useEffect(() => {
     if (session && session.user && session.user.email) {
       fetchBalance();
@@ -229,6 +237,7 @@ const MobilePurchaseContractForm: React.FC = () => {
   }, []);
 
   const getButtonText = () => {
+    if (!formik.isValid) return "Sjekk at alle obligatoriske felt er fylt ut";
     if (isLoading) return "Genererer...";
     if (balance !== null && Number(balance) < 9.9)
       return "Legg til penger (kr 9.90.-)";
@@ -677,56 +686,92 @@ const MobilePurchaseContractForm: React.FC = () => {
               <h3 className="text-lg font-semibold">Signatur og dato</h3>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="sted_kjoper">Sted</Label>
-                <Input
-                  id="sted_kjoper"
-                  {...formik.getFieldProps("sted_kjoper")}
-                />
-                {formik.touched.sted_kjoper && formik.errors.sted_kjoper && (
-                  <div className="text-red-500">
-                    {formik.errors.sted_kjoper}
-                  </div>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="dato_kjoper">Dato</Label>
-                <Input
-                  id="dato_kjoper"
-                  type="date"
-                  {...formik.getFieldProps("dato_kjoper")}
-                />
-                {formik.touched.dato_kjoper && formik.errors.dato_kjoper && (
-                  <div className="text-red-500">
-                    {formik.errors.dato_kjoper}
-                  </div>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="selgers_underskrift">Selgers underskrift</Label>
-                <Input
-                  id="selgers_underskrift"
-                  {...formik.getFieldProps("selgers_underskrift")}
-                />
-                {formik.touched.selgers_underskrift &&
-                  formik.errors.selgers_underskrift && (
+              <div className="mb-4 pb-2 border-b">
+                <h4 className="mb-2 font-medium">Selger</h4>
+                <div className="space-y-2">
+                  <Label htmlFor="sted_selger">Sted (selger)</Label>
+                  <Input
+                    id="sted_selger"
+                    {...formik.getFieldProps("sted_selger")}
+                  />
+                  {formik.touched.sted_selger && formik.errors.sted_selger && (
                     <div className="text-red-500">
-                      {formik.errors.selgers_underskrift}
+                      {formik.errors.sted_selger}
                     </div>
                   )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="kjopers_underskrift">Kjøpers underskrift</Label>
-                <Input
-                  id="kjopers_underskrift"
-                  // {...formik.getFieldProps("kjopers_underskrift")}
-                />
-                {formik.touched.kjopers_underskrift &&
-                  formik.errors.kjopers_underskrift && (
+                </div>
+                <div className="space-y-2 mt-2">
+                  <Label htmlFor="dato_selger">Dato (selger)</Label>
+                  <Input
+                    id="dato_selger"
+                    type="date"
+                    {...formik.getFieldProps("dato_selger")}
+                  />
+                  {formik.touched.dato_selger && formik.errors.dato_selger && (
                     <div className="text-red-500">
-                      {formik.errors.kjopers_underskrift}
+                      {formik.errors.dato_selger}
                     </div>
                   )}
+                </div>
+                <div className="space-y-2 mt-2">
+                  <Label htmlFor="selgers_underskrift">
+                    Selgers underskrift
+                  </Label>
+                  <Input
+                    id="selgers_underskrift"
+                    {...formik.getFieldProps("selgers_underskrift")}
+                  />
+                  {formik.touched.selgers_underskrift &&
+                    formik.errors.selgers_underskrift && (
+                      <div className="text-red-500">
+                        {formik.errors.selgers_underskrift}
+                      </div>
+                    )}
+                </div>
+              </div>
+
+              <div>
+                <h4 className="mb-2 font-medium">Kjøper</h4>
+                <div className="space-y-2">
+                  <Label htmlFor="sted_kjoper">Sted (kjøper)</Label>
+                  <Input
+                    id="sted_kjoper"
+                    {...formik.getFieldProps("sted_kjoper")}
+                  />
+                  {formik.touched.sted_kjoper && formik.errors.sted_kjoper && (
+                    <div className="text-red-500">
+                      {formik.errors.sted_kjoper}
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-2 mt-2">
+                  <Label htmlFor="dato_kjoper">Dato (kjøper)</Label>
+                  <Input
+                    id="dato_kjoper"
+                    type="date"
+                    {...formik.getFieldProps("dato_kjoper")}
+                  />
+                  {formik.touched.dato_kjoper && formik.errors.dato_kjoper && (
+                    <div className="text-red-500">
+                      {formik.errors.dato_kjoper}
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-2 mt-2">
+                  <Label htmlFor="kjopers_underskrift">
+                    Kjøpers underskrift
+                  </Label>
+                  <Input
+                    id="kjopers_underskrift"
+                    {...formik.getFieldProps("kjopers_underskrift")}
+                  />
+                  {formik.touched.kjopers_underskrift &&
+                    formik.errors.kjopers_underskrift && (
+                      <div className="text-red-500">
+                        {formik.errors.kjopers_underskrift}
+                      </div>
+                    )}
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -745,6 +790,7 @@ const MobilePurchaseContractForm: React.FC = () => {
           <Button
             type="submit"
             className="w-full"
+            onClick={() => debugValidationErrors()}
             disabled={isLoading || balance === null || balance < 9.9}
           >
             {getButtonText()}
