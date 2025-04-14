@@ -355,7 +355,9 @@ const PurchaseContractForm: React.FC = () => {
       ctx.fillStyle = "white";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = "black";
-      ctx.lineWidth = 2; // Add this for better lines
+      ctx.lineWidth = 2.5; // Increase line width for better visibility
+      ctx.lineCap = "round"; // Round line caps for smoother signatures
+      ctx.lineJoin = "round"; // Round line joins for smoother signatures
     }
   };
 
@@ -525,6 +527,40 @@ const PurchaseContractForm: React.FC = () => {
     setBuyerSignatureData("");
     formik.setFieldValue("kjopers_underskrift", "");
   };
+
+  // Add this new useEffect to handle touch events globally when drawing signatures
+  useEffect(() => {
+    const preventScroll = (e: TouchEvent) => {
+      if (isDrawingSellerSignature || isDrawingBuyerSignature) {
+        e.preventDefault();
+      }
+    };
+
+    // Add passive: false to ensure preventDefault works
+    document.addEventListener("touchmove", preventScroll, { passive: false });
+
+    // Apply CSS to canvas elements when drawing
+    if (sellerCanvasRef.current && isDrawingSellerSignature) {
+      sellerCanvasRef.current.style.touchAction = "none";
+    }
+
+    if (buyerCanvasRef.current && isDrawingBuyerSignature) {
+      buyerCanvasRef.current.style.touchAction = "none";
+    }
+
+    return () => {
+      document.removeEventListener("touchmove", preventScroll);
+
+      // Reset touchAction when not drawing
+      if (sellerCanvasRef.current) {
+        sellerCanvasRef.current.style.touchAction = "";
+      }
+
+      if (buyerCanvasRef.current) {
+        buyerCanvasRef.current.style.touchAction = "";
+      }
+    };
+  }, [isDrawingSellerSignature, isDrawingBuyerSignature]);
 
   return (
     <Card className="w-full max-w-4xl mx-auto bg-white shadow-xl border-t border-blue-500 rounded-xl overflow-hidden">
@@ -1658,12 +1694,16 @@ const PurchaseContractForm: React.FC = () => {
                         )}
 
                         {sellerSignatureMode === "draw" && (
-                          <div className="signature-container">
+                          <div className="signature-container relative touch-none">
+                            <p className="text-xs text-gray-500 mb-2">
+                              Tegn din signatur i boksen under. På mobilenheter,
+                              tegn sakte for best resultat.
+                            </p>
                             <canvas
                               ref={sellerCanvasRef}
                               width={380}
                               height={120}
-                              className="border border-gray-300 rounded cursor-crosshair bg-white w-full"
+                              className="border border-gray-300 rounded cursor-crosshair bg-white w-full touch-none"
                               onMouseDown={handleSellerCanvasMouseDown}
                               onMouseMove={handleSellerCanvasMouseMove}
                               onMouseUp={handleSellerCanvasMouseUp}
@@ -1859,12 +1899,16 @@ const PurchaseContractForm: React.FC = () => {
                         )}
 
                         {buyerSignatureMode === "draw" && (
-                          <div className="signature-container">
+                          <div className="signature-container relative touch-none">
+                            <p className="text-xs text-gray-500 mb-2">
+                              Tegn din signatur i boksen under. På mobilenheter,
+                              tegn sakte for best resultat.
+                            </p>
                             <canvas
                               ref={buyerCanvasRef}
                               width={380}
                               height={120}
-                              className="border border-gray-300 rounded cursor-crosshair bg-white w-full"
+                              className="border border-gray-300 rounded cursor-crosshair bg-white w-full touch-none"
                               onMouseDown={handleBuyerCanvasMouseDown}
                               onMouseMove={handleBuyerCanvasMouseMove}
                               onMouseUp={handleBuyerCanvasMouseUp}
