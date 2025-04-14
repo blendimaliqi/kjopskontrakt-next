@@ -81,9 +81,11 @@ interface FormData {
 
 const PurchaseContractForm: React.FC = () => {
   const { data: session } = useSession();
-  const isLoggedIn = !!session?.user;
-  const { formData: storedFormData, setFormData: setStoredFormData } =
-    useContractFormStore();
+  const {
+    formData: storedFormData,
+    setFormData: setStoredFormData,
+    setUserEmail,
+  } = useContractFormStore();
   const [showColorPicker, setShowColorPicker] = useState(false);
   const colorPickerRef = useRef<HTMLDivElement>(null);
   const [sellerSignatureMode, setSellerSignatureMode] = useState<
@@ -100,6 +102,7 @@ const PurchaseContractForm: React.FC = () => {
     useState(false);
   const [isDrawingBuyerSignature, setIsDrawingBuyerSignature] = useState(false);
   const [logoFileName, setLogoFileName] = useState<string>("");
+  const [logoFile, setLogoFile] = useState<File | null>(null);
 
   const validationSchema = Yup.object({
     selger_fornavn: Yup.string().required("Påkrevd"),
@@ -188,7 +191,6 @@ const PurchaseContractForm: React.FC = () => {
     },
     validationSchema,
     onSubmit: (values) => {
-      saveCompanyInfoToLocalStorage(values);
       handleGeneratePDF(values);
     },
   });
@@ -209,49 +211,6 @@ const PurchaseContractForm: React.FC = () => {
 
   const handleCheckboxChange = (name: string) => (checked: boolean) => {
     formik.setFieldValue(name, checked);
-
-    // Handle localStorage management when include_company_info changes
-    if (name === "include_company_info" && !checked) {
-      // If unchecking the include_company_info, remove data from localStorage
-      localStorage.removeItem("companyInfo");
-    } else if (name === "remember_company_info" && !checked) {
-      // If unchecking the remember_company_info, remove data from localStorage
-      localStorage.removeItem("companyInfo");
-    } else if (
-      name === "include_company_info" &&
-      checked &&
-      formik.values.remember_company_info
-    ) {
-      // If checking the include_company_info and remember is also checked, save to localStorage
-      const companyInfo = {
-        company_name: formik.values.company_name,
-        company_address: formik.values.company_address,
-        company_email: formik.values.company_email,
-        company_phone: formik.values.company_phone,
-        company_logo_base64: formik.values.company_logo_base64,
-        custom_header_text: formik.values.custom_header_text,
-        primary_color: formik.values.primary_color,
-        company_file_name: formik.values.company_file_name,
-      };
-      localStorage.setItem("companyInfo", JSON.stringify(companyInfo));
-    } else if (
-      name === "remember_company_info" &&
-      checked &&
-      formik.values.include_company_info
-    ) {
-      // If checking the remember_company_info and include is also checked, save to localStorage
-      const companyInfo = {
-        company_name: formik.values.company_name,
-        company_address: formik.values.company_address,
-        company_email: formik.values.company_email,
-        company_phone: formik.values.company_phone,
-        company_logo_base64: formik.values.company_logo_base64,
-        custom_header_text: formik.values.custom_header_text,
-        primary_color: formik.values.primary_color,
-        company_file_name: formik.values.company_file_name,
-      };
-      localStorage.setItem("companyInfo", JSON.stringify(companyInfo));
-    }
   };
 
   const handlePaste = (e: ClipboardEvent<HTMLTextAreaElement>) => {
@@ -347,10 +306,18 @@ const PurchaseContractForm: React.FC = () => {
   };
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (session?.user?.email) {
+      setUserEmail(session.user.email);
+    } else {
+      setUserEmail(null);
+    }
+  }, [session, setUserEmail]);
+
+  useEffect(() => {
+    if (session?.user) {
       fetchBalance();
     }
-  }, [isLoggedIn]);
+  }, [session]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -374,7 +341,7 @@ const PurchaseContractForm: React.FC = () => {
 
   const getButtonText = () => {
     if (!formik.isValid) return "Sjekk at alle obligatoriske felt er fylt ut";
-    if (!isLoggedIn) return "Logg inn for å generere PDF";
+    if (!session?.user) return "Logg inn for å generere PDF";
     if (isLoading) return "Genererer...";
     if (balance !== null && Number(balance) < 9.9)
       return "Legg til penger (Kun kr 9.90.- per generering)";
@@ -549,91 +516,6 @@ const PurchaseContractForm: React.FC = () => {
     setBuyerSignatureData("");
     formik.setFieldValue("kjopers_underskrift", "");
   };
-
-  // Load company info from localStorage on component mount
-  useEffect(() => {
-    const savedCompanyInfo = localStorage.getItem("companyInfo");
-    if (savedCompanyInfo) {
-      const companyInfo = JSON.parse(savedCompanyInfo);
-      formik.setFieldValue("company_name", companyInfo.company_name || "");
-      formik.setFieldValue(
-        "company_address",
-        companyInfo.company_address || ""
-      );
-      formik.setFieldValue("company_email", companyInfo.company_email || "");
-      formik.setFieldValue("company_phone", companyInfo.company_phone || "");
-      formik.setFieldValue(
-        "company_logo_base64",
-        companyInfo.company_logo_base64 || ""
-      );
-      formik.setFieldValue(
-        "custom_header_text",
-        companyInfo.custom_header_text || ""
-      );
-      formik.setFieldValue(
-        "primary_color",
-        companyInfo.primary_color || "#1E3369"
-      );
-      formik.setFieldValue("include_company_info", true);
-      formik.setFieldValue("remember_company_info", true);
-      // Set file name if logo exists
-      if (companyInfo.company_logo_base64) {
-        const fileName = companyInfo.company_file_name || "Lagret logo.png";
-        setLogoFileName(fileName);
-        formik.setFieldValue("company_file_name", fileName);
-      }
-    }
-  }, []);
-
-  const saveCompanyInfoToLocalStorage = (values: FormData) => {
-    if (values.remember_company_info && values.include_company_info) {
-      const companyInfo = {
-        company_name: values.company_name,
-        company_address: values.company_address,
-        company_email: values.company_email,
-        company_phone: values.company_phone,
-        company_logo_base64: values.company_logo_base64,
-        custom_header_text: values.custom_header_text,
-        primary_color: values.primary_color,
-        company_file_name: values.company_file_name,
-      };
-      localStorage.setItem("companyInfo", JSON.stringify(companyInfo));
-    } else {
-      // If either checkbox is unchecked during form submission, remove data
-      localStorage.removeItem("companyInfo");
-    }
-  };
-
-  // Add useEffect to update localStorage when relevant fields change
-  useEffect(() => {
-    if (
-      formik.values.remember_company_info &&
-      formik.values.include_company_info
-    ) {
-      const companyInfo = {
-        company_name: formik.values.company_name,
-        company_address: formik.values.company_address,
-        company_email: formik.values.company_email,
-        company_phone: formik.values.company_phone,
-        company_logo_base64: formik.values.company_logo_base64,
-        custom_header_text: formik.values.custom_header_text,
-        primary_color: formik.values.primary_color,
-        company_file_name: formik.values.company_file_name,
-      };
-      localStorage.setItem("companyInfo", JSON.stringify(companyInfo));
-    }
-  }, [
-    formik.values.company_name,
-    formik.values.company_address,
-    formik.values.company_email,
-    formik.values.company_phone,
-    formik.values.company_logo_base64,
-    formik.values.custom_header_text,
-    formik.values.primary_color,
-    formik.values.company_file_name,
-    formik.values.remember_company_info,
-    formik.values.include_company_info,
-  ]);
 
   return (
     <Card className="w-full max-w-4xl mx-auto bg-white shadow-xl border-t border-blue-500 rounded-xl overflow-hidden">
@@ -1991,7 +1873,7 @@ const PurchaseContractForm: React.FC = () => {
             </Label>
           </div>
 
-          {!isLoggedIn && (
+          {!session?.user && (
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-4">
               <div className="flex items-center gap-3">
                 <svg
@@ -2058,7 +1940,7 @@ const PurchaseContractForm: React.FC = () => {
               Forhåndsvisning (Gratis)
             </Button>
 
-            {isLoggedIn && balance !== null && balance < 9.9 ? (
+            {session?.user && balance !== null && balance < 9.9 ? (
               <Button
                 type="button"
                 className="w-2/3 py-6 bg-blue-600 hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
@@ -2070,10 +1952,12 @@ const PurchaseContractForm: React.FC = () => {
               <Button
                 type="submit"
                 className={`w-2/3 text-lg py-6 ${
-                  isLoggedIn ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400"
+                  session?.user
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-gray-400"
                 } transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2`}
                 onClick={() => debugValidationErrors()}
-                disabled={isLoading || !isLoggedIn}
+                disabled={isLoading || !session?.user}
               >
                 {isLoading ? (
                   <svg

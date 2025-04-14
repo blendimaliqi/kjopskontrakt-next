@@ -57,6 +57,8 @@ interface ContractFormStore {
   formData: FormData;
   setFormData: (data: Partial<FormData>) => void;
   resetForm: () => void;
+  userEmail: string | null;
+  setUserEmail: (email: string | null) => void;
 }
 
 const initialFormData: FormData = {
@@ -111,18 +113,107 @@ const initialFormData: FormData = {
   company_file_name: "",
 };
 
-export const useContractFormStore = create<ContractFormStore>()(
-  persist(
-    (set) => ({
-      formData: initialFormData,
-      setFormData: (data) =>
-        set((state) => ({
-          formData: { ...state.formData, ...data },
-        })),
-      resetForm: () => set({ formData: initialFormData }),
-    }),
-    {
-      name: "contract-form-storage", // unique name for localStorage key
-    }
-  )
-);
+// Helper to get storage key based on user email
+const getStorageKey = (email: string | null) => {
+  return email ? `contract-form-storage-${email}` : null;
+};
+
+export const useContractFormStore = create<ContractFormStore>()((set, get) => {
+  // Initialize with no persistence first
+  const store = {
+    formData: initialFormData,
+    userEmail: null,
+    setFormData: (data: Partial<FormData>) =>
+      set((state) => ({
+        formData: { ...state.formData, ...data },
+      })),
+    resetForm: () => set({ formData: initialFormData }),
+    setUserEmail: (email: string | null) => {
+      set({ userEmail: email });
+
+      // Clear session storage on logout
+      if (!email) {
+        sessionStorage.removeItem("contract-form-storage-temp");
+        return;
+      }
+
+      // After setting email, retrieve stored data from localStorage if it exists
+      const storageKey = getStorageKey(email);
+      if (storageKey) {
+        try {
+          const storedData = localStorage.getItem(storageKey);
+          if (storedData) {
+            const parsedData = JSON.parse(storedData);
+            if (parsedData.state && parsedData.state.formData) {
+              set({
+                formData: { ...initialFormData, ...parsedData.state.formData },
+              });
+            }
+          }
+        } catch (error) {
+          console.error("Error loading data from localStorage:", error);
+        }
+      }
+    },
+  };
+
+  // Add middleware conditionally based on user email
+  return {
+    ...store,
+    setFormData: (data: Partial<FormData>) => {
+      // Standard update logic first
+      store.setFormData(data);
+
+      // Then handle persistence manually if user is logged in
+      const email = get().userEmail;
+      const storageKey = getStorageKey(email);
+
+      if (
+        storageKey &&
+        data.remember_company_info &&
+        data.include_company_info
+      ) {
+        // Save to localStorage
+        try {
+          const currentState = get().formData;
+          const updatedState = { ...currentState, ...data };
+          localStorage.setItem(
+            storageKey,
+            JSON.stringify({
+              state: { formData: updatedState },
+              version: 0,
+            })
+          );
+        } catch (error) {
+          console.error("Error saving data to localStorage:", error);
+        }
+      } else if (!email) {
+        // If no email but form data changed, store temporarily in sessionStorage
+        try {
+          const currentState = get().formData;
+          const updatedState = { ...currentState, ...data };
+          sessionStorage.setItem(
+            "contract-form-storage-temp",
+            JSON.stringify({
+              state: { formData: updatedState },
+              version: 0,
+            })
+          );
+        } catch (error) {
+          console.error("Error saving temporary data:", error);
+        }
+      }
+    },
+    resetForm: () => {
+      store.resetForm();
+
+      // Also clear stored data if user requested
+      const email = get().userEmail;
+      const storageKey = getStorageKey(email);
+      if (storageKey) {
+        localStorage.removeItem(storageKey);
+      }
+      sessionStorage.removeItem("contract-form-storage-temp");
+    },
+  };
+});

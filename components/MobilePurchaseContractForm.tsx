@@ -63,8 +63,11 @@ interface FormData {
 
 const MobilePurchaseContractForm: React.FC = () => {
   const { data: session } = useSession();
-  const { formData: storedFormData, setFormData: setStoredFormData } =
-    useContractFormStore();
+  const {
+    formData: storedFormData,
+    setFormData: setStoredFormData,
+    setUserEmail,
+  } = useContractFormStore();
 
   const validationSchema = Yup.object({
     selger_fornavn: Yup.string().required("Påkrevd"),
@@ -250,10 +253,13 @@ const MobilePurchaseContractForm: React.FC = () => {
   };
 
   useEffect(() => {
-    if (session && session.user && session.user.email) {
+    if (session?.user?.email) {
+      setUserEmail(session.user.email);
       fetchBalance();
+    } else {
+      setUserEmail(null);
     }
-  }, []);
+  }, [session, setUserEmail]);
 
   useEffect(() => {
     setStoredFormData(formik.values);
