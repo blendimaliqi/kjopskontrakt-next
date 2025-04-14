@@ -956,8 +956,35 @@ export function generatePDF(formData: FormData): void {
       .toLowerCase()}-kjøpskontrakt.pdf`;
   }
 
-  // Save the PDF with the determined filename
-  doc.save(filename);
+  // Get file data and handle download more effectively for mobile
+  const pdfData = doc.output("blob");
+  const pdfUrl = URL.createObjectURL(pdfData);
+
+  // Create an invisible link element to trigger download
+  const downloadLink = document.createElement("a");
+  downloadLink.href = pdfUrl;
+  downloadLink.download = filename;
+  downloadLink.style.display = "none";
+  document.body.appendChild(downloadLink);
+
+  // Check if it's iOS device (MSStream is used to exclude IE11)
+  const isIOS =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+  if (isIOS || isSafari) {
+    // For iOS devices, open in a new window
+    window.open(pdfUrl, "_blank");
+  } else {
+    // For other devices, trigger download
+    downloadLink.click();
+  }
+
+  // Clean up
+  setTimeout(() => {
+    URL.revokeObjectURL(pdfUrl);
+    document.body.removeChild(downloadLink);
+  }, 100);
 }
 
 // Add a new function for generating a preview PDF with watermark
@@ -1881,6 +1908,33 @@ export function generatePreviewPDF(formData: FormData): void {
     }
   }
 
-  // Save the PDF as a preview
-  doc.save("forhandsvisning-kjopskontrakt.pdf");
+  // Get file data and handle download more effectively for mobile
+  const pdfData = doc.output("blob");
+  const pdfUrl = URL.createObjectURL(pdfData);
+
+  // Create an invisible link element to trigger download
+  const downloadLink = document.createElement("a");
+  downloadLink.href = pdfUrl;
+  downloadLink.download = "forhandsvisning-kjopskontrakt.pdf";
+  downloadLink.style.display = "none";
+  document.body.appendChild(downloadLink);
+
+  // Check if it's iOS device (MSStream is used to exclude IE11)
+  const isIOS =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+  if (isIOS || isSafari) {
+    // For iOS devices, open in a new window
+    window.open(pdfUrl, "_blank");
+  } else {
+    // For other devices, trigger download
+    downloadLink.click();
+  }
+
+  // Clean up
+  setTimeout(() => {
+    URL.revokeObjectURL(pdfUrl);
+    document.body.removeChild(downloadLink);
+  }, 100);
 }
