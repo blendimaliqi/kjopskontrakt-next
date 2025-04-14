@@ -12,7 +12,7 @@ import {
   HelpCircle,
   CreditCard,
   Menu,
-  X
+  X,
 } from "lucide-react";
 import { getBaseUrl } from "@/utils/auth";
 
@@ -173,7 +173,7 @@ export default function Navbar() {
               )}
             </div>
           </div>
-          
+
           <div className="flex items-center">
             {/* Mobile menu button */}
             <button
@@ -188,7 +188,7 @@ export default function Navbar() {
                 <Menu className="block h-6 w-6" aria-hidden="true" />
               )}
             </button>
-            
+
             {/* Desktop auth buttons */}
             <div className="hidden sm:ml-6 sm:flex sm:items-center">
               {status === "authenticated" && session?.user?.email ? (
@@ -224,7 +224,7 @@ export default function Navbar() {
       </div>
 
       {/* Mobile menu, show/hide based on menu state */}
-      <div className={`sm:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
+      <div className={`sm:hidden ${isMobileMenuOpen ? "block" : "hidden"}`}>
         <div className="pt-2 pb-3 space-y-1 border-t">
           <Link
             href="/"
@@ -288,12 +288,14 @@ export default function Navbar() {
             </Link>
           )}
         </div>
-        
+
         {/* Mobile auth buttons */}
         <div className="pt-4 pb-3 border-t border-gray-200">
           {status === "authenticated" && session?.user?.email ? (
             <div className="space-y-3 px-4">
-              <div className="text-base font-medium text-gray-800">{session.user.email}</div>
+              <div className="text-base font-medium text-gray-800">
+                {session.user.email}
+              </div>
               <Button
                 variant="outline"
                 className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 justify-center"
@@ -311,7 +313,10 @@ export default function Navbar() {
               >
                 <Link href="/auth/signin">Logg inn</Link>
               </Button>
-              <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 justify-center">
+              <Button
+                asChild
+                className="w-full bg-blue-600 hover:bg-blue-700 justify-center"
+              >
                 <Link href="/auth/signup">Registrer deg</Link>
               </Button>
             </div>
