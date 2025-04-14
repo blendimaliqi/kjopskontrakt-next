@@ -174,7 +174,8 @@ export function generatePDF(formData: FormData): void {
     x: number,
     y: number,
     width: number = 50,
-    multiline: boolean = false
+    multiline: boolean = false,
+    isSignature: boolean = false
   ): number {
     // Position the label slightly above the field with proper spacing
     addText(label, x, y, 8, "normal", "left", undefined, [80, 80, 80]);
@@ -190,16 +191,45 @@ export function generatePDF(formData: FormData): void {
     doc.setLineWidth(0.1);
 
     const fieldHeight = multiline ? 15 : 6;
-    doc.rect(x, fieldY, width, fieldHeight, "FD");
 
-    if (multiline) {
-      return (
-        addText(value, x + 2, fieldY + 4, 9, "normal", "left", width - 4) * 5 +
-        5
-      );
+    // For signature fields that contain base64 data, render as image
+    if (isSignature && value && value.startsWith("data:image")) {
+      // Draw the field background and border
+      doc.rect(x, fieldY, width, 20, "FD");
+
+      try {
+        // Add the signature image
+        doc.addImage(
+          value,
+          "PNG",
+          x + 2,
+          fieldY + 1,
+          width - 4,
+          18,
+          undefined,
+          "FAST"
+        );
+        return 25; // Return taller height for signature images
+      } catch (error) {
+        console.error("Error adding signature to PDF:", error);
+        // Fallback to text if image fails
+        addText(value, x + 2, fieldY + 4, 9, "normal", "left");
+        return fieldHeight + 7;
+      }
     } else {
-      addText(value, x + 2, fieldY + 4, 9, "normal", "left");
-      return fieldHeight + 7; // Reduced from 10 to 7 to reduce space between fields
+      // Regular text field
+      doc.rect(x, fieldY, width, fieldHeight, "FD");
+
+      if (multiline) {
+        return (
+          addText(value, x + 2, fieldY + 4, 9, "normal", "left", width - 4) *
+            5 +
+          5
+        );
+      } else {
+        addText(value, x + 2, fieldY + 4, 9, "normal", "left");
+        return fieldHeight + 7; // Reduced from 10 to 7 to reduce space between fields
+      }
     }
   }
 
@@ -744,7 +774,9 @@ export function generatePDF(formData: FormData): void {
     formData.selgers_underskrift,
     margin,
     yPosition,
-    signatureFieldWidth
+    signatureFieldWidth,
+    false,
+    true // Mark as signature
   );
 
   addField(
@@ -752,10 +784,12 @@ export function generatePDF(formData: FormData): void {
     formData.kjopers_underskrift || "",
     margin + signatureFieldWidth + 10,
     yPosition,
-    signatureFieldWidth
+    signatureFieldWidth,
+    false,
+    true // Mark as signature
   );
 
-  yPosition += 25;
+  yPosition += 40; // Increased from 25 to add more space before disclaimer
 
   // Add disclaimer if checkbox is checked
   if (formData.include_disclaimer) {
@@ -983,7 +1017,8 @@ export function generatePreviewPDF(formData: FormData): void {
     x: number,
     y: number,
     width: number = 50,
-    multiline: boolean = false
+    multiline: boolean = false,
+    isSignature: boolean = false
   ): number {
     // Position the label slightly above the field with proper spacing
     addText(label, x, y, 8, "normal", "left", undefined, [80, 80, 80]);
@@ -999,16 +1034,45 @@ export function generatePreviewPDF(formData: FormData): void {
     doc.setLineWidth(0.1);
 
     const fieldHeight = multiline ? 15 : 6;
-    doc.rect(x, fieldY, width, fieldHeight, "FD");
 
-    if (multiline) {
-      return (
-        addText(value, x + 2, fieldY + 4, 9, "normal", "left", width - 4) * 5 +
-        5
-      );
+    // For signature fields that contain base64 data, render as image
+    if (isSignature && value && value.startsWith("data:image")) {
+      // Draw the field background and border
+      doc.rect(x, fieldY, width, 20, "FD");
+
+      try {
+        // Add the signature image
+        doc.addImage(
+          value,
+          "PNG",
+          x + 2,
+          fieldY + 1,
+          width - 4,
+          18,
+          undefined,
+          "FAST"
+        );
+        return 25; // Return taller height for signature images
+      } catch (error) {
+        console.error("Error adding signature to PDF:", error);
+        // Fallback to text if image fails
+        addText(value, x + 2, fieldY + 4, 9, "normal", "left");
+        return fieldHeight + 7;
+      }
     } else {
-      addText(value, x + 2, fieldY + 4, 9, "normal", "left");
-      return fieldHeight + 7; // Reduced from 10 to 7 to reduce space between fields
+      // Regular text field
+      doc.rect(x, fieldY, width, fieldHeight, "FD");
+
+      if (multiline) {
+        return (
+          addText(value, x + 2, fieldY + 4, 9, "normal", "left", width - 4) *
+            5 +
+          5
+        );
+      } else {
+        addText(value, x + 2, fieldY + 4, 9, "normal", "left");
+        return fieldHeight + 7; // Reduced from 10 to 7 to reduce space between fields
+      }
     }
   }
 
@@ -1583,7 +1647,9 @@ export function generatePreviewPDF(formData: FormData): void {
     formData.selgers_underskrift,
     margin,
     yPosition,
-    signatureFieldWidth
+    signatureFieldWidth,
+    false,
+    true // Mark as signature
   );
 
   addField(
@@ -1591,10 +1657,12 @@ export function generatePreviewPDF(formData: FormData): void {
     formData.kjopers_underskrift || "",
     margin + signatureFieldWidth + 10,
     yPosition,
-    signatureFieldWidth
+    signatureFieldWidth,
+    false,
+    true // Mark as signature
   );
 
-  yPosition += 25;
+  yPosition += 40; // Increased from 25 to add more space before disclaimer
 
   // Add disclaimer if checkbox is checked
   if (formData.include_disclaimer) {

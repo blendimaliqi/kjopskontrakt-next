@@ -76,6 +76,19 @@ const PurchaseContractForm: React.FC = () => {
   const isLoggedIn = Boolean(session && session.user && session.user.email);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const colorPickerRef = useRef<HTMLDivElement>(null);
+  const [sellerSignatureMode, setSellerSignatureMode] = useState<
+    "text" | "draw" | "upload"
+  >("text");
+  const [buyerSignatureMode, setBuyerSignatureMode] = useState<
+    "text" | "draw" | "upload"
+  >("text");
+  const [sellerSignatureData, setSellerSignatureData] = useState<string>("");
+  const [buyerSignatureData, setBuyerSignatureData] = useState<string>("");
+  const sellerCanvasRef = useRef<HTMLCanvasElement>(null);
+  const buyerCanvasRef = useRef<HTMLCanvasElement>(null);
+  const [isDrawingSellerSignature, setIsDrawingSellerSignature] =
+    useState(false);
+  const [isDrawingBuyerSignature, setIsDrawingBuyerSignature] = useState(false);
 
   const validationSchema = Yup.object({
     selger_fornavn: Yup.string().required("Påkrevd"),
@@ -278,6 +291,175 @@ const PurchaseContractForm: React.FC = () => {
     if (balance !== null && Number(balance) < 9.9)
       return "Legg til penger (Kun kr 9.90.- per generering)";
     return "Generer PDF (kr 9.90.-)";
+  };
+
+  const initializeCanvas = (canvas: HTMLCanvasElement | null) => {
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "black";
+    }
+  };
+
+  useEffect(() => {
+    // Initialize canvas for seller signature
+    initializeCanvas(sellerCanvasRef.current);
+    // Initialize canvas for buyer signature
+    initializeCanvas(buyerCanvasRef.current);
+  }, [sellerSignatureMode, buyerSignatureMode]);
+
+  const handleSellerCanvasMouseDown = (
+    e: React.MouseEvent<HTMLCanvasElement>
+  ) => {
+    setIsDrawingSellerSignature(true);
+    const canvas = sellerCanvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  };
+
+  const handleSellerCanvasMouseMove = (
+    e: React.MouseEvent<HTMLCanvasElement>
+  ) => {
+    if (!isDrawingSellerSignature) return;
+
+    const canvas = sellerCanvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  };
+
+  const handleSellerCanvasMouseUp = () => {
+    setIsDrawingSellerSignature(false);
+    const canvas = sellerCanvasRef.current;
+    if (!canvas) return;
+
+    // Save the signature as base64 data
+    const dataURL = canvas.toDataURL("image/png");
+    setSellerSignatureData(dataURL);
+    formik.setFieldValue("selgers_underskrift", dataURL);
+  };
+
+  const handleBuyerCanvasMouseDown = (
+    e: React.MouseEvent<HTMLCanvasElement>
+  ) => {
+    setIsDrawingBuyerSignature(true);
+    const canvas = buyerCanvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  };
+
+  const handleBuyerCanvasMouseMove = (
+    e: React.MouseEvent<HTMLCanvasElement>
+  ) => {
+    if (!isDrawingBuyerSignature) return;
+
+    const canvas = buyerCanvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  };
+
+  const handleBuyerCanvasMouseUp = () => {
+    setIsDrawingBuyerSignature(false);
+    const canvas = buyerCanvasRef.current;
+    if (!canvas) return;
+
+    // Save the signature as base64 data
+    const dataURL = canvas.toDataURL("image/png");
+    setBuyerSignatureData(dataURL);
+    formik.setFieldValue("kjopers_underskrift", dataURL);
+  };
+
+  const handleSellerSignatureUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataURL = event.target?.result as string;
+      setSellerSignatureData(dataURL);
+      formik.setFieldValue("selgers_underskrift", dataURL);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleBuyerSignatureUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataURL = event.target?.result as string;
+      setBuyerSignatureData(dataURL);
+      formik.setFieldValue("kjopers_underskrift", dataURL);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const clearSellerCanvas = () => {
+    const canvas = sellerCanvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "black";
+
+    setSellerSignatureData("");
+    formik.setFieldValue("selgers_underskrift", "");
+  };
+
+  const clearBuyerCanvas = () => {
+    const canvas = buyerCanvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "black";
+
+    setBuyerSignatureData("");
+    formik.setFieldValue("kjopers_underskrift", "");
   };
 
   return (
@@ -1218,15 +1400,102 @@ const PurchaseContractForm: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-2 bg-white p-6 rounded-lg border border-blue-200 shadow-sm">
+            <div className="space-y-4 bg-white p-6 rounded-lg border border-blue-200 shadow-sm">
               <Label htmlFor="selgers_underskrift" className="font-medium">
                 Selgers underskrift
               </Label>
-              <Input
-                id="selgers_underskrift"
-                {...formik.getFieldProps("selgers_underskrift")}
-                className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-              />
+
+              <div className="flex space-x-3 mb-2">
+                <Button
+                  type="button"
+                  onClick={() => setSellerSignatureMode("text")}
+                  className={`px-3 py-1 text-xs ${
+                    sellerSignatureMode === "text"
+                      ? "bg-blue-600"
+                      : "bg-gray-300"
+                  }`}
+                >
+                  Skriv inn
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => setSellerSignatureMode("draw")}
+                  className={`px-3 py-1 text-xs ${
+                    sellerSignatureMode === "draw"
+                      ? "bg-blue-600"
+                      : "bg-gray-300"
+                  }`}
+                >
+                  Tegn signatur
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => setSellerSignatureMode("upload")}
+                  className={`px-3 py-1 text-xs ${
+                    sellerSignatureMode === "upload"
+                      ? "bg-blue-600"
+                      : "bg-gray-300"
+                  }`}
+                >
+                  Last opp
+                </Button>
+              </div>
+
+              {sellerSignatureMode === "text" && (
+                <Input
+                  id="selgers_underskrift"
+                  {...formik.getFieldProps("selgers_underskrift")}
+                  className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                  placeholder="Skriv inn ditt navn"
+                />
+              )}
+
+              {sellerSignatureMode === "draw" && (
+                <div className="signature-container">
+                  <canvas
+                    ref={sellerCanvasRef}
+                    width={400}
+                    height={150}
+                    className="border border-gray-300 rounded cursor-crosshair bg-white"
+                    onMouseDown={handleSellerCanvasMouseDown}
+                    onMouseMove={handleSellerCanvasMouseMove}
+                    onMouseUp={handleSellerCanvasMouseUp}
+                    onMouseLeave={handleSellerCanvasMouseUp}
+                  ></canvas>
+                  <Button
+                    type="button"
+                    onClick={clearSellerCanvas}
+                    className="mt-2 px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 text-gray-700"
+                  >
+                    Tøm signatur
+                  </Button>
+                </div>
+              )}
+
+              {sellerSignatureMode === "upload" && (
+                <div className="space-y-2">
+                  <Input
+                    id="sellerSignatureUpload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleSellerSignatureUpload}
+                    className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                  {sellerSignatureData && (
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-600 mb-1">
+                        Forhåndsvisning av signatur:
+                      </p>
+                      <img
+                        src={sellerSignatureData}
+                        alt="Seller Signature"
+                        className="max-w-full h-auto max-h-[100px] border rounded p-1"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
               {formik.touched.selgers_underskrift &&
               formik.errors.selgers_underskrift ? (
                 <div className="text-red-500 text-xs">
@@ -1234,15 +1503,103 @@ const PurchaseContractForm: React.FC = () => {
                 </div>
               ) : null}
             </div>
-            <div className="space-y-2 bg-white p-6 rounded-lg border border-blue-200 shadow-sm">
+
+            <div className="space-y-4 bg-white p-6 rounded-lg border border-blue-200 shadow-sm">
               <Label htmlFor="kjopers_underskrift" className="font-medium">
                 Kjøpers underskrift
               </Label>
-              <Input
-                id="kjopers_underskrift"
-                // {...formik.getFieldProps("kjopers_underskrift")}
-                className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-              />
+
+              <div className="flex space-x-3 mb-2">
+                <Button
+                  type="button"
+                  onClick={() => setBuyerSignatureMode("text")}
+                  className={`px-3 py-1 text-xs ${
+                    buyerSignatureMode === "text"
+                      ? "bg-blue-600"
+                      : "bg-gray-300"
+                  }`}
+                >
+                  Skriv inn
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => setBuyerSignatureMode("draw")}
+                  className={`px-3 py-1 text-xs ${
+                    buyerSignatureMode === "draw"
+                      ? "bg-blue-600"
+                      : "bg-gray-300"
+                  }`}
+                >
+                  Tegn signatur
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => setBuyerSignatureMode("upload")}
+                  className={`px-3 py-1 text-xs ${
+                    buyerSignatureMode === "upload"
+                      ? "bg-blue-600"
+                      : "bg-gray-300"
+                  }`}
+                >
+                  Last opp
+                </Button>
+              </div>
+
+              {buyerSignatureMode === "text" && (
+                <Input
+                  id="kjopers_underskrift"
+                  {...formik.getFieldProps("kjopers_underskrift")}
+                  className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                  placeholder="Skriv inn ditt navn"
+                />
+              )}
+
+              {buyerSignatureMode === "draw" && (
+                <div className="signature-container">
+                  <canvas
+                    ref={buyerCanvasRef}
+                    width={400}
+                    height={150}
+                    className="border border-gray-300 rounded cursor-crosshair bg-white"
+                    onMouseDown={handleBuyerCanvasMouseDown}
+                    onMouseMove={handleBuyerCanvasMouseMove}
+                    onMouseUp={handleBuyerCanvasMouseUp}
+                    onMouseLeave={handleBuyerCanvasMouseUp}
+                  ></canvas>
+                  <Button
+                    type="button"
+                    onClick={clearBuyerCanvas}
+                    className="mt-2 px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 text-gray-700"
+                  >
+                    Tøm signatur
+                  </Button>
+                </div>
+              )}
+
+              {buyerSignatureMode === "upload" && (
+                <div className="space-y-2">
+                  <Input
+                    id="buyerSignatureUpload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleBuyerSignatureUpload}
+                    className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                  {buyerSignatureData && (
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-600 mb-1">
+                        Forhåndsvisning av signatur:
+                      </p>
+                      <img
+                        src={buyerSignatureData}
+                        alt="Buyer Signature"
+                        className="max-w-full h-auto max-h-[100px] border rounded p-1"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
               {formik.touched.kjopers_underskrift &&
               formik.errors.kjopers_underskrift ? (
                 <div className="text-red-500 text-xs">
