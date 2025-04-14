@@ -36,19 +36,6 @@ export default function ContactPage() {
                 </a>
               </div>
             </div>
-
-            <div className="flex items-start">
-              <Phone className="h-6 w-6 text-blue-600 mr-4 mt-0.5" />
-              <div>
-                <h3 className="font-medium text-gray-900 mb-1">Telefon</h3>
-                <a
-                  href="tel:+4712345678"
-                  className="text-blue-600 hover:underline"
-                >
-                  +47 12 34 56 78
-                </a>
-              </div>
-            </div>
           </div>
         </div>
 

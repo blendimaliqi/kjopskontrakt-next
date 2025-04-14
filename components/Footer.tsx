@@ -1,14 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import {
-  Car,
-  Mail,
-  Phone,
-  MapPin,
-  Facebook,
-  Instagram,
-  Twitter,
-} from "lucide-react";
+import { Car, Mail } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -26,26 +18,6 @@ const Footer = () => {
               kjøpskontrakter for bil på nett. Vår tjeneste er designet for å
               gjøre prosessen så smidig som mulig for både kjøpere og selgere.
             </p>
-            <div className="flex space-x-4">
-              <a
-                href="https://facebook.com"
-                className="text-gray-400 hover:text-blue-400 transition-colors"
-              >
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a
-                href="https://instagram.com"
-                className="text-gray-400 hover:text-blue-400 transition-colors"
-              >
-                <Instagram className="h-5 w-5" />
-              </a>
-              <a
-                href="https://twitter.com"
-                className="text-gray-400 hover:text-blue-400 transition-colors"
-              >
-                <Twitter className="h-5 w-5" />
-              </a>
-            </div>
           </div>
 
           {/* Quick links */}
