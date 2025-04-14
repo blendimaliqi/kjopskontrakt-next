@@ -355,6 +355,7 @@ const PurchaseContractForm: React.FC = () => {
       ctx.fillStyle = "white";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = "black";
+      ctx.lineWidth = 2; // Add this for better lines
     }
   };
 
@@ -376,8 +377,10 @@ const PurchaseContractForm: React.FC = () => {
     if (!ctx) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
 
     ctx.beginPath();
     ctx.moveTo(x, y);
@@ -395,8 +398,10 @@ const PurchaseContractForm: React.FC = () => {
     if (!ctx) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
 
     ctx.lineTo(x, y);
     ctx.stroke();
@@ -424,8 +429,10 @@ const PurchaseContractForm: React.FC = () => {
     if (!ctx) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
 
     ctx.beginPath();
     ctx.moveTo(x, y);
@@ -443,8 +450,10 @@ const PurchaseContractForm: React.FC = () => {
     if (!ctx) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
 
     ctx.lineTo(x, y);
     ctx.stroke();
@@ -519,19 +528,19 @@ const PurchaseContractForm: React.FC = () => {
 
   return (
     <Card className="w-full max-w-4xl mx-auto bg-white shadow-xl border-t border-blue-500 rounded-xl overflow-hidden">
-      <CardHeader className="border-b bg-white p-6 flex flex-row justify-between items-center">
+      <CardHeader className="border-b bg-white p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-blue-600">
+          <h2 className="text-xl sm:text-2xl font-bold text-blue-600 text-center sm:text-left">
             {formik.values.custom_header_text || "Kjøpskontrakt"}
           </h2>
-          <p className="text-gray-500 mt-1 text-sm">
+          <p className="text-gray-500 mt-1 text-sm text-center sm:text-left">
             Fyll ut alle nødvendige detaljer for å generere en juridisk bindende
             kontrakt
           </p>
         </div>
         {formik.values.include_company_info &&
           formik.values.company_logo_base64 && (
-            <div className="h-16">
+            <div className="h-16 mt-3 sm:mt-0">
               <img
                 src={formik.values.company_logo_base64}
                 alt="Company Logo"
@@ -543,16 +552,16 @@ const PurchaseContractForm: React.FC = () => {
       <CardContent className="p-8 bg-gray-50/50">
         <form
           id="customForm"
-          className="space-y-8"
+          className="space-y-6 sm:space-y-8"
           onSubmit={formik.handleSubmit}
         >
           <Card className="border border-blue-200 shadow-sm hover:shadow-md transition-shadow duration-200 bg-white">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 py-4">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 py-3 sm:py-4 px-4 sm:px-6">
               <h3 className="text-lg font-semibold text-blue-700">
                 Tilpass kontrakten
               </h3>
             </CardHeader>
-            <CardContent className="space-y-6 p-6">
+            <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
               <div className="flex items-center space-x-2 mb-4">
                 <Checkbox
                   id="include_company_info"
@@ -566,16 +575,16 @@ const PurchaseContractForm: React.FC = () => {
 
               {formik.values.include_company_info && (
                 <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                  <div className="flex items-center space-x-3 p-3 mb-4 bg-white rounded-md border-2 border-blue-300 shadow-sm">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-3 p-3 mb-4 bg-white rounded-md border-2 border-blue-300 shadow-sm">
                     <Checkbox
                       id="remember_company_info"
                       checked={formik.values.remember_company_info}
                       onCheckedChange={handleCheckboxChange(
                         "remember_company_info"
                       )}
-                      className="text-blue-600 h-5 w-5"
+                      className="text-blue-600 h-5 w-5 mt-1 sm:mt-0"
                     />
-                    <div className="flex flex-col">
+                    <div className="flex flex-col mt-2 sm:mt-0">
                       <Label
                         htmlFor="remember_company_info"
                         className="font-medium text-blue-700"
@@ -684,7 +693,7 @@ const PurchaseContractForm: React.FC = () => {
                           />
                           {showColorPicker && (
                             <div
-                              className="absolute z-10 right-0 top-full mt-2 w-64"
+                              className="absolute z-10 right-0 top-full mt-2 w-full sm:w-64"
                               ref={colorPickerRef}
                             >
                               <div className="p-4 bg-white rounded-lg shadow-lg border border-gray-200">
@@ -713,12 +722,12 @@ const PurchaseContractForm: React.FC = () => {
                                           }}
                                         >
                                           <div
-                                            className="w-10 h-10 rounded-md border shadow cursor-pointer hover:scale-110 transition-transform"
+                                            className="w-8 sm:w-10 h-8 sm:h-10 rounded-md border shadow cursor-pointer hover:scale-110 transition-transform"
                                             style={{
                                               backgroundColor: colorItem.color,
                                             }}
                                           />
-                                          <span className="text-xs mt-1">
+                                          <span className="text-xs mt-1 text-center">
                                             {colorItem.name}
                                           </span>
                                         </div>
@@ -747,7 +756,7 @@ const PurchaseContractForm: React.FC = () => {
                                       ].map((color) => (
                                         <div
                                           key={color}
-                                          className="w-8 h-8 rounded-sm border shadow cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                                          className="w-6 h-6 sm:w-8 sm:h-8 rounded-sm border shadow cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
                                           style={{ backgroundColor: color }}
                                           onClick={() => {
                                             handleColorChange(color);
@@ -772,7 +781,7 @@ const PurchaseContractForm: React.FC = () => {
                                         onChange={(e) =>
                                           handleColorChange(e.target.value)
                                         }
-                                        className="w-10 h-10 cursor-pointer rounded border-0 bg-transparent p-0"
+                                        className="w-8 h-8 sm:w-10 sm:h-10 cursor-pointer rounded border-0 bg-transparent p-0"
                                       />
                                       <div className="text-xs text-gray-700 flex-1">
                                         Velg en egendefinert farge
@@ -812,7 +821,7 @@ const PurchaseContractForm: React.FC = () => {
                           id="company_logo"
                           type="file"
                           accept="image/png, image/jpeg"
-                          className={`border-blue-200 focus:border-blue-500 focus:ring-blue-500 ${
+                          className={`border-blue-200 focus:border-blue-500 focus:ring-blue-500 w-full ${
                             logoFileName ? "opacity-0 h-[38px]" : ""
                           }`}
                           onChange={(e) => {
@@ -845,7 +854,7 @@ const PurchaseContractForm: React.FC = () => {
                         />
                         {logoFileName && (
                           <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center border rounded-md border-gray-200">
-                            <span className="truncate px-3 flex-1">
+                            <span className="truncate px-3 flex-1 text-sm">
                               {logoFileName}
                             </span>
                             <Button
@@ -877,7 +886,7 @@ const PurchaseContractForm: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Card className="border border-blue-200 shadow-sm hover:shadow-md transition-shadow duration-200 bg-white">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 py-4">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 py-3 sm:py-4 px-4 sm:px-6">
                 <h3 className="text-lg font-semibold text-blue-700 flex items-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -894,7 +903,7 @@ const PurchaseContractForm: React.FC = () => {
                   Selger
                 </h3>
               </CardHeader>
-              <CardContent className="space-y-4 p-6">
+              <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="selger_fornavn" className="font-medium">
@@ -1019,7 +1028,7 @@ const PurchaseContractForm: React.FC = () => {
             </Card>
 
             <Card className="border border-blue-200 shadow-sm hover:shadow-md transition-shadow duration-200 bg-white">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 py-4">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 py-3 sm:py-4 px-4 sm:px-6">
                 <h3 className="text-lg font-semibold text-blue-700 flex items-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1036,7 +1045,7 @@ const PurchaseContractForm: React.FC = () => {
                   Kjøper
                 </h3>
               </CardHeader>
-              <CardContent className="space-y-4 p-6">
+              <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="kjoper_fornavn" className="font-medium">
@@ -1162,7 +1171,7 @@ const PurchaseContractForm: React.FC = () => {
           </div>
 
           <Card className="border border-blue-200 shadow-sm hover:shadow-md transition-shadow duration-200 bg-white">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 py-4">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 py-3 sm:py-4 px-4 sm:px-6">
               <h3 className="text-lg font-semibold text-blue-700 flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -1176,8 +1185,8 @@ const PurchaseContractForm: React.FC = () => {
                 Kjøretøy
               </h3>
             </CardHeader>
-            <CardContent className="space-y-6 p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                 <div className="space-y-2">
                   <Label
                     htmlFor="omregistreringsavgift_betales_av"
@@ -1229,7 +1238,7 @@ const PurchaseContractForm: React.FC = () => {
                   ) : null}
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
                 <div className="space-y-2">
                   <Label htmlFor="regnr" className="font-medium">
                     Reg.nr
@@ -1276,7 +1285,7 @@ const PurchaseContractForm: React.FC = () => {
                   ) : null}
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                 <div className="space-y-2">
                   <Label htmlFor="arsmodell" className="font-medium">
                     Årsmodell
@@ -1308,7 +1317,7 @@ const PurchaseContractForm: React.FC = () => {
                   ) : null}
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                 <div className="space-y-2">
                   <Label htmlFor="siste_eu_kontroll" className="font-medium">
                     Siste EU-kontroll
@@ -1342,7 +1351,7 @@ const PurchaseContractForm: React.FC = () => {
                   ) : null}
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                 <div className="space-y-2">
                   <Label htmlFor="betalingsmate" className="font-medium">
                     Betalingsmåte
@@ -1380,7 +1389,7 @@ const PurchaseContractForm: React.FC = () => {
           </Card>
 
           <Card className="border border-blue-200 shadow-sm hover:shadow-md transition-shadow duration-200 bg-white">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 py-4">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 py-3 sm:py-4 px-4 sm:px-6">
               <h3 className="text-lg font-semibold text-blue-700 flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -1397,38 +1406,47 @@ const PurchaseContractForm: React.FC = () => {
                 Utstyr inkludert i kjøpesum
               </h3>
             </CardHeader>
-            <CardContent className="p-6">
-              <div className="flex flex-wrap gap-6">
-                <div className="flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-md">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex flex-wrap gap-4 sm:gap-6">
+                <div className="flex items-center space-x-2 bg-gray-50 px-3 sm:px-4 py-2 rounded-md">
                   <Checkbox
                     id="utstyr_sommer"
                     checked={formik.values.utstyr_sommer}
                     onCheckedChange={handleCheckboxChange("utstyr_sommer")}
                     className="text-blue-600"
                   />
-                  <Label htmlFor="utstyr_sommer" className="font-medium">
+                  <Label
+                    htmlFor="utstyr_sommer"
+                    className="font-medium text-sm sm:text-base"
+                  >
                     Sommerhjul
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-md">
+                <div className="flex items-center space-x-2 bg-gray-50 px-3 sm:px-4 py-2 rounded-md">
                   <Checkbox
                     id="utstyr_vinter"
                     checked={formik.values.utstyr_vinter}
                     onCheckedChange={handleCheckboxChange("utstyr_vinter")}
                     className="text-blue-600"
                   />
-                  <Label htmlFor="utstyr_vinter" className="font-medium">
+                  <Label
+                    htmlFor="utstyr_vinter"
+                    className="font-medium text-sm sm:text-base"
+                  >
                     Vinterhjul
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-md">
+                <div className="flex items-center space-x-2 bg-gray-50 px-3 sm:px-4 py-2 rounded-md">
                   <Checkbox
                     id="utstyr_annet"
                     checked={formik.values.utstyr_annet}
                     onCheckedChange={handleCheckboxChange("utstyr_annet")}
                     className="text-blue-600"
                   />
-                  <Label htmlFor="utstyr_annet" className="font-medium">
+                  <Label
+                    htmlFor="utstyr_annet"
+                    className="font-medium text-sm sm:text-base"
+                  >
                     Annet
                   </Label>
                 </div>
@@ -1449,7 +1467,7 @@ const PurchaseContractForm: React.FC = () => {
                 </div>
               )}
 
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                 <div className="space-y-2">
                   <Label htmlFor="har_bilen_heftelser" className="font-medium">
                     Har bilen heftelser
@@ -1498,7 +1516,7 @@ const PurchaseContractForm: React.FC = () => {
           </Card>
 
           <Card className="border border-blue-200 shadow-sm hover:shadow-md transition-shadow duration-200 bg-white">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 py-4">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 py-3 sm:py-4 px-4 sm:px-6">
               <h3 className="text-lg font-semibold text-blue-700 flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -1515,7 +1533,7 @@ const PurchaseContractForm: React.FC = () => {
                 Andre kommentarer / vilkår
               </h3>
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <Textarea
                 id="andre_kommentarer"
                 {...formik.getFieldProps("andre_kommentarer")}
@@ -1528,7 +1546,7 @@ const PurchaseContractForm: React.FC = () => {
 
           <div className="grid grid-cols-1 gap-8">
             <Card className="border border-blue-200 shadow-sm hover:shadow-md transition-shadow duration-200 bg-white">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 py-4">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 py-3 sm:py-4 px-4 sm:px-6">
                 <h3 className="text-lg font-semibold text-blue-700 flex items-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1541,8 +1559,8 @@ const PurchaseContractForm: React.FC = () => {
                   Signaturer og datoer
                 </h3>
               </CardHeader>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <CardContent className="p-4 sm:p-6">
+                <div className="grid grid-cols-1 gap-6">
                   <div className="border rounded-lg p-4 bg-blue-50/30">
                     <h4 className="text-md font-semibold text-blue-700 mb-4">
                       Selger
@@ -1572,7 +1590,8 @@ const PurchaseContractForm: React.FC = () => {
                           id="dato_selger"
                           type="date"
                           {...formik.getFieldProps("dato_selger")}
-                          className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                          className="border-gray-200 focus:border-blue-500 focus:ring-blue-500 w-full"
+                          placeholder="dd.mm.åååå"
                         />
                         {formik.touched.dato_selger &&
                         formik.errors.dato_selger ? (
@@ -1589,7 +1608,7 @@ const PurchaseContractForm: React.FC = () => {
                           Selgers underskrift
                         </Label>
 
-                        <div className="flex space-x-3 mb-2">
+                        <div className="flex flex-wrap gap-2 mb-2">
                           <Button
                             type="button"
                             onClick={() => setSellerSignatureMode("draw")}
@@ -1649,8 +1668,51 @@ const PurchaseContractForm: React.FC = () => {
                               onMouseMove={handleSellerCanvasMouseMove}
                               onMouseUp={handleSellerCanvasMouseUp}
                               onMouseLeave={handleSellerCanvasMouseUp}
+                              onTouchStart={(e) => {
+                                e.preventDefault();
+                                const touch = e.touches[0];
+                                const canvas = sellerCanvasRef.current;
+                                if (!canvas) return;
+
+                                const rect = canvas.getBoundingClientRect();
+                                const scaleX = canvas.width / rect.width;
+                                const scaleY = canvas.height / rect.height;
+                                const x = (touch.clientX - rect.left) * scaleX;
+                                const y = (touch.clientY - rect.top) * scaleY;
+
+                                const ctx = canvas.getContext("2d");
+                                if (!ctx) return;
+
+                                setIsDrawingSellerSignature(true);
+                                ctx.beginPath();
+                                ctx.moveTo(x, y);
+                              }}
+                              onTouchMove={(e) => {
+                                e.preventDefault();
+                                if (!isDrawingSellerSignature) return;
+
+                                const touch = e.touches[0];
+                                const canvas = sellerCanvasRef.current;
+                                if (!canvas) return;
+
+                                const rect = canvas.getBoundingClientRect();
+                                const scaleX = canvas.width / rect.width;
+                                const scaleY = canvas.height / rect.height;
+                                const x = (touch.clientX - rect.left) * scaleX;
+                                const y = (touch.clientY - rect.top) * scaleY;
+
+                                const ctx = canvas.getContext("2d");
+                                if (!ctx) return;
+
+                                ctx.lineTo(x, y);
+                                ctx.stroke();
+                              }}
+                              onTouchEnd={(e) => {
+                                e.preventDefault();
+                                handleSellerCanvasMouseUp();
+                              }}
                             ></canvas>
-                            <div className="flex justify-between mt-2">
+                            <div className="flex flex-col sm:flex-row sm:justify-between mt-2 gap-2">
                               <Button
                                 type="button"
                                 onClick={clearSellerCanvas}
@@ -1658,7 +1720,7 @@ const PurchaseContractForm: React.FC = () => {
                               >
                                 Tøm signatur
                               </Button>
-                              <p className="text-xs text-gray-500 ml-2">
+                              <p className="text-xs text-gray-500">
                                 Du kan la dette være tomt hvis du vil signere på
                                 selve PDF-en senere.
                               </p>
@@ -1729,7 +1791,8 @@ const PurchaseContractForm: React.FC = () => {
                           id="dato_kjoper"
                           type="date"
                           {...formik.getFieldProps("dato_kjoper")}
-                          className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                          className="border-gray-200 focus:border-blue-500 focus:ring-blue-500 w-full"
+                          placeholder="dd.mm.åååå"
                         />
                         {formik.touched.dato_kjoper &&
                         formik.errors.dato_kjoper ? (
@@ -1746,7 +1809,7 @@ const PurchaseContractForm: React.FC = () => {
                           Kjøpers underskrift
                         </Label>
 
-                        <div className="flex space-x-3 mb-2">
+                        <div className="flex flex-wrap gap-2 mb-2">
                           <Button
                             type="button"
                             onClick={() => setBuyerSignatureMode("draw")}
@@ -1806,8 +1869,51 @@ const PurchaseContractForm: React.FC = () => {
                               onMouseMove={handleBuyerCanvasMouseMove}
                               onMouseUp={handleBuyerCanvasMouseUp}
                               onMouseLeave={handleBuyerCanvasMouseUp}
+                              onTouchStart={(e) => {
+                                e.preventDefault();
+                                const touch = e.touches[0];
+                                const canvas = buyerCanvasRef.current;
+                                if (!canvas) return;
+
+                                const rect = canvas.getBoundingClientRect();
+                                const scaleX = canvas.width / rect.width;
+                                const scaleY = canvas.height / rect.height;
+                                const x = (touch.clientX - rect.left) * scaleX;
+                                const y = (touch.clientY - rect.top) * scaleY;
+
+                                const ctx = canvas.getContext("2d");
+                                if (!ctx) return;
+
+                                setIsDrawingBuyerSignature(true);
+                                ctx.beginPath();
+                                ctx.moveTo(x, y);
+                              }}
+                              onTouchMove={(e) => {
+                                e.preventDefault();
+                                if (!isDrawingBuyerSignature) return;
+
+                                const touch = e.touches[0];
+                                const canvas = buyerCanvasRef.current;
+                                if (!canvas) return;
+
+                                const rect = canvas.getBoundingClientRect();
+                                const scaleX = canvas.width / rect.width;
+                                const scaleY = canvas.height / rect.height;
+                                const x = (touch.clientX - rect.left) * scaleX;
+                                const y = (touch.clientY - rect.top) * scaleY;
+
+                                const ctx = canvas.getContext("2d");
+                                if (!ctx) return;
+
+                                ctx.lineTo(x, y);
+                                ctx.stroke();
+                              }}
+                              onTouchEnd={(e) => {
+                                e.preventDefault();
+                                handleBuyerCanvasMouseUp();
+                              }}
                             ></canvas>
-                            <div className="flex justify-between mt-2">
+                            <div className="flex flex-col sm:flex-row sm:justify-between mt-2 gap-2">
                               <Button
                                 type="button"
                                 onClick={clearBuyerCanvas}
@@ -1815,7 +1921,7 @@ const PurchaseContractForm: React.FC = () => {
                               >
                                 Tøm signatur
                               </Button>
-                              <p className="text-xs text-gray-500 ml-2">
+                              <p className="text-xs text-gray-500">
                                 Du kan la dette være tomt hvis du vil signere på
                                 selve PDF-en senere.
                               </p>
@@ -1861,14 +1967,17 @@ const PurchaseContractForm: React.FC = () => {
             </Card>
           </div>
 
-          <div className="flex items-center space-x-2 p-4 bg-blue-50 rounded-lg border border-blue-100">
+          <div className="flex flex-col-reverse sm:flex-row items-center space-x-0 sm:space-x-2 p-4 bg-blue-50 rounded-lg border border-blue-100">
             <Checkbox
               id="include_disclaimer"
               checked={formik.values.include_disclaimer}
               onCheckedChange={handleCheckboxChange("include_disclaimer")}
-              className="text-blue-600"
+              className="text-blue-600 mt-2 sm:mt-0"
             />
-            <Label htmlFor="include_disclaimer" className="font-medium">
+            <Label
+              htmlFor="include_disclaimer"
+              className="font-medium text-center sm:text-left"
+            >
               Inkluder ansvarsfraskrivelse i kontrakten
             </Label>
           </div>
@@ -1911,15 +2020,15 @@ const PurchaseContractForm: React.FC = () => {
             </div>
           )}
 
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <Button
               type="button"
               onClick={handlePreviewPDF}
-              className="w-1/3 py-6 bg-gray-600 hover:bg-gray-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+              className="w-full sm:w-1/3 py-4 sm:py-6 bg-gray-600 hover:bg-gray-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 mr-2"
+                className="h-5 w-5 mr-2"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -1943,7 +2052,7 @@ const PurchaseContractForm: React.FC = () => {
             {session?.user && balance !== null && balance < 9.9 ? (
               <Button
                 type="button"
-                className="w-2/3 py-6 bg-blue-600 hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                className="w-full sm:w-2/3 py-4 sm:py-6 bg-blue-600 hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
                 onClick={() => (window.location.href = "/payments-form")}
               >
                 Legg til penger (Kun kr 9.90.- per generering)
@@ -1951,7 +2060,7 @@ const PurchaseContractForm: React.FC = () => {
             ) : (
               <Button
                 type="submit"
-                className={`w-2/3 text-lg py-6 ${
+                className={`w-full sm:w-2/3 text-lg py-4 sm:py-6 ${
                   session?.user
                     ? "bg-blue-600 hover:bg-blue-700"
                     : "bg-gray-400"
@@ -1983,7 +2092,7 @@ const PurchaseContractForm: React.FC = () => {
                 ) : (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 mr-2"
+                    className="h-5 w-5 mr-2"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
