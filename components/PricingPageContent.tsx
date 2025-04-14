@@ -148,14 +148,6 @@ const PricingPageContent = () => {
                   </li>
                 ))}
               </ol>
-
-              <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <p className="text-sm text-gray-700">
-                  <strong>Tips:</strong> Vi anbefaler å sette inn et større
-                  beløp (f.eks. 500 kr) for å ha saldo tilgjengelig til flere
-                  kontrakter etter behov.
-                </p>
-              </div>
             </div>
           </div>
         </motion.div>
