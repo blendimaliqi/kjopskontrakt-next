@@ -20,7 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { generatePDF } from "../utils/pdfGenerator";
+import { generatePDF, generatePreviewPDF } from "../utils/pdfGenerator";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -238,6 +238,12 @@ const PurchaseContractForm: React.FC = () => {
 
   const handleGeneratePDF = (values: FormData) => {
     handleWithdraw();
+  };
+
+  const handlePreviewPDF = () => {
+    if (formik.values) {
+      generatePreviewPDF(formik.values);
+    }
   };
 
   useEffect(() => {
@@ -1296,39 +1302,12 @@ const PurchaseContractForm: React.FC = () => {
             </div>
           )}
 
-          <Button
-            type="submit"
-            className={`w-full text-lg py-6 ${
-              isLoggedIn ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400"
-            } transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2`}
-            disabled={
-              isLoading ||
-              !isLoggedIn ||
-              (isLoggedIn && balance !== null && balance < 9.9)
-            }
-          >
-            {isLoading ? (
-              <svg
-                className="animate-spin h-5 w-5 mr-3 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-            ) : (
+          <div className="flex gap-4">
+            <Button
+              type="button"
+              onClick={handlePreviewPDF}
+              className="w-1/3 py-6 bg-gray-600 hover:bg-gray-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6 mr-2"
@@ -1340,12 +1319,69 @@ const PurchaseContractForm: React.FC = () => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                 />
               </svg>
-            )}
-            {getButtonText()}
-          </Button>
+              Forhåndsvisning (Gratis)
+            </Button>
+
+            <Button
+              type="submit"
+              className={`w-2/3 text-lg py-6 ${
+                isLoggedIn ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400"
+              } transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2`}
+              disabled={
+                isLoading ||
+                !isLoggedIn ||
+                (isLoggedIn && balance !== null && balance < 9.9)
+              }
+            >
+              {isLoading ? (
+                <svg
+                  className="animate-spin h-5 w-5 mr-3 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                  />
+                </svg>
+              )}
+              {getButtonText()}
+            </Button>
+          </div>
 
           {!formik.isValid && (
             <div className="text-red-500 mt-4 text-center font-medium p-3 bg-red-50 border border-red-100 rounded-md">
