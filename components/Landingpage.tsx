@@ -181,14 +181,16 @@ const LandingPageContent: React.FC<LandingPageContentProps> = ({
               Prøv vår PDF-generator og se hvordan den ferdige kontrakten vil se
               ut
             </p>
-            <Button
-              onClick={() => generateDemoPDF()}
-              size="lg"
-              className="bg-blue-600 text-white hover:bg-blue-700 shadow-lg"
-            >
-              <FileText className="mr-2 h-5 w-5" />
-              Generer Demo PDF
-            </Button>
+            <div className="flex justify-center">
+              <Button
+                onClick={() => generateDemoPDF()}
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center"
+              >
+                <FileText className="mr-2 h-5 w-5" />
+                Generer Demo PDF
+              </Button>
+            </div>
           </div>
         </div>
       </motion.section>

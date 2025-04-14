@@ -32,11 +32,23 @@ interface FormData {
   utstyr_annet: boolean;
   utstyr_spesifisert: string;
   andre_kommentarer: string;
+  sted_selger: string;
+  dato_selger: string;
   sted_kjoper: string;
   dato_kjoper: string;
   selgers_underskrift: string;
   kjopers_underskrift: string;
   include_disclaimer: boolean;
+  har_bilen_heftelser?: "ja" | "nei" | "velg" | "";
+  er_bilen_provekjort?: "ja" | "nei" | "velg" | "";
+  include_company_info?: boolean;
+  primary_color?: string;
+  company_name?: string;
+  company_address?: string;
+  company_email?: string;
+  company_phone?: string;
+  company_logo_base64?: string;
+  custom_header_text?: string;
 }
 
 const dummyData: FormData = {
@@ -68,14 +80,19 @@ const dummyData: FormData = {
   utstyr_sommer: true,
   utstyr_vinter: true,
   utstyr_annet: true,
-  utstyr_spesifisert: "Takstativ, skiboks, og barnesete",
-  andre_kommentarer:
-    "Bilen er nylig servicert og har fått nye bremseskiver. Den er i meget god stand og har vært røykfri.",
+  utstyr_spesifisert: "Takstativ, skiboks",
+  andre_kommentarer: "Bilen er nylig servicert og har fått nye bremseskiver.",
+  sted_selger: "Oslo",
+  dato_selger: "15.08.2023",
   sted_kjoper: "Oslo",
   dato_kjoper: "15.08.2023",
   selgers_underskrift: "Ola Nordmann",
   kjopers_underskrift: "Kari Hansen",
   include_disclaimer: true,
+  har_bilen_heftelser: "nei",
+  er_bilen_provekjort: "ja",
+  include_company_info: false,
+  primary_color: "#1e336c",
 };
 
 export function generateDemoPDF(): void {

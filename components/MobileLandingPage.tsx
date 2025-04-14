@@ -151,7 +151,7 @@ const MobileLandingPage: React.FC<MobileLandingPageProps> = ({
           </p>
           <Button
             onClick={() => generateDemoPDF()}
-            className="w-full bg-blue-600 text-white hover:bg-blue-700 shadow-md"
+            className="w-full bg-blue-600 hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center"
           >
             <FileText className="mr-2 h-4 w-4" />
             Generer Demo PDF
