@@ -28,7 +28,7 @@ import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { useContractFormStore } from "@/store/contractFormStore";
 
-// Add CSS for error highlighting
+// Add CSS for error highlighting and remove number input arrows
 const errorHighlightStyle = `
   @keyframes pulseError {
     0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.5); }
@@ -40,6 +40,18 @@ const errorHighlightStyle = `
     animation: pulseError 1.5s ease-in-out;
     border-color: #dc2626 !important;
     background-color: rgba(254, 226, 226, 0.5) !important;
+  }
+
+  /* Hide number input spinner arrows */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type="number"] {
+    -moz-appearance: textfield;
   }
 `;
 
@@ -121,24 +133,27 @@ const PurchaseContractForm: React.FC = () => {
   const [isDrawingBuyerSignature, setIsDrawingBuyerSignature] = useState(false);
   const [logoFileName, setLogoFileName] = useState<string>("");
   const [logoFile, setLogoFile] = useState<File | null>(null);
-
   const validationSchema = Yup.object({
     selger_fornavn: Yup.string().required("Påkrevd"),
-    selger_etternavn: Yup.string().required("Påkrevd"),
+    selger_etternavn: Yup.string(),
     selger_adresse: Yup.string().required("Påkrevd"),
     selger_postnummer: Yup.string().required("Påkrevd"),
     selger_poststed: Yup.string().required("Påkrevd"),
     selger_fodselsdato: Yup.string().required("Påkrevd"),
     selger_tlf_arbeid: Yup.string().required("Påkrevd"),
     kjoper_fornavn: Yup.string().required("Påkrevd"),
-    kjoper_etternavn: Yup.string().required("Påkrevd"),
+    kjoper_etternavn: Yup.string(),
     kjoper_adresse: Yup.string().required("Påkrevd"),
     kjoper_postnummer: Yup.string().required("Påkrevd"),
     kjoper_poststed: Yup.string().required("Påkrevd"),
     kjoper_fodselsdato: Yup.string().required("Påkrevd"),
     kjoper_tlf_arbeid: Yup.string().required("Påkrevd"),
     regnr: Yup.string().required("Påkrevd"),
-    kjopesum: Yup.number().typeError("Må være et tall").required("Påkrevd"),
+    kjopesum: Yup.string()
+      .required("Påkrevd")
+      .test("is-number", "Må være et tall", (value) => {
+        return value ? !isNaN(Number(value)) && Number(value) > 0 : false;
+      }),
     omregistreringsavgift_betales_av: Yup.string()
       .oneOf(["kjoper", "selger"])
       .required("Påkrevd"),
@@ -709,7 +724,6 @@ const PurchaseContractForm: React.FC = () => {
       <span className="text-red-500 ml-1">*</span>
     </Label>
   );
-
   // Add a utility component for form inputs with validation
   const FormInput: React.FC<{
     id: string;
@@ -721,21 +735,37 @@ const PurchaseContractForm: React.FC = () => {
     const fieldProps = formik.getFieldProps(id);
     const hasError = formik.touched[id] && formik.errors[id];
 
+    // Handle number input change to prevent focus loss
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (type === "number") {
+        // Ensure the value is a number or empty string before setting
+        const value = e.target.value;
+        if (value === "" || /^[0-9]+$/.test(value)) {
+          formik.setFieldValue(id, value);
+        }
+      } else {
+        fieldProps.onChange(e);
+      }
+    };
+
     return (
       <div className="space-y-2">
         {required ? (
-          <RequiredLabel htmlFor={id} className="font-medium">
-            {label}
-          </RequiredLabel>
+          <RequiredLabel htmlFor={id}>{label}</RequiredLabel>
         ) : (
-          <Label htmlFor={id} className="font-medium">
+          <Label htmlFor={id} className="flex items-center">
+            {" "}
+            {/* Added flex items-center */}
             {label}
           </Label>
         )}
         <Input
           id={id}
           type={type}
-          {...fieldProps}
+          value={fieldProps.value}
+          onChange={handleChange}
+          onBlur={fieldProps.onBlur}
+          name={fieldProps.name}
           className={`border-gray-200 focus:border-blue-500 focus:ring-blue-500 ${
             hasError ? "border-red-500" : ""
           }`}
@@ -752,22 +782,30 @@ const PurchaseContractForm: React.FC = () => {
       {/* Add style tag for error highlighting */}
       <style dangerouslySetInnerHTML={{ __html: errorHighlightStyle }} />
 
-      <CardHeader className="border-b bg-white p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-center">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-blue-600 text-center sm:text-left">
-            {formik.values.custom_header_text || "Kjøpskontrakt"}
-          </h2>
+      <CardHeader className="border-b bg-white p-4 sm:p-6">
+        <div className="flex items-center">
+          {formik.values.include_company_info &&
+            formik.values.company_logo_base64 && (
+              <div className="h-16 mr-4">
+                <img
+                  src={formik.values.company_logo_base64}
+                  alt="Company Logo"
+                  className="h-full max-h-16 object-contain"
+                />
+              </div>
+            )}
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-blue-600 text-center sm:text-left">
+              {formik.values.custom_header_text || "Kjøpskontrakt"}
+            </h2>
+            {formik.values.include_company_info &&
+              formik.values.company_name && (
+                <p className="text-sm text-blue-700 mt-1">
+                  {formik.values.company_name}
+                </p>
+              )}
+          </div>
         </div>
-        {formik.values.include_company_info &&
-          formik.values.company_logo_base64 && (
-            <div className="h-16 mt-3 sm:mt-0">
-              <img
-                src={formik.values.company_logo_base64}
-                alt="Company Logo"
-                className="h-full max-h-16 object-contain"
-              />
-            </div>
-          )}
       </CardHeader>
       <CardContent className="p-8 bg-gray-50/50">
         <form
@@ -1160,14 +1198,14 @@ const PurchaseContractForm: React.FC = () => {
                         {formik.errors.selger_fornavn}
                       </div>
                     ) : null}
-                  </div>
+                  </div>{" "}
                   <div className="space-y-2">
-                    <RequiredLabel
+                    <Label
                       htmlFor="selger_etternavn"
-                      className="font-medium"
+                      className="font-medium flex items-center"
                     >
-                      Etternavn
-                    </RequiredLabel>
+                      Selgers etternavn
+                    </Label>
                     <Input
                       id="selger_etternavn"
                       {...formik.getFieldProps("selger_etternavn")}
@@ -1295,10 +1333,14 @@ const PurchaseContractForm: React.FC = () => {
               </CardHeader>
               <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
                 <div className="grid grid-cols-2 gap-4">
+                  {" "}
                   <div className="space-y-2">
-                    <Label htmlFor="kjoper_fornavn" className="font-medium">
+                    <RequiredLabel
+                      htmlFor="kjoper_fornavn"
+                      className="font-medium"
+                    >
                       Fornavn
-                    </Label>
+                    </RequiredLabel>
                     <Input
                       id="kjoper_fornavn"
                       {...formik.getFieldProps("kjoper_fornavn")}
@@ -1310,9 +1352,12 @@ const PurchaseContractForm: React.FC = () => {
                         {formik.errors.kjoper_fornavn}
                       </div>
                     ) : null}
-                  </div>
+                  </div>{" "}
                   <div className="space-y-2">
-                    <Label htmlFor="kjoper_etternavn" className="font-medium">
+                    <Label
+                      htmlFor="kjoper_etternavn"
+                      className="font-medium flex items-center"
+                    >
                       Etternavn
                     </Label>
                     <Input
@@ -1490,14 +1535,23 @@ const PurchaseContractForm: React.FC = () => {
                     </div>
                   ) : null}
                 </div>
-              </div>
+              </div>{" "}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
-                <FormInput
-                  id="regnr"
-                  label="Reg.nr"
-                  required={true}
-                  formik={formik}
-                />
+                <div className="space-y-2">
+                  <RequiredLabel htmlFor="regnr" className="font-medium">
+                    Reg.nr
+                  </RequiredLabel>
+                  <Input
+                    id="regnr"
+                    {...formik.getFieldProps("regnr")}
+                    className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                  {formik.touched.regnr && formik.errors.regnr ? (
+                    <div className="text-red-500 text-xs">
+                      {formik.errors.regnr}
+                    </div>
+                  ) : null}
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="bilmerke" className="font-medium">
                     Bilmerke
@@ -1577,14 +1631,24 @@ const PurchaseContractForm: React.FC = () => {
                     <div className="text-red-500 text-xs">
                       {formik.errors.siste_eu_kontroll}
                     </div>
+                  ) : null}{" "}
+                </div>{" "}
+                <div className="space-y-2">
+                  <RequiredLabel htmlFor="kjopesum" className="font-medium">
+                    Kjøpesum
+                  </RequiredLabel>
+                  <Input
+                    id="kjopesum"
+                    type="number"
+                    {...formik.getFieldProps("kjopesum")}
+                    className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                  {formik.touched.kjopesum && formik.errors.kjopesum ? (
+                    <div className="text-red-500 text-xs">
+                      {formik.errors.kjopesum}
+                    </div>
                   ) : null}
                 </div>
-                <FormInput
-                  id="kjopesum"
-                  label="Kjøpesum"
-                  required={true}
-                  formik={formik}
-                />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                 <div className="space-y-2">
@@ -1634,7 +1698,7 @@ const PurchaseContractForm: React.FC = () => {
                 >
                   <path
                     fillRule="evenodd"
-                    d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z"
+                    d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-3.05a2.5 2.5 0 01-4.9 0H3z"
                     clipRule="evenodd"
                   />
                 </svg>
@@ -1761,7 +1825,7 @@ const PurchaseContractForm: React.FC = () => {
                 >
                   <path
                     fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-3.05a2.5 2.5 0 01-4.9 0H3z"
                     clipRule="evenodd"
                   />
                 </svg>

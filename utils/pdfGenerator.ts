@@ -168,7 +168,7 @@ export function generatePDF(formData: FormData): void {
   // Function to add a simple field with proper spacing as shown in the image
   function addField(
     label: string,
-    value: string,
+    value: string | number | boolean,
     x: number,
     y: number,
     width: number = 50,
@@ -177,6 +177,9 @@ export function generatePDF(formData: FormData): void {
   ): number {
     // Position the label slightly above the field with proper spacing
     addText(label, x, y, 8, "normal", "left", undefined, [80, 80, 80]);
+
+    // Convert value to string to prevent type errors
+    const stringValue = String(value || "");
 
     // Calculate position for input field with optimal spacing from label
     const fieldY = y + 3.5;
@@ -196,11 +199,11 @@ export function generatePDF(formData: FormData): void {
       const signatureFieldHeight = 20;
       doc.rect(x, fieldY, width, signatureFieldHeight, "FD");
 
-      if (value && value.startsWith("data:image")) {
+      if (stringValue && stringValue.startsWith("data:image")) {
         try {
           // Add the signature image
           doc.addImage(
-            value,
+            stringValue,
             "PNG",
             x + 2,
             fieldY + 1,
@@ -213,10 +216,10 @@ export function generatePDF(formData: FormData): void {
           console.error("Error adding signature to PDF:", error);
           // If image fails, leave blank box
         }
-      } else if (value) {
+      } else if (stringValue) {
         // If it's text, display the text centered in the signature box
         addText(
-          value,
+          stringValue,
           x + width / 2,
           fieldY + signatureFieldHeight / 2,
           9,
@@ -233,12 +236,20 @@ export function generatePDF(formData: FormData): void {
 
       if (multiline) {
         return (
-          addText(value, x + 2, fieldY + 4, 9, "normal", "left", width - 4) *
+          addText(
+            stringValue,
+            x + 2,
+            fieldY + 4,
+            9,
+            "normal",
+            "left",
+            width - 4
+          ) *
             5 +
           5
         );
       } else {
-        addText(value, x + 2, fieldY + 4, 9, "normal", "left");
+        addText(stringValue, x + 2, fieldY + 4, 9, "normal", "left");
         return fieldHeight + 7; // Reduced from 10 to 7 to reduce space between fields
       }
     }
@@ -263,9 +274,7 @@ export function generatePDF(formData: FormData): void {
         primaryColorRGB[1],
         primaryColorRGB[2]
       );
-      doc.rect(x, y - 3, 4, 4, "F");
-
-      // Add a checkmark
+      doc.rect(x, y - 3, 4, 4, "F"); // Add a checkmark
       doc.setDrawColor(255, 255, 255);
       doc.setLineWidth(0.2);
       doc.line(x + 0.8, y - 1, x + 1.6, y + 0.2);
@@ -314,12 +323,12 @@ export function generatePDF(formData: FormData): void {
     // Add company logo if provided as base64
     if (formData.company_logo_base64) {
       try {
-        // Make logo smaller
-        const logoWidth = isSecondaryPage ? 16 : 20; // Further reduced from 20/25 to 16/20
-        logoHeight = isSecondaryPage ? 10 : 12; // Further reduced from 12/15 to 10/12
+        // Logo sizing - moderate size for better visibility while staying inline with text
+        const logoWidth = isSecondaryPage ? 25 : 30; // Smaller than previous 40/50
+        logoHeight = isSecondaryPage ? 15 : 20; // Smaller than previous 25/30
 
-        // Calculate logo position (right aligned as in the image)
-        const logoX = pageWidth - margin - logoWidth;
+        // Position logo inline with company info on the left
+        const logoX = margin;
         const logoY = margin;
 
         doc.addImage(
@@ -344,7 +353,7 @@ export function generatePDF(formData: FormData): void {
     doc.rect(margin - 5, margin - 5, 2, headerHeight, "F");
 
     // Add company name and information
-    const infoX = margin + 5;
+    const infoX = margin + (formData.company_logo_base64 ? 35 : 5); // Move text to the right of logo when logo exists
     let infoY = margin + 4; // Further reduced from margin + 5
 
     // Use even smaller text
@@ -1146,7 +1155,7 @@ export function generatePreviewPDF(formData: FormData): void {
   // Function to add a simple field with proper spacing as shown in the image
   function addField(
     label: string,
-    value: string,
+    value: string | number | boolean,
     x: number,
     y: number,
     width: number = 50,
@@ -1155,6 +1164,9 @@ export function generatePreviewPDF(formData: FormData): void {
   ): number {
     // Position the label slightly above the field with proper spacing
     addText(label, x, y, 8, "normal", "left", undefined, [80, 80, 80]);
+
+    // Convert value to string to prevent type errors
+    const stringValue = String(value || "");
 
     // Calculate position for input field with optimal spacing from label
     const fieldY = y + 3.5;
@@ -1174,11 +1186,11 @@ export function generatePreviewPDF(formData: FormData): void {
       const signatureFieldHeight = 20;
       doc.rect(x, fieldY, width, signatureFieldHeight, "FD");
 
-      if (value && value.startsWith("data:image")) {
+      if (stringValue && stringValue.startsWith("data:image")) {
         try {
           // Add the signature image
           doc.addImage(
-            value,
+            stringValue,
             "PNG",
             x + 2,
             fieldY + 1,
@@ -1191,10 +1203,10 @@ export function generatePreviewPDF(formData: FormData): void {
           console.error("Error adding signature to PDF:", error);
           // If image fails, leave blank box
         }
-      } else if (value) {
+      } else if (stringValue) {
         // If it's text, display the text centered in the signature box
         addText(
-          value,
+          stringValue,
           x + width / 2,
           fieldY + signatureFieldHeight / 2,
           9,
@@ -1211,12 +1223,20 @@ export function generatePreviewPDF(formData: FormData): void {
 
       if (multiline) {
         return (
-          addText(value, x + 2, fieldY + 4, 9, "normal", "left", width - 4) *
+          addText(
+            stringValue,
+            x + 2,
+            fieldY + 4,
+            9,
+            "normal",
+            "left",
+            width - 4
+          ) *
             5 +
           5
         );
       } else {
-        addText(value, x + 2, fieldY + 4, 9, "normal", "left");
+        addText(stringValue, x + 2, fieldY + 4, 9, "normal", "left");
         return fieldHeight + 7; // Reduced from 10 to 7 to reduce space between fields
       }
     }
@@ -1241,9 +1261,7 @@ export function generatePreviewPDF(formData: FormData): void {
         primaryColorRGB[1],
         primaryColorRGB[2]
       );
-      doc.rect(x, y - 3, 4, 4, "F");
-
-      // Add a checkmark
+      doc.rect(x, y - 3, 4, 4, "F"); // Add a checkmark
       doc.setDrawColor(255, 255, 255);
       doc.setLineWidth(0.2);
       doc.line(x + 0.8, y - 1, x + 1.6, y + 0.2);
@@ -1288,9 +1306,7 @@ export function generatePreviewPDF(formData: FormData): void {
     }
 
     // Add page border
-    addPageBorder();
-
-    // Add watermark on each page
+    addPageBorder(); // Add watermark on each page
     addWatermark();
   }
 
@@ -1319,12 +1335,12 @@ export function generatePreviewPDF(formData: FormData): void {
     // Add company logo if provided as base64
     if (formData.company_logo_base64) {
       try {
-        // Make logo smaller
-        const logoWidth = isSecondaryPage ? 16 : 20; // Further reduced from 20/25 to 16/20
-        logoHeight = isSecondaryPage ? 10 : 12; // Further reduced from 12/15 to 10/12
+        // Logo sizing - moderate size for better visibility while staying inline with text
+        const logoWidth = isSecondaryPage ? 25 : 30; // Smaller than previous 40/50
+        logoHeight = isSecondaryPage ? 15 : 20; // Smaller than previous 25/30
 
-        // Calculate logo position (right aligned as in the image)
-        const logoX = pageWidth - margin - logoWidth;
+        // Position logo inline with company info on the left
+        const logoX = margin;
         const logoY = margin;
 
         doc.addImage(
@@ -1349,7 +1365,7 @@ export function generatePreviewPDF(formData: FormData): void {
     doc.rect(margin - 5, margin - 5, 2, headerHeight, "F");
 
     // Add company name and information
-    const infoX = margin + 5;
+    const infoX = margin + (formData.company_logo_base64 ? 35 : 5); // Move text to the right of logo when logo exists
     let infoY = margin + 4; // Further reduced from margin + 5
 
     // Use even smaller text
