@@ -59,6 +59,8 @@ const errorHighlightStyle = `
 interface FormData {
   selger_fornavn: string;
   selger_etternavn: string;
+  selger_bedriftsnavn: string;
+  selger_er_bedrift: boolean;
   selger_adresse: string;
   selger_postnummer: string;
   selger_poststed: string;
@@ -66,6 +68,8 @@ interface FormData {
   selger_tlf_arbeid: string;
   kjoper_fornavn: string;
   kjoper_etternavn: string;
+  kjoper_bedriftsnavn: string;
+  kjoper_er_bedrift: boolean;
   kjoper_adresse: string;
   kjoper_postnummer: string;
   kjoper_poststed: string;
@@ -134,15 +138,33 @@ const PurchaseContractForm: React.FC = () => {
   const [logoFileName, setLogoFileName] = useState<string>("");
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const validationSchema = Yup.object({
-    selger_fornavn: Yup.string().required("Påkrevd"),
+    selger_fornavn: Yup.string().when("selger_er_bedrift", {
+      is: false,
+      then: (schema) => schema.required("Påkrevd"),
+      otherwise: (schema) => schema,
+    }),
     selger_etternavn: Yup.string(),
+    selger_bedriftsnavn: Yup.string().when("selger_er_bedrift", {
+      is: true,
+      then: (schema) => schema.required("Påkrevd"),
+      otherwise: (schema) => schema,
+    }),
     selger_adresse: Yup.string().required("Påkrevd"),
     selger_postnummer: Yup.string().required("Påkrevd"),
     selger_poststed: Yup.string().required("Påkrevd"),
     selger_fodselsdato: Yup.string().required("Påkrevd"),
     selger_tlf_arbeid: Yup.string().required("Påkrevd"),
-    kjoper_fornavn: Yup.string().required("Påkrevd"),
+    kjoper_fornavn: Yup.string().when("kjoper_er_bedrift", {
+      is: false,
+      then: (schema) => schema.required("Påkrevd"),
+      otherwise: (schema) => schema,
+    }),
     kjoper_etternavn: Yup.string(),
+    kjoper_bedriftsnavn: Yup.string().when("kjoper_er_bedrift", {
+      is: true,
+      then: (schema) => schema.required("Påkrevd"),
+      otherwise: (schema) => schema,
+    }),
     kjoper_adresse: Yup.string().required("Påkrevd"),
     kjoper_postnummer: Yup.string().required("Påkrevd"),
     kjoper_poststed: Yup.string().required("Påkrevd"),
@@ -168,6 +190,8 @@ const PurchaseContractForm: React.FC = () => {
     initialValues: {
       selger_fornavn: storedFormData.selger_fornavn || "",
       selger_etternavn: storedFormData.selger_etternavn || "",
+      selger_bedriftsnavn: storedFormData.selger_bedriftsnavn || "",
+      selger_er_bedrift: storedFormData.selger_er_bedrift || false,
       selger_adresse: storedFormData.selger_adresse || "",
       selger_postnummer: storedFormData.selger_postnummer || "",
       selger_poststed: storedFormData.selger_poststed || "",
@@ -175,6 +199,8 @@ const PurchaseContractForm: React.FC = () => {
       selger_tlf_arbeid: storedFormData.selger_tlf_arbeid || "",
       kjoper_fornavn: storedFormData.kjoper_fornavn || "",
       kjoper_etternavn: storedFormData.kjoper_etternavn || "",
+      kjoper_bedriftsnavn: storedFormData.kjoper_bedriftsnavn || "",
+      kjoper_er_bedrift: storedFormData.kjoper_er_bedrift || false,
       kjoper_adresse: storedFormData.kjoper_adresse || "",
       kjoper_postnummer: storedFormData.kjoper_postnummer || "",
       kjoper_poststed: storedFormData.kjoper_poststed || "",
@@ -1172,58 +1198,95 @@ const PurchaseContractForm: React.FC = () => {
                   </svg>
                   Selger
                 </h3>
-              </CardHeader>
+              </CardHeader>{" "}
               <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
-                <div className="grid grid-cols-2 gap-4">
+                {/* Bedrift checkbox for seller */}
+                <div className="flex items-center space-x-2 mb-4 p-3 bg-blue-50 rounded-md">
+                  <Checkbox
+                    id="selger_er_bedrift"
+                    checked={formik.values.selger_er_bedrift}
+                    onCheckedChange={handleCheckboxChange("selger_er_bedrift")}
+                    className="text-blue-600"
+                  />
+                  <Label htmlFor="selger_er_bedrift" className="font-medium">
+                    Bedrift
+                  </Label>
+                </div>
+
+                {formik.values.selger_er_bedrift ? (
+                  // Show company name field when "Bedrift" is checked
                   <div className="space-y-2">
                     <RequiredLabel
-                      htmlFor="selger_fornavn"
+                      htmlFor="selger_bedriftsnavn"
                       className="font-medium"
                     >
-                      Fornavn
+                      Bedriftsnavn
                     </RequiredLabel>
                     <Input
-                      id="selger_fornavn"
-                      {...formik.getFieldProps("selger_fornavn")}
-                      className={`border-gray-200 focus:border-blue-500 focus:ring-blue-500 ${
-                        formik.touched.selger_fornavn &&
-                        formik.errors.selger_fornavn
-                          ? "border-red-500"
-                          : ""
-                      }`}
+                      id="selger_bedriftsnavn"
+                      {...formik.getFieldProps("selger_bedriftsnavn")}
+                      className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                     />
-                    {formik.touched.selger_fornavn &&
-                    formik.errors.selger_fornavn ? (
+                    {formik.touched.selger_bedriftsnavn &&
+                    formik.errors.selger_bedriftsnavn ? (
                       <div className="text-red-500 text-xs">
-                        {formik.errors.selger_fornavn}
-                      </div>
-                    ) : null}
-                  </div>{" "}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="selger_etternavn"
-                      className="font-medium flex items-center"
-                    >
-                      Selgers etternavn
-                    </Label>
-                    <Input
-                      id="selger_etternavn"
-                      {...formik.getFieldProps("selger_etternavn")}
-                      className={`border-gray-200 focus:border-blue-500 focus:ring-blue-500 ${
-                        formik.touched.selger_etternavn &&
-                        formik.errors.selger_etternavn
-                          ? "border-red-500"
-                          : ""
-                      }`}
-                    />
-                    {formik.touched.selger_etternavn &&
-                    formik.errors.selger_etternavn ? (
-                      <div className="text-red-500 text-xs">
-                        {formik.errors.selger_etternavn}
+                        {formik.errors.selger_bedriftsnavn}
                       </div>
                     ) : null}
                   </div>
-                </div>
+                ) : (
+                  // Show firstname and lastname fields when "Bedrift" is not checked
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <RequiredLabel
+                        htmlFor="selger_fornavn"
+                        className="font-medium"
+                      >
+                        Fornavn
+                      </RequiredLabel>
+                      <Input
+                        id="selger_fornavn"
+                        {...formik.getFieldProps("selger_fornavn")}
+                        className={`border-gray-200 focus:border-blue-500 focus:ring-blue-500 ${
+                          formik.touched.selger_fornavn &&
+                          formik.errors.selger_fornavn
+                            ? "border-red-500"
+                            : ""
+                        }`}
+                      />
+                      {formik.touched.selger_fornavn &&
+                      formik.errors.selger_fornavn ? (
+                        <div className="text-red-500 text-xs">
+                          {formik.errors.selger_fornavn}
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="selger_etternavn"
+                        className="font-medium flex items-center"
+                      >
+                        Etternavn
+                      </Label>
+                      <Input
+                        id="selger_etternavn"
+                        {...formik.getFieldProps("selger_etternavn")}
+                        className={`border-gray-200 focus:border-blue-500 focus:ring-blue-500 ${
+                          formik.touched.selger_etternavn &&
+                          formik.errors.selger_etternavn
+                            ? "border-red-500"
+                            : ""
+                        }`}
+                      />
+                      {formik.touched.selger_etternavn &&
+                      formik.errors.selger_etternavn ? (
+                        <div className="text-red-500 text-xs">
+                          {formik.errors.selger_etternavn}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   <Label htmlFor="selger_adresse" className="font-medium">
@@ -1330,49 +1393,85 @@ const PurchaseContractForm: React.FC = () => {
                   </svg>
                   Kjøper
                 </h3>
-              </CardHeader>
+              </CardHeader>{" "}
               <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
-                <div className="grid grid-cols-2 gap-4">
-                  {" "}
+                {/* Bedrift checkbox for buyer */}
+                <div className="flex items-center space-x-2 mb-4 p-3 bg-blue-50 rounded-md">
+                  <Checkbox
+                    id="kjoper_er_bedrift"
+                    checked={formik.values.kjoper_er_bedrift}
+                    onCheckedChange={handleCheckboxChange("kjoper_er_bedrift")}
+                    className="text-blue-600"
+                  />
+                  <Label htmlFor="kjoper_er_bedrift" className="font-medium">
+                    Bedrift
+                  </Label>
+                </div>
+
+                {formik.values.kjoper_er_bedrift ? (
+                  // Show company name field when "Bedrift" is checked
                   <div className="space-y-2">
                     <RequiredLabel
-                      htmlFor="kjoper_fornavn"
+                      htmlFor="kjoper_bedriftsnavn"
                       className="font-medium"
                     >
-                      Fornavn
+                      Bedriftsnavn
                     </RequiredLabel>
                     <Input
-                      id="kjoper_fornavn"
-                      {...formik.getFieldProps("kjoper_fornavn")}
+                      id="kjoper_bedriftsnavn"
+                      {...formik.getFieldProps("kjoper_bedriftsnavn")}
                       className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                     />
-                    {formik.touched.kjoper_fornavn &&
-                    formik.errors.kjoper_fornavn ? (
+                    {formik.touched.kjoper_bedriftsnavn &&
+                    formik.errors.kjoper_bedriftsnavn ? (
                       <div className="text-red-500 text-xs">
-                        {formik.errors.kjoper_fornavn}
-                      </div>
-                    ) : null}
-                  </div>{" "}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="kjoper_etternavn"
-                      className="font-medium flex items-center"
-                    >
-                      Etternavn
-                    </Label>
-                    <Input
-                      id="kjoper_etternavn"
-                      {...formik.getFieldProps("kjoper_etternavn")}
-                      className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                    />
-                    {formik.touched.kjoper_etternavn &&
-                    formik.errors.kjoper_etternavn ? (
-                      <div className="text-red-500 text-xs">
-                        {formik.errors.kjoper_etternavn}
+                        {formik.errors.kjoper_bedriftsnavn}
                       </div>
                     ) : null}
                   </div>
-                </div>
+                ) : (
+                  // Show firstname and lastname fields when "Bedrift" is not checked
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <RequiredLabel
+                        htmlFor="kjoper_fornavn"
+                        className="font-medium"
+                      >
+                        Fornavn
+                      </RequiredLabel>
+                      <Input
+                        id="kjoper_fornavn"
+                        {...formik.getFieldProps("kjoper_fornavn")}
+                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                      {formik.touched.kjoper_fornavn &&
+                      formik.errors.kjoper_fornavn ? (
+                        <div className="text-red-500 text-xs">
+                          {formik.errors.kjoper_fornavn}
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="kjoper_etternavn"
+                        className="font-medium flex items-center"
+                      >
+                        Etternavn
+                      </Label>
+                      <Input
+                        id="kjoper_etternavn"
+                        {...formik.getFieldProps("kjoper_etternavn")}
+                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                      {formik.touched.kjoper_etternavn &&
+                      formik.errors.kjoper_etternavn ? (
+                        <div className="text-red-500 text-xs">
+                          {formik.errors.kjoper_etternavn}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   <Label htmlFor="kjoper_adresse" className="font-medium">

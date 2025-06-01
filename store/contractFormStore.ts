@@ -4,6 +4,8 @@ import { persist } from "zustand/middleware";
 export interface FormData {
   selger_fornavn: string;
   selger_etternavn: string;
+  selger_bedriftsnavn: string;
+  selger_er_bedrift: boolean;
   selger_adresse: string;
   selger_postnummer: string;
   selger_poststed: string;
@@ -11,6 +13,8 @@ export interface FormData {
   selger_tlf_arbeid: string;
   kjoper_fornavn: string;
   kjoper_etternavn: string;
+  kjoper_bedriftsnavn: string;
+  kjoper_er_bedrift: boolean;
   kjoper_adresse: string;
   kjoper_postnummer: string;
   kjoper_poststed: string;
@@ -64,6 +68,8 @@ interface ContractFormStore {
 const initialFormData: FormData = {
   selger_fornavn: "",
   selger_etternavn: "",
+  selger_bedriftsnavn: "",
+  selger_er_bedrift: false,
   selger_adresse: "",
   selger_postnummer: "",
   selger_poststed: "",
@@ -71,6 +77,8 @@ const initialFormData: FormData = {
   selger_tlf_arbeid: "",
   kjoper_fornavn: "",
   kjoper_etternavn: "",
+  kjoper_bedriftsnavn: "",
+  kjoper_er_bedrift: false,
   kjoper_adresse: "",
   kjoper_postnummer: "",
   kjoper_poststed: "",

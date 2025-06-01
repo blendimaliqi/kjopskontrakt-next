@@ -4,6 +4,8 @@ import { generatePDF } from "./pdfGenerator";
 interface FormData {
   selger_fornavn: string;
   selger_etternavn: string;
+  selger_bedriftsnavn: string;
+  selger_er_bedrift: boolean;
   selger_adresse: string;
   selger_postnummer: string;
   selger_poststed: string;
@@ -11,6 +13,8 @@ interface FormData {
   selger_tlf_arbeid: string;
   kjoper_fornavn: string;
   kjoper_etternavn: string;
+  kjoper_bedriftsnavn: string;
+  kjoper_er_bedrift: boolean;
   kjoper_adresse: string;
   kjoper_postnummer: string;
   kjoper_poststed: string;
@@ -54,6 +58,8 @@ interface FormData {
 const dummyData: FormData = {
   selger_fornavn: "Ola",
   selger_etternavn: "Nordmann",
+  selger_bedriftsnavn: "",
+  selger_er_bedrift: false,
   selger_adresse: "Kongens gate 1",
   selger_postnummer: "0153",
   selger_poststed: "Oslo",
@@ -61,6 +67,8 @@ const dummyData: FormData = {
   selger_tlf_arbeid: "22334455",
   kjoper_fornavn: "Kari",
   kjoper_etternavn: "Hansen",
+  kjoper_bedriftsnavn: "",
+  kjoper_er_bedrift: false,
   kjoper_adresse: "Slottsplassen 1",
   kjoper_postnummer: "0010",
   kjoper_poststed: "Oslo",
