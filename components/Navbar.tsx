@@ -143,14 +143,6 @@ export default function Navbar() {
                 Kjøpskontrakt
               </Link>
               <a
-                href="/#hvordan-det-fungerer"
-                onClick={(e) => handleSmoothScroll(e, "#hvordan-det-fungerer")}
-                className="inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
-              >
-                <HelpCircle className="mr-1 h-4 w-4" />
-                Hvordan det fungerer
-              </a>
-              <a
                 href="/#priser"
                 onClick={(e) => handleSmoothScroll(e, "#priser")}
                 className="inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
