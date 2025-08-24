@@ -9,7 +9,7 @@ export const getBaseUrl = () => {
   }
 
   // For server-side rendering
-  return process.env.NEXTAUTH_URL || "https://kjopskontrakt.no";
+  return process.env.NEXTAUTH_URL || "https://kjopekontrakter.no";
 };
 
 // Helper function to get the session in server components and API routes
